@@ -107,7 +107,7 @@ class ApparentWind : ObservableObject {
         //        print("atan(1,  1) \( atan2( 1, 1) * (180 / Double.pi) )")
         //        print("atan(1, -1) \( atan2( 1, -1) * (180 / Double.pi) )")
         //        print("atan(-1, -1) \( atan2( -1, -1) * (180 / Double.pi) )")
-        //        print("atan(-1, 1) \( atan2( -1, 1) * (180 / Double.pi) )")
+        //        print("atan(-1, 1) \( atan2( -1, 1) * (180 / Double.pi) )") 안녕하세요
         
         print("windx \(windX) windy \(windY)")
         print("apparent wind speed \(speed!)")
