@@ -84,5 +84,6 @@ class SailingDataCollector : ObservableObject {
      
     }
     
+    //
     
 }
