@@ -11,7 +11,7 @@ import SwiftUI
 struct BuzzerBeaterApp: App {
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            ContentView().ignoresSafeArea(.all)
         }
     }
 }
