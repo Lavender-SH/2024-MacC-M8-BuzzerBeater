@@ -7,41 +7,89 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		02CE99282CBD94A400668857 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 02CE99182CBD94A400668857 /* Preview Assets.xcassets */; };
-		02CE99292CBD94A400668857 /* .gitignore in Resources */ = {isa = PBXBuildFile; fileRef = 02CE991A2CBD94A400668857 /* .gitignore */; };
-		02CE992A2CBD94A400668857 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 02CE991C2CBD94A400668857 /* Assets.xcassets */; };
-		02CE992C2CBD94A400668857 /* ApparentWind.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02CE991B2CBD94A400668857 /* ApparentWind.swift */; };
-		02CE992D2CBD94A400668857 /* BoatView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02CE991D2CBD94A400668857 /* BoatView.swift */; };
-		02CE992E2CBD94A400668857 /* BuzzerBeaterApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02CE991E2CBD94A400668857 /* BuzzerBeaterApp.swift */; };
-		02CE992F2CBD94A400668857 /* CompassView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02CE991F2CBD94A400668857 /* CompassView.swift */; };
-		02CE99302CBD94A400668857 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02CE99202CBD94A400668857 /* ContentView.swift */; };
-		02CE99312CBD94A400668857 /* LocationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02CE99222CBD94A400668857 /* LocationManager.swift */; };
-		02CE99322CBD94A400668857 /* MapView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02CE99232CBD94A400668857 /* MapView.swift */; };
-		02CE99332CBD94A400668857 /* SailAngleFind.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02CE99242CBD94A400668857 /* SailAngleFind.swift */; };
-		02CE99342CBD94A400668857 /* SailingDataCollector.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02CE99252CBD94A400668857 /* SailingDataCollector.swift */; };
-		02CE99352CBD94A400668857 /* WindDetector.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02CE99262CBD94A400668857 /* WindDetector.swift */; };
+		0297A25E2CC3E65D0024AEC9 /* BuzzerBeaterWatch Watch App.app in Embed Watch Content */ = {isa = PBXBuildFile; fileRef = 0297A2512CC3E65C0024AEC9 /* BuzzerBeaterWatch Watch App.app */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 /* End PBXBuildFile section */
 
+/* Begin PBXContainerItemProxy section */
+		0297A25C2CC3E65D0024AEC9 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 9291A7812CB37D6300E44161 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 0297A2502CC3E65C0024AEC9;
+			remoteInfo = "BuzzerBeaterWatch Watch App";
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		0297A25F2CC3E65D0024AEC9 /* Embed Watch Content */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "$(CONTENTS_FOLDER_PATH)/Watch";
+			dstSubfolderSpec = 16;
+			files = (
+				0297A25E2CC3E65D0024AEC9 /* BuzzerBeaterWatch Watch App.app in Embed Watch Content */,
+			);
+			name = "Embed Watch Content";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
 /* Begin PBXFileReference section */
-		02CE99182CBD94A400668857 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
-		02CE991A2CBD94A400668857 /* .gitignore */ = {isa = PBXFileReference; lastKnownFileType = text; path = .gitignore; sourceTree = "<group>"; };
-		02CE991B2CBD94A400668857 /* ApparentWind.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ApparentWind.swift; sourceTree = "<group>"; };
-		02CE991C2CBD94A400668857 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
-		02CE991D2CBD94A400668857 /* BoatView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BoatView.swift; sourceTree = "<group>"; };
-		02CE991E2CBD94A400668857 /* BuzzerBeaterApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BuzzerBeaterApp.swift; sourceTree = "<group>"; };
-		02CE991F2CBD94A400668857 /* CompassView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CompassView.swift; sourceTree = "<group>"; };
-		02CE99202CBD94A400668857 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
-		02CE99222CBD94A400668857 /* LocationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationManager.swift; sourceTree = "<group>"; };
-		02CE99232CBD94A400668857 /* MapView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapView.swift; sourceTree = "<group>"; };
-		02CE99242CBD94A400668857 /* SailAngleFind.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SailAngleFind.swift; sourceTree = "<group>"; };
-		02CE99252CBD94A400668857 /* SailingDataCollector.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SailingDataCollector.swift; sourceTree = "<group>"; };
-		02CE99262CBD94A400668857 /* WindDetector.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WindDetector.swift; sourceTree = "<group>"; };
-		02CE99372CBDED8500668857 /* BuzzerBeater.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = BuzzerBeater.entitlements; sourceTree = "<group>"; };
-		02CE99382CBDED9000668857 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		0297A2512CC3E65C0024AEC9 /* BuzzerBeaterWatch Watch App.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "BuzzerBeaterWatch Watch App.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		0297A2642CC3E6780024AEC9 /* WeatherKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WeatherKit.framework; path = Platforms/WatchOS.platform/Developer/SDKs/WatchOS11.0.sdk/System/Library/Frameworks/WeatherKit.framework; sourceTree = DEVELOPER_DIR; };
 		9291A7892CB37D6300E44161 /* BuzzerBeater.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = BuzzerBeater.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		0297A2672CC3E8B60024AEC9 /* Exceptions for "BuzzerBeater" folder in "BuzzerBeaterWatch Watch App" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Andy/ApparentWind.swift,
+				Andy/BoatView.swift,
+				Andy/CompassView.swift,
+				Andy/ContentView.swift,
+				Andy/LocationManager.swift,
+				Andy/MapView.swift,
+				Andy/SailAngleFind.swift,
+				Andy/SailingDataCollector.swift,
+				Andy/WindDetector.swift,
+			);
+			target = 0297A2502CC3E65C0024AEC9 /* BuzzerBeaterWatch Watch App */;
+		};
+		02CE99932CC2CAD200668857 /* Exceptions for "BuzzerBeater" folder in "BuzzerBeater" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = 9291A7882CB37D6300E44161 /* BuzzerBeater */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
+/* Begin PBXFileSystemSynchronizedRootGroup section */
+		0297A2522CC3E65C0024AEC9 /* BuzzerBeaterWatch Watch App */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = "BuzzerBeaterWatch Watch App";
+			sourceTree = "<group>";
+		};
+		9291A78B2CB37D6300E44161 /* BuzzerBeater */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				02CE99932CC2CAD200668857 /* Exceptions for "BuzzerBeater" folder in "BuzzerBeater" target */,
+				0297A2672CC3E8B60024AEC9 /* Exceptions for "BuzzerBeater" folder in "BuzzerBeaterWatch Watch App" target */,
+			);
+			path = BuzzerBeater;
+			sourceTree = "<group>";
+		};
+/* End PBXFileSystemSynchronizedRootGroup section */
+
 /* Begin PBXFrameworksBuildPhase section */
+		0297A24E2CC3E65C0024AEC9 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		9291A7862CB37D6300E44161 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -52,48 +100,20 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		02CE99192CBD94A400668857 /* Preview Content */ = {
+		0297A2632CC3E6780024AEC9 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				02CE99182CBD94A400668857 /* Preview Assets.xcassets */,
+				0297A2642CC3E6780024AEC9 /* WeatherKit.framework */,
 			);
-			path = "Preview Content";
-			sourceTree = "<group>";
-		};
-		02CE99272CBD94A400668857 /* BuzzerBeater */ = {
-			isa = PBXGroup;
-			children = (
-				02CE99382CBDED9000668857 /* Info.plist */,
-				02CE99372CBDED8500668857 /* BuzzerBeater.entitlements */,
-				02CE99192CBD94A400668857 /* Preview Content */,
-				02CE991A2CBD94A400668857 /* .gitignore */,
-				02CE991E2CBD94A400668857 /* BuzzerBeaterApp.swift */,
-				02CE99362CBD94B500668857 /* Andy */,
-				02CE991C2CBD94A400668857 /* Assets.xcassets */,
-			);
-			path = BuzzerBeater;
-			sourceTree = "<group>";
-		};
-		02CE99362CBD94B500668857 /* Andy */ = {
-			isa = PBXGroup;
-			children = (
-				02CE99202CBD94A400668857 /* ContentView.swift */,
-				02CE991F2CBD94A400668857 /* CompassView.swift */,
-				02CE991D2CBD94A400668857 /* BoatView.swift */,
-				02CE99232CBD94A400668857 /* MapView.swift */,
-				02CE99222CBD94A400668857 /* LocationManager.swift */,
-				02CE99262CBD94A400668857 /* WindDetector.swift */,
-				02CE991B2CBD94A400668857 /* ApparentWind.swift */,
-				02CE99242CBD94A400668857 /* SailAngleFind.swift */,
-				02CE99252CBD94A400668857 /* SailingDataCollector.swift */,
-			);
-			path = Andy;
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 		9291A7802CB37D6300E44161 = {
 			isa = PBXGroup;
 			children = (
-				02CE99272CBD94A400668857 /* BuzzerBeater */,
+				9291A78B2CB37D6300E44161 /* BuzzerBeater */,
+				0297A2522CC3E65C0024AEC9 /* BuzzerBeaterWatch Watch App */,
+				0297A2632CC3E6780024AEC9 /* Frameworks */,
 				9291A78A2CB37D6300E44161 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -102,6 +122,7 @@
 			isa = PBXGroup;
 			children = (
 				9291A7892CB37D6300E44161 /* BuzzerBeater.app */,
+				0297A2512CC3E65C0024AEC9 /* BuzzerBeaterWatch Watch App.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -109,6 +130,28 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
+		0297A2502CC3E65C0024AEC9 /* BuzzerBeaterWatch Watch App */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 0297A2622CC3E65D0024AEC9 /* Build configuration list for PBXNativeTarget "BuzzerBeaterWatch Watch App" */;
+			buildPhases = (
+				0297A24D2CC3E65C0024AEC9 /* Sources */,
+				0297A24E2CC3E65C0024AEC9 /* Frameworks */,
+				0297A24F2CC3E65C0024AEC9 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				0297A2522CC3E65C0024AEC9 /* BuzzerBeaterWatch Watch App */,
+			);
+			name = "BuzzerBeaterWatch Watch App";
+			packageProductDependencies = (
+			);
+			productName = "BuzzerBeaterWatch Watch App";
+			productReference = 0297A2512CC3E65C0024AEC9 /* BuzzerBeaterWatch Watch App.app */;
+			productType = "com.apple.product-type.application";
+		};
 		9291A7882CB37D6300E44161 /* BuzzerBeater */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 9291A7972CB37D6400E44161 /* Build configuration list for PBXNativeTarget "BuzzerBeater" */;
@@ -116,10 +159,15 @@
 				9291A7852CB37D6300E44161 /* Sources */,
 				9291A7862CB37D6300E44161 /* Frameworks */,
 				9291A7872CB37D6300E44161 /* Resources */,
+				0297A25F2CC3E65D0024AEC9 /* Embed Watch Content */,
 			);
 			buildRules = (
 			);
 			dependencies = (
+				0297A25D2CC3E65D0024AEC9 /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				9291A78B2CB37D6300E44161 /* BuzzerBeater */,
 			);
 			name = BuzzerBeater;
 			packageProductDependencies = (
@@ -138,6 +186,9 @@
 				LastSwiftUpdateCheck = 1600;
 				LastUpgradeCheck = 1600;
 				TargetAttributes = {
+					0297A2502CC3E65C0024AEC9 = {
+						CreatedOnToolsVersion = 16.0;
+					};
 					9291A7882CB37D6300E44161 = {
 						CreatedOnToolsVersion = 16.0;
 					};
@@ -158,44 +209,128 @@
 			projectRoot = "";
 			targets = (
 				9291A7882CB37D6300E44161 /* BuzzerBeater */,
+				0297A2502CC3E65C0024AEC9 /* BuzzerBeaterWatch Watch App */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
+		0297A24F2CC3E65C0024AEC9 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		9291A7872CB37D6300E44161 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				02CE99282CBD94A400668857 /* Preview Assets.xcassets in Resources */,
-				02CE99292CBD94A400668857 /* .gitignore in Resources */,
-				02CE992A2CBD94A400668857 /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		0297A24D2CC3E65C0024AEC9 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		9291A7852CB37D6300E44161 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				02CE992C2CBD94A400668857 /* ApparentWind.swift in Sources */,
-				02CE992D2CBD94A400668857 /* BoatView.swift in Sources */,
-				02CE992E2CBD94A400668857 /* BuzzerBeaterApp.swift in Sources */,
-				02CE992F2CBD94A400668857 /* CompassView.swift in Sources */,
-				02CE99302CBD94A400668857 /* ContentView.swift in Sources */,
-				02CE99312CBD94A400668857 /* LocationManager.swift in Sources */,
-				02CE99322CBD94A400668857 /* MapView.swift in Sources */,
-				02CE99332CBD94A400668857 /* SailAngleFind.swift in Sources */,
-				02CE99342CBD94A400668857 /* SailingDataCollector.swift in Sources */,
-				02CE99352CBD94A400668857 /* WindDetector.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
+/* Begin PBXTargetDependency section */
+		0297A25D2CC3E65D0024AEC9 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 0297A2502CC3E65C0024AEC9 /* BuzzerBeaterWatch Watch App */;
+			targetProxy = 0297A25C2CC3E65D0024AEC9 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
 /* Begin XCBuildConfiguration section */
+		0297A2602CC3E65D0024AEC9 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = "BuzzerBeaterWatch Watch App/BuzzerBeaterWatch Watch App.entitlements";
+				CODE_SIGN_IDENTITY = "Apple Development";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "iPhone Developer";
+				CODE_SIGN_STYLE = Manual;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_ASSET_PATHS = "\"BuzzerBeaterWatch Watch App/Preview Content\"";
+				DEVELOPMENT_TEAM = "";
+				"DEVELOPMENT_TEAM[sdk=watchos*]" = DBXHWJCYZK;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "BuzzerBeaterWatch-Watch-App-Info.plist";
+				INFOPLIST_KEY_CFBundleDisplayName = BuzzerBeaterWatch;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
+				INFOPLIST_KEY_WKCompanionAppBundleIdentifier = com.lavender.buzzbeater;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.lavender.buzzbeater.watchkitapp;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
+				"PROVISIONING_PROFILE_SPECIFIER[sdk=watchos*]" = provisioningbuzzbeaterwatch;
+				SDKROOT = watchos;
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 4;
+				WATCHOS_DEPLOYMENT_TARGET = 10.6;
+			};
+			name = Debug;
+		};
+		0297A2612CC3E65D0024AEC9 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = "BuzzerBeaterWatch Watch App/BuzzerBeaterWatch Watch App.entitlements";
+				CODE_SIGN_IDENTITY = "Apple Development";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "iPhone Developer";
+				CODE_SIGN_STYLE = Manual;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_ASSET_PATHS = "\"BuzzerBeaterWatch Watch App/Preview Content\"";
+				DEVELOPMENT_TEAM = "";
+				"DEVELOPMENT_TEAM[sdk=watchos*]" = DBXHWJCYZK;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "BuzzerBeaterWatch-Watch-App-Info.plist";
+				INFOPLIST_KEY_CFBundleDisplayName = BuzzerBeaterWatch;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
+				INFOPLIST_KEY_WKCompanionAppBundleIdentifier = com.lavender.buzzbeater;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.lavender.buzzbeater.watchkitapp;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
+				"PROVISIONING_PROFILE_SPECIFIER[sdk=watchos*]" = provisioningbuzzbeaterwatch;
+				SDKROOT = watchos;
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 4;
+				WATCHOS_DEPLOYMENT_TARGET = 10.6;
+			};
+			name = Release;
+		};
 		9291A7952CB37D6400E44161 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -321,11 +456,12 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = BuzzerBeater/BuzzerBeater.entitlements;
-				CODE_SIGN_IDENTITY = "Apple Development";
-				CODE_SIGN_STYLE = Automatic;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				CODE_SIGN_STYLE = Manual;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"BuzzerBeater/Preview Content\"";
 				DEVELOPMENT_TEAM = "";
+				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = DBXHWJCYZK;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = BuzzerBeater/Info.plist;
@@ -334,19 +470,16 @@
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.6;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = sail.BuzzerBeater;
+				PRODUCT_BUNDLE_IDENTIFIER = com.lavender.buzzbeater;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
-				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
-				SUPPORTS_MACCATALYST = NO;
-				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
-				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
+				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = provisioningbuzzbeater;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -359,11 +492,12 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = BuzzerBeater/BuzzerBeater.entitlements;
-				CODE_SIGN_IDENTITY = "Apple Development";
-				CODE_SIGN_STYLE = Automatic;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				CODE_SIGN_STYLE = Manual;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"BuzzerBeater/Preview Content\"";
 				DEVELOPMENT_TEAM = "";
+				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = DBXHWJCYZK;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = BuzzerBeater/Info.plist;
@@ -372,19 +506,16 @@
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.6;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = sail.BuzzerBeater;
+				PRODUCT_BUNDLE_IDENTIFIER = com.lavender.buzzbeater;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
-				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
-				SUPPORTS_MACCATALYST = NO;
-				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
-				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
+				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = provisioningbuzzbeater;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -394,6 +525,15 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		0297A2622CC3E65D0024AEC9 /* Build configuration list for PBXNativeTarget "BuzzerBeaterWatch Watch App" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				0297A2602CC3E65D0024AEC9 /* Debug */,
+				0297A2612CC3E65D0024AEC9 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		9291A7842CB37D6300E44161 /* Build configuration list for PBXProject "BuzzerBeater" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (

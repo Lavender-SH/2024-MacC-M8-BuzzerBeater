@@ -13,17 +13,17 @@ struct MapView: View {
     @EnvironmentObject var vm: SailingDataCollector
   
 //    @State private var cameraPosition: MapCameraPosition = .region(MKCoordinateRegion(
-//        center: CLLocationCoordinate2D(latitude: 36.017470189362115, longitude: 129.32224097538742), 
+//        center: CLLocationCoordinate2D(latitude: 36.017470189362115, longitude: 129.32224097538742),
 //        span: MKCoordinateSpan(latitudeDelta: mapShowingDegree, longitudeDelta: mapShowingDegree)
 //    ))
-//    
+//
     @State private var coordinates: [CLLocationCoordinate2D] = []
     
     @State private var position: MapCameraPosition = .automatic
     
     @EnvironmentObject var locationManager : LocationManager
         
-    let mapShowingDegree = 0.05
+    let mapShowingDegree = 0.1
     
     var body: some View {
         VStack(alignment: .center) {
@@ -31,18 +31,20 @@ struct MapView: View {
             //                    .stroke(Color.blue, lineWidth: 2)
             //
             //            }
+           
             Map(position: $position, interactionModes: [.all] ){
                 MapPolyline(coordinates: coordinates)
                     .stroke(Color.blue, lineWidth: 2)
                 
+                
             }
             
             .onAppear {
-                //                position = .userLocation(followsHeading: true, fallback: MapCameraPosition.region(MKCoordinateRegion(
-                //                            center: CLLocationCoordinate2D(latitude: 36.017470189362115, longitude: 129.32224097538742),
-                //                            span: MKCoordinateSpan(latitudeDelta: mapShowingDegree, longitudeDelta: mapShowingDegree)
-                //                        )))
-                //              updateCameraPosition(with: locationManager.lastLocation)  //<= 이것도 .automatic과 중복됨
+                position = .userLocation(followsHeading: true, fallback: MapCameraPosition.region(MKCoordinateRegion(
+                    center: CLLocationCoordinate2D(latitude: LocationManager.shared.latitude, longitude: LocationManager.shared.longitude),
+                    span: MKCoordinateSpan(latitudeDelta: mapShowingDegree, longitudeDelta: mapShowingDegree)
+                )))
+                updateCameraPosition(with: locationManager.lastLocation)  //<= 이것도 .automatic과 중복됨
                 
                 updateCoordinates() // 초기 좌표 업데이트
             }
@@ -105,3 +107,4 @@ struct MapView: View {
         }
     }
 }
+

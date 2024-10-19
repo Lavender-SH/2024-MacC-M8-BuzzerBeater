@@ -19,43 +19,32 @@ struct CompassView: View {
     
     var body: some View {
         GeometryReader { geometry in
-            let r1 = geometry.size.width * 0.35
-            let r2 = geometry.size.width * 0.4
-            let r3 = geometry.size.width * 0.26
-            let r4 = geometry.size.width * 0.30
-            let cx = geometry.size.width * 0.5
-            let cy = geometry.size.width * 0.5
+            let r1 = geometry.size.width * 0.45
+            let r2 = geometry.size.width * 0.50
+            let r3 = geometry.size.width * 0.36
+            let r4 = geometry.size.width * 0.40
+            let cx = geometry.size.width * 0.45
+            let cy = geometry.size.width * 0.55
             let center = CGPoint(x: cx, y: cy)
-            let r5 = geometry.size.width * 0.43
-            let r6 = geometry.size.width * 0.45
+            let r5 = geometry.size.width * 0.53
+            let r6 = geometry.size.width * 0.55
             
             VStack(alignment: .center){
                 ZStack {
                     // 나침반 원
                     // reflection이  y축 기준으로 발생하니까 수학좌표계로는  clockwise
                     // 스크린이나  frame좌표계에서는  counter clockwise.
-                    Path { path in
-                        // Arc의 중심 (ZStack에서 중앙을 기준으로)
-                        let radius: CGFloat = r2
-                        
-                        // Arc 추가 (시작 각도와 끝 각도 설정)
-                        path.addArc(center: center, radius: radius, startAngle: .degrees(0), endAngle: .degrees(-90), clockwise: true)
-                        
-                    }
-                    .stroke(Color.green, lineWidth: 4)
-                    
-                    Path { path in
-                        // Arc의 중심 (ZStack에서 중앙을 기준으로)
-                        let radius: CGFloat = r2
-                        // Arc 추가 (시작 각도와 끝 각도 설정)
-                        path.addArc(center: center, radius: radius, startAngle: .degrees(-90), endAngle: .degrees(-180), clockwise: true)
-                    }
-                    .stroke(Color.red, lineWidth: 4)
+                  
                     ForEach(0..<360, id: \.self) { degree in
                         let isMainDirection = degree % 30 == 0 // 30도마다 큰 눈금
-                        let lineLength: CGFloat = isMainDirection ? 15 : 5 // 큰 눈금과 작은 눈금의 길이
+                        let lineLength: CGFloat = isMainDirection ? 10 : 2 // 큰 눈금과 작은 눈금의 길이
+#if !os(watchOS)
                         let lineColor: Color = isMainDirection ? .black : .orange // 큰 눈금은 검은색, 작은 눈금은 회색
+#endif
                         
+#if os(watchOS)
+                        let lineColor: Color = isMainDirection ? .white : .orange
+#endif
                         // 선을 그린다
                         // 직교 수학 좌표계
                         Path { path in
@@ -173,12 +162,29 @@ struct CompassView: View {
                             .offset(x: x, y: -y)
                         // apparent wind direction draw // 근데 여기서 계산까지 해줘야 하나 아니면 다른데서??
                     }
-               }
+                    Path { path in
+                        // Arc의 중심 (ZStack에서 중앙을 기준으로)
+                        let radius: CGFloat = r2 - 2
+                        
+                        // Arc 추가 (시작 각도와 끝 각도 설정)
+                        path.addArc(center: center, radius: radius, startAngle: .degrees(0), endAngle: .degrees(-90), clockwise: true)
+                        
+                    }
+                    .stroke(Color.green, lineWidth: 4)
+                    
+                    Path { path in
+                        // Arc의 중심 (ZStack에서 중앙을 기준으로)
+                        let radius: CGFloat = r2 - 2
+                        // Arc 추가 (시작 각도와 끝 각도 설정)
+                        path.addArc(center: center, radius: radius, startAngle: .degrees(-90), endAngle: .degrees(-180), clockwise: true)
+                    }
+                    .stroke(Color.red, lineWidth: 4)
+                }
                 .overlay{
                     BoatView().offset(x: cx, y: cy)
                         .environmentObject(sailAngleFind)
                 }
-           }
+            }
         }
     }
 }
@@ -192,4 +198,5 @@ struct CompassView_Previews: PreviewProvider {
         CompassView().environmentObject(LocationManager())
     }
 }
+
 
