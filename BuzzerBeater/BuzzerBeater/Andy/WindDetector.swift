@@ -23,13 +23,39 @@ class WindDetector : ObservableObject{
     static let shared = WindDetector()
     
 //    @ObservedObject var locationManager = LocationManager()
-    let  locationManager = LocationManager.shared
-    
+ 
     @Published var currentWind: WindData?
     @Published var timestamp :Date?
     @Published var direction: Double?
     @Published var speed: Double?
-   
+    @Published var adjustedDirection : Double?
+    
+    
+    @Published var windCorrectionDetent: Double = 0 {
+        didSet {
+            
+//            let shared = LocationManager.shared
+//            DispatchQueue.main.asyncAfter(deadline: .now() ) {
+//                Task {
+//                    print("Fectching wind in the disptach")
+//                    if let location =  shared.lastLocation {
+//                        await self.fetchCurrentWind(for: location)
+//                    }
+//                }
+//            }
+            if let direction = self.direction {
+                self.adjustedDirection = direction + self.windCorrectionDetent
+                print("Updated windCorrectionDetent in the WindDetector: in Side  \(windCorrectionDetent)")
+            }
+           
+            print("Updated windCorrectionDetent in the WindDetector: out Side \(windCorrectionDetent)")
+            
+            
+            
+        }
+    }
+
+    let  locationManager = LocationManager.shared
     
         
     var timer: AnyCancellable?
@@ -42,7 +68,7 @@ class WindDetector : ObservableObject{
     
     func startCollectingWind() {
         
-        let location = locationManager.lastLocation ?? CLLocation(latitude: 37.522, longitude: 126.976)
+//        let location = locationManager.lastLocation ?? CLLocation(latitude: 37.522, longitude: 126.976)
         let shared = LocationManager.shared
         DispatchQueue.main.asyncAfter(deadline: .now() + 5) {
             Task {
@@ -70,7 +96,7 @@ class WindDetector : ObservableObject{
         // WeatherService에도  Singleton 으로 인스턴스를 만드는  shared 변수가 있음.
         let weatherService =  WeatherService.shared
         let location = location
-        print("--- sombody called fetchCurrentWind from \(weatherService) at \(location) --- over.\n")
+        print("fetchCurrentWind  in the WindDetector :\(weatherService) at \(location).\n")
         
         Task {
             do {
@@ -87,12 +113,14 @@ class WindDetector : ObservableObject{
                     self.currentWind?.timestamp = Date.now
                     self.currentWind?.wind = currentWind
                     self.timestamp = Date.now
+                    // direction 을  winDetecor class에서 보정값을 더해서  Direction을 계산.
                     self.direction = currentWind.direction.value
+                    self.adjustedDirection = currentWind.direction.value + self.windCorrectionDetent
                     self.speed = currentWind.speed.value
                     print("timestamp : \(self.timestamp!)")
                     print("location lat: \(location.coordinate.latitude) long:\(location.coordinate.longitude)")
                     print("Current wind speed: \(currentWind.speed.value) m/s")
-                    print("Current wind direction: \(currentWind.direction.value)°  compassDirection: \(currentWindCompassDirection.rawValue)")
+                    print("Current wind direction: \(self.direction)°  adjusted: \(self.adjustedDirection)° ")
                 }
                 
                 

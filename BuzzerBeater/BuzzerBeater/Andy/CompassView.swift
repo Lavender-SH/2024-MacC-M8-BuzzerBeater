@@ -8,14 +8,20 @@
 import Foundation
 import SwiftUI
 
-
+/*  nonisolated public func digitalCrownRotation<V>(detent: Binding<V>, from minValue: V, through maxValue: V, by stride: V.Stride, sensitivity: DigitalCrownRotationalSensitivity = .high, isContinuous: Bool = false, isHapticFeedbackEnabled: Bool = true, onChange: @escaping (DigitalCrownEvent) -> Void = { _ in }, onIdle: @escaping () -> Void = { }) -> some View where V : BinaryFloatingPoint, V.Stride : BinaryFloatingPoint
+*/
 struct CompassView: View {
     // View에서는  Sigleton 썼더니 화면이 업데이트가 안되서 다시 원복.
     @State var showAlert : Bool = false
     @EnvironmentObject private var locationManager : LocationManager
     @EnvironmentObject private var windDetector : WindDetector
+    
     @EnvironmentObject var apparentWind :ApparentWind
     @EnvironmentObject private var sailAngleFind : SailAngleFind
+// 먼저 보여주는것이 되면 그 값을  Windetector의 파라메타로 전달하든지 해서 윈드의 방향을 보정해주는걸로 함.
+    
+    @State var windCorrectionDetent : Double  = 0
+    @State var isCrownIdle = true
     
     var body: some View {
         GeometryReader { geometry in
@@ -23,8 +29,9 @@ struct CompassView: View {
             let r2 = geometry.size.width * 0.50
             let r3 = geometry.size.width * 0.36
             let r4 = geometry.size.width * 0.40
-            let cx = geometry.size.width * 0.45
-            let cy = geometry.size.width * 0.55
+            let cx = geometry.size.width * 0.50
+            let cy = geometry.size.width * 0.50
+            
             let center = CGPoint(x: cx, y: cy)
             let r5 = geometry.size.width * 0.53
             let r6 = geometry.size.width * 0.55
@@ -34,7 +41,7 @@ struct CompassView: View {
                     // 나침반 원
                     // reflection이  y축 기준으로 발생하니까 수학좌표계로는  clockwise
                     // 스크린이나  frame좌표계에서는  counter clockwise.
-                  
+                    
                     ForEach(0..<360, id: \.self) { degree in
                         let isMainDirection = degree % 30 == 0 // 30도마다 큰 눈금
                         let lineLength: CGFloat = isMainDirection ? 10 : 2 // 큰 눈금과 작은 눈금의 길이
@@ -121,6 +128,8 @@ struct CompassView: View {
                             .foregroundColor(.red)
                         
                         
+                        
+                        
 #endif
                         
                     }.rotationEffect(Angle(degrees: (  -(locationManager.heading?.trueHeading ?? 0))), anchor: .init(x: cx / geometry.size.width , y: cy / geometry.size.width ))
@@ -130,9 +139,12 @@ struct CompassView: View {
                     
                     
                     let sfSymbolName = "location.north.fill"
-                    if let direction = windDetector.direction , let speed = windDetector.speed {
+  
+                    //  WindDetector에서는 이미 보정된 값만 사용하고 여기서 보정된 값을 만들지는 않음.. 단지 디지탈크라운을 이용해서 WindDetector에 보정값만 변경함
+                /*
+                    if let direction = windDetector.adjustedDirection, let speed = windDetector.speed {
                         
-                        let angle = Angle(degrees: 90 - direction + (locationManager.heading?.trueHeading ?? 0)) // 각도 계산
+                        let angle = Angle(degrees: 90 - direction +   (locationManager.heading?.trueHeading ?? 0))  // 각도 계산
                         let x = r5 * cos(angle.radians) // x 좌표
                         let y = r5 * sin(angle.radians) // y 좌표
                         let finalRotation = direction  - (locationManager.heading?.trueHeading ?? 0)
@@ -143,10 +155,9 @@ struct CompassView: View {
                             .foregroundColor(.blue)
                             .position(x:cx, y:cy)
                             .offset(x: x, y: -y)
-                        // apparent wind direction draw // 근데 여기서 계산까지 해줘야 하나 아니면 다른데서??
-
+                      
                     }
-                    
+                  */
                     if let direction = apparentWind.direction , let speed = apparentWind.speed {
 
                         let angle = Angle(degrees: 90 - direction + (locationManager.heading?.trueHeading ?? 0)) // 각도 계산
@@ -162,6 +173,7 @@ struct CompassView: View {
                             .offset(x: x, y: -y)
                         // apparent wind direction draw // 근데 여기서 계산까지 해줘야 하나 아니면 다른데서??
                     }
+                    
                     Path { path in
                         // Arc의 중심 (ZStack에서 중앙을 기준으로)
                         let radius: CGFloat = r2 - 2
@@ -179,12 +191,50 @@ struct CompassView: View {
                         path.addArc(center: center, radius: radius, startAngle: .degrees(-90), endAngle: .degrees(-180), clockwise: true)
                     }
                     .stroke(Color.red, lineWidth: 4)
+
+
+                    Text(String(format: "%+d", Int(windCorrectionDetent)))
+                        .position(x: cx, y: cy)
+                        .offset(x: 40, y: 0)
+                        .font(.system(size: 12))
+                        .foregroundColor(.white)
+               
+                    
+                    #if os(watchOS)
+                        .focusable()
+                        .digitalCrownRotation(
+                            detent: $windCorrectionDetent,
+                            from: -30,
+                            through: 30,
+                            by: 1,
+                            sensitivity: .low
+                        )
+                        {
+                            crownEvent in
+                            isCrownIdle = false
+                            let crownOffset = crownEvent.offset
+                         
+                            windCorrectionDetent = crownOffset
+                            // 모델 클라스 WindDetector.shared.windCorrectionDetent 값을 변경함..다음번 윈도우 정보는 보정이 반영된값임.
+                            WindDetector.shared.windCorrectionDetent = windCorrectionDetent
+                        
+                            windCorrectionDetent = max(min(30, windCorrectionDetent), -30)
+                            print("crownOffset :\(crownOffset) ,  windCorrectionDetent:\(windCorrectionDetent)")
+                        } onIdle: {
+                            isCrownIdle = true
+                        }
+                    #endif
+
+
                 }
                 .overlay{
                     BoatView().offset(x: cx, y: cy)
                         .environmentObject(sailAngleFind)
+                    
+                  
                 }
             }
+
         }
     }
 }

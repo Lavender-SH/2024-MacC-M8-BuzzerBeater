@@ -42,7 +42,7 @@ class ApparentWind : ObservableObject {
 //            .store(in: &cancellables)
 
         
-        Publishers.CombineLatest3(windData.$speed, windData.$direction, windData.locationManager.$heading)
+        Publishers.CombineLatest3(windData.$speed, windData.$adjustedDirection, windData.locationManager.$heading)
             .throttle(for: .milliseconds(500), scheduler: RunLoop.main, latest: true)
             .sink { [weak self] _ , _ , _  in
                 self?.calcApparentWind()
@@ -55,12 +55,12 @@ class ApparentWind : ObservableObject {
     func calcApparentWind(){
         
         guard let windSpeed = windData.speed,
-              let windDirection  = windData.direction  else {
+              let windDirection  = windData.adjustedDirection  else {
             print("wind Data is not available in calcApparentWind")
             return
         }
         let boatSpeed =  windData.locationManager.speed <  windSpeed * 0.5 ? windSpeed * 0.5 : windData.locationManager.speed
-        
+        // 헤딩이 아니라 보트 디렉션이야 하는데 일단 헤딩으로 계산
         guard let boatHeading =  windData.locationManager.heading?.trueHeading else { return }
         
         
