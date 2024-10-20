@@ -141,8 +141,11 @@ struct CompassView: View {
                     let sfSymbolName = "location.north.fill"
   
                     //  WindDetector에서는 이미 보정된 값만 사용하고 여기서 보정된 값을 만들지는 않음.. 단지 디지탈크라운을 이용해서 WindDetector에 보정값만 변경함
-                /*
-                    if let direction = windDetector.adjustedDirection, let speed = windDetector.speed {
+                    
+                    // 왜 let direction = windDetector.adjustedDirection 하면 안되는걸까요?
+                    
+                    let shared = WindDetector.shared
+                    if let direction = shared.adjustedDirection, let speed = shared.speed {
                         
                         let angle = Angle(degrees: 90 - direction +   (locationManager.heading?.trueHeading ?? 0))  // 각도 계산
                         let x = r5 * cos(angle.radians) // x 좌표
@@ -157,7 +160,7 @@ struct CompassView: View {
                             .offset(x: x, y: -y)
                       
                     }
-                  */
+                  
                     if let direction = apparentWind.direction , let speed = apparentWind.speed {
 
                         let angle = Angle(degrees: 90 - direction + (locationManager.heading?.trueHeading ?? 0)) // 각도 계산
