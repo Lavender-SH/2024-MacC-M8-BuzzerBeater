@@ -32,18 +32,18 @@ struct BoatView: View{
 #endif
         
         let lb1 = CGPoint(x:  0 * scaleFactor, y: -50 * scaleFactor)
-        let lb2 = CGPoint(x : -20 * scaleFactor, y: -20 * scaleFactor)
-        let lb3 = CGPoint(x:  -20 * scaleFactor, y:0 * scaleFactor)
-        let lb4 = CGPoint(x : -20 * scaleFactor, y: 50 * scaleFactor)
+        let lb2 = CGPoint(x : -22 * scaleFactor, y: -30 * scaleFactor)
+        let lb3 = CGPoint(x:  -20 * scaleFactor, y:25 * scaleFactor)
+        let lb4 = CGPoint(x : -18 * scaleFactor, y: 48 * scaleFactor)
         
         let rb1 = CGPoint(x: 0 * scaleFactor, y: -50 * scaleFactor)
-        let rb2 = CGPoint(x : 20 * scaleFactor, y: -20 * scaleFactor)
-        let rb3 = CGPoint(x:  20 * scaleFactor, y: 0 * scaleFactor)
-        let rb4 = CGPoint(x : 20 * scaleFactor, y: 50 * scaleFactor)
+        let rb2 = CGPoint(x : 22 * scaleFactor, y: -30 * scaleFactor)
+        let rb3 = CGPoint(x:  20 * scaleFactor, y: 25 * scaleFactor)
+        let rb4 = CGPoint(x : 18 * scaleFactor, y: 48 * scaleFactor)
         
         let mast = CGPoint(x: 0 * scaleFactor, y: -20 * scaleFactor)
         
-        let sailLength  = 68.0 * scaleFactor
+        let sailLength  = 70 * scaleFactor
         
 
         ZStack {
@@ -52,39 +52,25 @@ struct BoatView: View{
                 path.move(to: lb1)
                 path.addCurve(to: lb4, control1: lb2, control2: lb3)
                 
+                
+                path.addLine(to: rb4)
+                
+                
+                path.addCurve(to: rb1, control1: rb3, control2: rb2)
+                
+                path.closeSubpath()
+                
+    
+                
             }
 #if os(watchOS)
-            .stroke(Color.white, lineWidth: 3)
+  //          .stroke(Color.white, lineWidth: 3)
+            .fill(.gray)
+            .opacity(0.5)
 #else
             .stroke(Color.black, lineWidth: 3)
 #endif
-            Path { path in
-                path.move(to: rb1)
-                path.addCurve(to: rb4, control1: rb2, control2: rb3)
-                
-            }
-#if os(watchOS)
-            .stroke(Color.white, lineWidth: 3)
-#else
-            .stroke(Color.black, lineWidth: 3)
-#endif
-            Path { path in
-                let newlb4 = CGPoint(x: lb4.x - 2, y: lb4.y)
-                let newrb4 = CGPoint(x: rb4.x + 2, y: rb4.y)
-                
-                path.move(to: newlb4)
-                path.addLine(to: newrb4)
-                
-            }
-#if os(watchOS)
-            .stroke(Color.white, lineWidth: 4 * scaleFactor)
-#else
-            .stroke(Color.black, lineWidth: 4 * scaleFactor)
-#endif
-            
-            // StarBoard 오른쪽 방향은 가운데를 중심으로 0 ~90
-            // Port 왼쪽 방향 가운데를 중심으로  0~ -90
-            
+  
             let lx =  sailLength * sin(sailAngle.radians) + 0
             let ly =  sailLength * cos(sailAngle.radians) - 20
             
@@ -100,7 +86,7 @@ struct BoatView: View{
                 path.addCurve(to: lb4, control1: lb2, control2: lb3)
                 
                     
-            }.stroke(Color.blue, lineWidth: 4)
+            }.stroke(Color.orange, lineWidth: 4)
           //   .animation(.spring, value: ly)   // 무슨 효과가 있다는건지..
               
         } .onAppear {

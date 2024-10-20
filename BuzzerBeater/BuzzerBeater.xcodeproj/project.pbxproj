@@ -8,6 +8,30 @@
 
 /* Begin PBXBuildFile section */
 		0297A25E2CC3E65D0024AEC9 /* BuzzerBeaterWatch Watch App.app in Embed Watch Content */ = {isa = PBXBuildFile; fileRef = 0297A2512CC3E65C0024AEC9 /* BuzzerBeaterWatch Watch App.app */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		0297A28E2CC51A740024AEC9 /* ApparentWind.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0297A27B2CC51A740024AEC9 /* ApparentWind.swift */; };
+		0297A28F2CC51A740024AEC9 /* BoatView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0297A27C2CC51A740024AEC9 /* BoatView.swift */; };
+		0297A2902CC51A740024AEC9 /* CompassView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0297A27D2CC51A740024AEC9 /* CompassView.swift */; };
+		0297A2912CC51A740024AEC9 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0297A27E2CC51A740024AEC9 /* ContentView.swift */; };
+		0297A2922CC51A740024AEC9 /* LocationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0297A27F2CC51A740024AEC9 /* LocationManager.swift */; };
+		0297A2932CC51A740024AEC9 /* MapView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0297A2802CC51A740024AEC9 /* MapView.swift */; };
+		0297A2942CC51A740024AEC9 /* SailAngleFind.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0297A2812CC51A740024AEC9 /* SailAngleFind.swift */; };
+		0297A2952CC51A740024AEC9 /* SailingDataCollector.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0297A2822CC51A740024AEC9 /* SailingDataCollector.swift */; };
+		0297A2962CC51A740024AEC9 /* WindDetector.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0297A2832CC51A740024AEC9 /* WindDetector.swift */; };
+		0297A2972CC51A740024AEC9 /* BuzzerBeaterApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0297A28A2CC51A740024AEC9 /* BuzzerBeaterApp.swift */; };
+		0297A2982CC51A740024AEC9 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 0297A2852CC51A740024AEC9 /* Preview Assets.xcassets */; };
+		0297A2992CC51A740024AEC9 /* .gitignore in Resources */ = {isa = PBXBuildFile; fileRef = 0297A2872CC51A740024AEC9 /* .gitignore */; };
+		0297A29A2CC51A740024AEC9 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 0297A2882CC51A740024AEC9 /* Assets.xcassets */; };
+		0297A29C2CC51A740024AEC9 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0297A27E2CC51A740024AEC9 /* ContentView.swift */; };
+		0297A29D2CC51A740024AEC9 /* SailingDataCollector.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0297A2822CC51A740024AEC9 /* SailingDataCollector.swift */; };
+		0297A29E2CC51A740024AEC9 /* CompassView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0297A27D2CC51A740024AEC9 /* CompassView.swift */; };
+		0297A29F2CC51A740024AEC9 /* BoatView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0297A27C2CC51A740024AEC9 /* BoatView.swift */; };
+		0297A2A02CC51A740024AEC9 /* ApparentWind.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0297A27B2CC51A740024AEC9 /* ApparentWind.swift */; };
+		0297A2A12CC51A740024AEC9 /* SailAngleFind.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0297A2812CC51A740024AEC9 /* SailAngleFind.swift */; };
+		0297A2A22CC51A740024AEC9 /* WindDetector.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0297A2832CC51A740024AEC9 /* WindDetector.swift */; };
+		0297A2A32CC51A740024AEC9 /* LocationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0297A27F2CC51A740024AEC9 /* LocationManager.swift */; };
+		0297A2A42CC51A740024AEC9 /* MapView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0297A2802CC51A740024AEC9 /* MapView.swift */; };
+		0297A2A62CC51E8F0024AEC9 /* ffff.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0297A2A52CC51E8E0024AEC9 /* ffff.swift */; };
+		0297A2A72CC51E8F0024AEC9 /* ffff.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0297A2A52CC51E8E0024AEC9 /* ffff.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -37,47 +61,30 @@
 /* Begin PBXFileReference section */
 		0297A2512CC3E65C0024AEC9 /* BuzzerBeaterWatch Watch App.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "BuzzerBeaterWatch Watch App.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		0297A2642CC3E6780024AEC9 /* WeatherKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WeatherKit.framework; path = Platforms/WatchOS.platform/Developer/SDKs/WatchOS11.0.sdk/System/Library/Frameworks/WeatherKit.framework; sourceTree = DEVELOPER_DIR; };
+		0297A27B2CC51A740024AEC9 /* ApparentWind.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ApparentWind.swift; sourceTree = "<group>"; };
+		0297A27C2CC51A740024AEC9 /* BoatView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BoatView.swift; sourceTree = "<group>"; };
+		0297A27D2CC51A740024AEC9 /* CompassView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CompassView.swift; sourceTree = "<group>"; };
+		0297A27E2CC51A740024AEC9 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		0297A27F2CC51A740024AEC9 /* LocationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationManager.swift; sourceTree = "<group>"; };
+		0297A2802CC51A740024AEC9 /* MapView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapView.swift; sourceTree = "<group>"; };
+		0297A2812CC51A740024AEC9 /* SailAngleFind.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SailAngleFind.swift; sourceTree = "<group>"; };
+		0297A2822CC51A740024AEC9 /* SailingDataCollector.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SailingDataCollector.swift; sourceTree = "<group>"; };
+		0297A2832CC51A740024AEC9 /* WindDetector.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WindDetector.swift; sourceTree = "<group>"; };
+		0297A2852CC51A740024AEC9 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
+		0297A2872CC51A740024AEC9 /* .gitignore */ = {isa = PBXFileReference; lastKnownFileType = text; path = .gitignore; sourceTree = "<group>"; };
+		0297A2882CC51A740024AEC9 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		0297A2892CC51A740024AEC9 /* BuzzerBeater.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = BuzzerBeater.entitlements; sourceTree = "<group>"; };
+		0297A28A2CC51A740024AEC9 /* BuzzerBeaterApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BuzzerBeaterApp.swift; sourceTree = "<group>"; };
+		0297A28B2CC51A740024AEC9 /* BuzzerBeaterRelease.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = BuzzerBeaterRelease.entitlements; sourceTree = "<group>"; };
+		0297A28C2CC51A740024AEC9 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		0297A2A52CC51E8E0024AEC9 /* ffff.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ffff.swift; sourceTree = "<group>"; };
 		9291A7892CB37D6300E44161 /* BuzzerBeater.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = BuzzerBeater.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
-
-/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
-		0297A2672CC3E8B60024AEC9 /* Exceptions for "BuzzerBeater" folder in "BuzzerBeaterWatch Watch App" target */ = {
-			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
-			membershipExceptions = (
-				Andy/ApparentWind.swift,
-				Andy/BoatView.swift,
-				Andy/CompassView.swift,
-				Andy/ContentView.swift,
-				Andy/LocationManager.swift,
-				Andy/MapView.swift,
-				Andy/SailAngleFind.swift,
-				Andy/SailingDataCollector.swift,
-				Andy/WindDetector.swift,
-			);
-			target = 0297A2502CC3E65C0024AEC9 /* BuzzerBeaterWatch Watch App */;
-		};
-		02CE99932CC2CAD200668857 /* Exceptions for "BuzzerBeater" folder in "BuzzerBeater" target */ = {
-			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
-			membershipExceptions = (
-				Info.plist,
-			);
-			target = 9291A7882CB37D6300E44161 /* BuzzerBeater */;
-		};
-/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		0297A2522CC3E65C0024AEC9 /* BuzzerBeaterWatch Watch App */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			path = "BuzzerBeaterWatch Watch App";
-			sourceTree = "<group>";
-		};
-		9291A78B2CB37D6300E44161 /* BuzzerBeater */ = {
-			isa = PBXFileSystemSynchronizedRootGroup;
-			exceptions = (
-				02CE99932CC2CAD200668857 /* Exceptions for "BuzzerBeater" folder in "BuzzerBeater" target */,
-				0297A2672CC3E8B60024AEC9 /* Exceptions for "BuzzerBeater" folder in "BuzzerBeaterWatch Watch App" target */,
-			);
-			path = BuzzerBeater;
 			sourceTree = "<group>";
 		};
 /* End PBXFileSystemSynchronizedRootGroup section */
@@ -108,10 +115,50 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
+		0297A2842CC51A740024AEC9 /* Andy */ = {
+			isa = PBXGroup;
+			children = (
+				0297A27E2CC51A740024AEC9 /* ContentView.swift */,
+				0297A27D2CC51A740024AEC9 /* CompassView.swift */,
+				0297A27C2CC51A740024AEC9 /* BoatView.swift */,
+				0297A2802CC51A740024AEC9 /* MapView.swift */,
+				0297A27F2CC51A740024AEC9 /* LocationManager.swift */,
+				0297A2832CC51A740024AEC9 /* WindDetector.swift */,
+				0297A27B2CC51A740024AEC9 /* ApparentWind.swift */,
+				0297A2812CC51A740024AEC9 /* SailAngleFind.swift */,
+				0297A2822CC51A740024AEC9 /* SailingDataCollector.swift */,
+				0297A2A52CC51E8E0024AEC9 /* ffff.swift */,
+			);
+			path = Andy;
+			sourceTree = "<group>";
+		};
+		0297A2862CC51A740024AEC9 /* Preview Content */ = {
+			isa = PBXGroup;
+			children = (
+				0297A2852CC51A740024AEC9 /* Preview Assets.xcassets */,
+			);
+			path = "Preview Content";
+			sourceTree = "<group>";
+		};
+		0297A28D2CC51A740024AEC9 /* BuzzerBeater */ = {
+			isa = PBXGroup;
+			children = (
+				0297A2842CC51A740024AEC9 /* Andy */,
+				0297A2862CC51A740024AEC9 /* Preview Content */,
+				0297A2872CC51A740024AEC9 /* .gitignore */,
+				0297A2882CC51A740024AEC9 /* Assets.xcassets */,
+				0297A2892CC51A740024AEC9 /* BuzzerBeater.entitlements */,
+				0297A28A2CC51A740024AEC9 /* BuzzerBeaterApp.swift */,
+				0297A28B2CC51A740024AEC9 /* BuzzerBeaterRelease.entitlements */,
+				0297A28C2CC51A740024AEC9 /* Info.plist */,
+			);
+			path = BuzzerBeater;
+			sourceTree = "<group>";
+		};
 		9291A7802CB37D6300E44161 = {
 			isa = PBXGroup;
 			children = (
-				9291A78B2CB37D6300E44161 /* BuzzerBeater */,
+				0297A28D2CC51A740024AEC9 /* BuzzerBeater */,
 				0297A2522CC3E65C0024AEC9 /* BuzzerBeaterWatch Watch App */,
 				0297A2632CC3E6780024AEC9 /* Frameworks */,
 				9291A78A2CB37D6300E44161 /* Products */,
@@ -165,9 +212,6 @@
 			);
 			dependencies = (
 				0297A25D2CC3E65D0024AEC9 /* PBXTargetDependency */,
-			);
-			fileSystemSynchronizedGroups = (
-				9291A78B2CB37D6300E44161 /* BuzzerBeater */,
 			);
 			name = BuzzerBeater;
 			packageProductDependencies = (
@@ -226,6 +270,9 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				0297A2982CC51A740024AEC9 /* Preview Assets.xcassets in Resources */,
+				0297A2992CC51A740024AEC9 /* .gitignore in Resources */,
+				0297A29A2CC51A740024AEC9 /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -236,6 +283,16 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				0297A29C2CC51A740024AEC9 /* ContentView.swift in Sources */,
+				0297A29D2CC51A740024AEC9 /* SailingDataCollector.swift in Sources */,
+				0297A29E2CC51A740024AEC9 /* CompassView.swift in Sources */,
+				0297A29F2CC51A740024AEC9 /* BoatView.swift in Sources */,
+				0297A2A02CC51A740024AEC9 /* ApparentWind.swift in Sources */,
+				0297A2A72CC51E8F0024AEC9 /* ffff.swift in Sources */,
+				0297A2A12CC51A740024AEC9 /* SailAngleFind.swift in Sources */,
+				0297A2A22CC51A740024AEC9 /* WindDetector.swift in Sources */,
+				0297A2A32CC51A740024AEC9 /* LocationManager.swift in Sources */,
+				0297A2A42CC51A740024AEC9 /* MapView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -243,6 +300,17 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				0297A28E2CC51A740024AEC9 /* ApparentWind.swift in Sources */,
+				0297A28F2CC51A740024AEC9 /* BoatView.swift in Sources */,
+				0297A2902CC51A740024AEC9 /* CompassView.swift in Sources */,
+				0297A2912CC51A740024AEC9 /* ContentView.swift in Sources */,
+				0297A2922CC51A740024AEC9 /* LocationManager.swift in Sources */,
+				0297A2932CC51A740024AEC9 /* MapView.swift in Sources */,
+				0297A2A62CC51E8F0024AEC9 /* ffff.swift in Sources */,
+				0297A2942CC51A740024AEC9 /* SailAngleFind.swift in Sources */,
+				0297A2952CC51A740024AEC9 /* SailingDataCollector.swift in Sources */,
+				0297A2962CC51A740024AEC9 /* WindDetector.swift in Sources */,
+				0297A2972CC51A740024AEC9 /* BuzzerBeaterApp.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
