@@ -214,7 +214,7 @@ struct CompassView: View {
                         .background(Color.gray.opacity(0.3))
                         .cornerRadius(5)  // Rounded corners for the box
                         .position(x: cx, y: cy)
-                        .offset(x: 30, y: 0)
+                        .offset(x: 33, y: 0)
                     
                     
                     
