@@ -16,16 +16,56 @@ struct ContentView: View {
     
         var body: some View {
                TabView {
-                   CompassPage()
-                       .tabItem {
-                           Image(systemName: "location.north.fill")
-                           Text("Compass")
+                   VStack {
+                       CompassPage()
+                           .tabItem {
+                               Image(systemName: "location.north.fill")
+                               Text("Compass")
+                           }
+                           .ignoresSafeArea(.all)
+                           .environmentObject(locationManager)
+                           .environmentObject(windDetector)
+                           .environmentObject(apparentWind)
+                           .environmentObject(sailAngleFind)
+                           .padding(.bottom, -20)
+
+                       HStack {
+                               VStack {
+                                   Text("SOG")
+                                       .foregroundColor(.orange)
+                                       .font(.system(size: 10).bold())
+                                       .multilineTextAlignment(.center)
+                                   Text("\(windDetector.speed ?? 0, specifier: "%.1f")")
+                                       .foregroundColor(.orange)
+                                       .font(.system(size: 17).bold())
+                                       .multilineTextAlignment(.center)
+                                   Text("m/s")
+                                       .foregroundColor(.orange)
+                                       .font(.system(size: 10).bold())
+                                       .multilineTextAlignment(.center)
+                               }
+                               Spacer()
+
+                               VStack {
+                                   Text("TWS")
+                                       .foregroundColor(.blue)
+                                       .font(.system(size: 10).bold())
+                                       .multilineTextAlignment(.center)
+                                   Text("\(locationManager.speed, specifier: "%.1f")")
+                                       .foregroundColor(.blue)
+                                       .font(.system(size: 17).bold())
+                                       .multilineTextAlignment(.center)
+                                   Text("m/s")
+                                       .foregroundColor(.blue)
+                                       .font(.system(size: 10).bold())
+                                       .multilineTextAlignment(.center)
+                               }
+                           }
+                           .padding([.leading, .trailing], 30)
+                           .padding(.bottom, -20)
                        }
-                        .ignoresSafeArea(.all)
-                       .environmentObject(locationManager)
-                       .environmentObject(windDetector)
-                       .environmentObject(apparentWind)
-                       .environmentObject(sailAngleFind)
+
+                   
 
                    MapPage()
                        .tabItem {
