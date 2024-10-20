@@ -8,6 +8,7 @@
 import SwiftUI
 
 @main
+
 struct BuzzerBeaterWatch_Watch_AppApp: App {
     var body: some Scene {
         WindowGroup {
