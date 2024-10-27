@@ -20,7 +20,8 @@ struct BoatView: View{
     @State private var currentSailAngle : Angle = .degrees(0)
     @State private var angleStep : Angle = .degrees(1)
     @EnvironmentObject private var sailAngleFind : SailAngleFind
-    
+// sigleton을 사용하면 화면 업데이트가 안됨 다시 @EnvironmentObject로 복귀
+//    let sailAngleFind = SailAngleFind.shared
     @State private var cancellable: AnyCancellable? = nil
     
     var body: some View {

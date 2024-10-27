@@ -10,9 +10,24 @@ import SwiftUI
 @main
 
 struct BuzzerBeaterWatch_Watch_AppApp: App {
+    init() {
+           // 앱 시작 시 LocationManager.shared를 초기화하여 사용 준비를 합니다.
+        _ = LocationManager.shared
+        _ = WindDetector.shared
+        _ = ApparentWind.shared
+        _ = SailAngleFind.shared
+        _ = SailingDataCollector.shared
+        
+    }
+    
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            ContentView().ignoresSafeArea(.all)
+                .environmentObject(LocationManager.shared)
+                .environmentObject(WindDetector.shared)
+                .environmentObject(ApparentWind.shared)
+                .environmentObject(SailAngleFind.shared)
+                .environmentObject(SailingDataCollector.shared)
         }
     }
 }

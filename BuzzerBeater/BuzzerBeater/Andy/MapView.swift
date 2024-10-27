@@ -10,8 +10,9 @@ import MapKit
 import SwiftUI
 
 struct MapView: View {
-    @EnvironmentObject var vm: SailingDataCollector
-  
+    @EnvironmentObject var locationManager : LocationManager
+    @EnvironmentObject var sailingDataCollector: SailingDataCollector
+    
 //    @State private var cameraPosition: MapCameraPosition = .region(MKCoordinateRegion(
 //        center: CLLocationCoordinate2D(latitude: 36.017470189362115, longitude: 129.32224097538742),
 //        span: MKCoordinateSpan(latitudeDelta: mapShowingDegree, longitudeDelta: mapShowingDegree)
@@ -21,9 +22,16 @@ struct MapView: View {
     
     @State private var position: MapCameraPosition = .automatic
     
-    @EnvironmentObject var locationManager : LocationManager
-        
+
+//    
+//    let locationManager = LocationManager.shared
+//    let windDetector = WindDetector.shared
+//    let apparentWind = ApparentWind.shared
+//    let sailAngleFind = SailAngleFind.shared
+    
+ //   let sailingDataCollector = SailingDataCollector.shared
     let mapShowingDegree = 0.1
+    
     
     var body: some View {
         VStack(alignment: .center) {
@@ -56,13 +64,13 @@ struct MapView: View {
             //                }
             //                print("sailing data array changed : \(coordinates.count)")
             //            }
-            .onChange(of : vm.sailingDataArray) {newValue, oldValue in
+            .onChange(of : sailingDataCollector.sailingDataArray) {newValue, oldValue in
                 if newValue != oldValue {
-                    //                    let location = CLLocation(latitude: vm.sailingDataArray.last?.latitude ?? 36.01737499212958, longitude:vm.sailingDataArray.last?.longitude ?? 129.32226514081427 )
+                    //                    let location = CLLocation(latitude: sailingDataCollector.sailingDataArray.last?.latitude ?? 36.01737499212958, longitude:sailingDataCollector.sailingDataArray.last?.longitude ?? 129.32226514081427 )
                     //                    updateCameraPosition(with : location)
                     
                     updateCoordinates() //좌표 업데이트
-                    print("vm.sailingdata array changed : \(coordinates.count)")
+                    print("sailingDataCollector.sailingdata array changed : \(coordinates.count)")
                 }
             }
             .mapControls{
@@ -96,9 +104,9 @@ struct MapView: View {
     }
 
     private func updateCoordinates() {
-        if !vm.sailingDataArray.isEmpty {
+        if !sailingDataCollector.sailingDataArray.isEmpty {
             coordinates.removeAll()
-            coordinates = vm.sailingDataArray.map { CLLocationCoordinate2D(latitude: $0.latitude, longitude: $0.longitude) }
+            coordinates = sailingDataCollector.sailingDataArray.map { CLLocationCoordinate2D(latitude: $0.latitude, longitude: $0.longitude) }
             print("MapView coordinagtes transferred : \(coordinates)")
         } else{
             

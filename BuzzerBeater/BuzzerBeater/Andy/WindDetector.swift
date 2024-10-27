@@ -33,31 +33,15 @@ class WindDetector : ObservableObject{
     
     @Published var windCorrectionDetent: Double = 0 {
         didSet {
-            
-//            let shared = LocationManager.shared
-//            DispatchQueue.main.asyncAfter(deadline: .now() ) {
-//                Task {
-//                    print("Fectching wind in the disptach")
-//                    if let location =  shared.lastLocation {
-//                        await self.fetchCurrentWind(for: location)
-//                    }
-//                }
-//            }
+        
             if let direction = self.direction {
                 self.adjustedDirection = direction + self.windCorrectionDetent
-                print("Updated windCorrectionDetent in the WindDetector: in Side  \(windCorrectionDetent)")
+                print("Updated windCorrectionDetent in the WindDetector:  \(windCorrectionDetent)")
             }
-           
-            print("Updated windCorrectionDetent in the WindDetector: out Side \(windCorrectionDetent)")
-            
-            
-            
         }
     }
 
     let  locationManager = LocationManager.shared
-    
-        
     var timer: AnyCancellable?
     
     init() {
@@ -67,8 +51,7 @@ class WindDetector : ObservableObject{
     }
     
     func startCollectingWind() {
-        
-//        let location = locationManager.lastLocation ?? CLLocation(latitude: 37.522, longitude: 126.976)
+
         let shared = LocationManager.shared
         DispatchQueue.main.asyncAfter(deadline: .now() + 5) {
             Task {
@@ -114,13 +97,13 @@ class WindDetector : ObservableObject{
                     self.currentWind?.wind = currentWind
                     self.timestamp = Date.now
                     // direction 을  winDetecor class에서 보정값을 더해서  Direction을 계산.
-                    self.direction = currentWind.direction.value
+                    self.direction = currentWind.direction.value > 0 ? currentWind.direction.value : 0
                     self.adjustedDirection = currentWind.direction.value + self.windCorrectionDetent
-                    self.speed = currentWind.speed.value
+                    self.speed = currentWind.speed.value > 0 ? currentWind.speed.value  : 0
                     print("timestamp : \(self.timestamp!)")
                     print("location lat: \(location.coordinate.latitude) long:\(location.coordinate.longitude)")
                     print("Current wind speed: \(currentWind.speed.value) m/s")
-                    print("Current wind direction: \(self.direction)°  adjusted: \(self.adjustedDirection)° ")
+                    print("Current wind direction: \(self.direction)°  adjusted: \(self.adjustedDirection)°")
                 }
                 
                 

@@ -16,11 +16,10 @@ class ApparentWind : ObservableObject {
     
     @Published  var direction: Double? = nil
     @Published  var speed:  Double? = nil
-    // 나중에  singleton으로  static 변수 하나만 선언해서  한번 선언되면 그것을 가져오는 식으로 수정..==> Singleton
-    // windDetector 안에 locationManager가 있음
-    // @ObservedObject var windData = WindDetector()
+ 
+    let windDetector = WindDetector.shared
+    let locationManager = LocationManager.shared
     
-    let windData = WindDetector.shared
     var cancellables: Set<AnyCancellable> = []
     
     init()
@@ -29,22 +28,11 @@ class ApparentWind : ObservableObject {
         
     }
     func startCollectingData() {
-//        DispatchQueue.main.asyncAfter(deadline: .now() + 5) {
-//            self.calcApparentWind()
-//
-//              }
-        // 차라리 5초마다 주기적으로 계산하는것이 안정적일듯..
-//        Timer.publish(every: 5, on: .main, in: .common)
-//            .autoconnect()
-//            .sink { [weak self] _ in
-//                self?.calcApparentWind()
-//            }
-//            .store(in: &cancellables)
 
         
-        Publishers.CombineLatest3(windData.$speed, windData.$adjustedDirection, windData.locationManager.$heading)
+        Publishers.CombineLatest4(windDetector.$speed, windDetector.$adjustedDirection, locationManager.$heading, locationManager.$lastLocation)
             .throttle(for: .milliseconds(500), scheduler: RunLoop.main, latest: true)
-            .sink { [weak self] _ , _ , _  in
+            .sink { [weak self] _ , _ , _ ,_ in
                 self?.calcApparentWind()
                        }
                        .store(in: &cancellables)
@@ -54,19 +42,19 @@ class ApparentWind : ObservableObject {
     
     func calcApparentWind(){
         
-        guard let windSpeed = windData.speed,
-              let windDirection  = windData.adjustedDirection  else {
+        guard let windSpeed = windDetector.speed,
+              let windDirection  = windDetector.adjustedDirection  else {
             print("wind Data is not available in calcApparentWind")
             return
         }
-        let boatSpeed =  windData.locationManager.speed <  windSpeed * 0.5 ? windSpeed * 0.5 : windData.locationManager.speed
-        // 헤딩이 아니라 보트 디렉션이야 하는데 일단 헤딩으로 계산
-        guard let boatHeading =  windData.locationManager.heading?.trueHeading else { return }
-        
-        
+    
+       
+ // boatCourse 와 boatSpeed는 locationManager에서 계산한 값만을 사용하고  locationManager에서만 업데이트 한다.
+        let boatCourse = locationManager.boatCourse
+        let boatSpeed = locationManager.boatSpeed
         
         print("calcApparentWind from trueWind: \(windSpeed) windDirection \(windDirection)")
-        print("calcApparentWind from boatHeading:  \(boatSpeed) boatHeading\(boatHeading)")
+        print("calcApparentWind from boatSpeed:  \(boatSpeed) boatCourse : \(boatCourse)")
         
         var windX : Double {
             let angle = Angle(degrees: 90 - windDirection)
@@ -80,12 +68,12 @@ class ApparentWind : ObservableObject {
         }
         
         var boatX : Double {
-            let angle = Angle(degrees: 90 - boatHeading)
+            let angle = Angle(degrees: 90 - boatCourse)
             return boatSpeed * cos(angle.radians)
         }
         
         var boatY : Double {
-            let angle = Angle(degrees: 90 - boatHeading)
+            let angle = Angle(degrees: 90 - boatCourse)
             return boatSpeed * sin(angle.radians)
         }
         
@@ -106,6 +94,7 @@ class ApparentWind : ObservableObject {
             direction = windDirection
               
         }
+// for debugging use
 //        print("atan(1,  1) \( atan2( 1, 1) * (180 / Double.pi) )")
 //        print("atan(1, -1) \( atan2( 1, -1) * (180 / Double.pi) )")
 //        print("atan(-1, -1) \( atan2( -1, -1) * (180 / Double.pi) )")
