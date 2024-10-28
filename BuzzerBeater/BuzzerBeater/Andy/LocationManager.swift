@@ -27,6 +27,9 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
     @Published var boatCourse : CLLocationDirection = 0.0
     @Published var boatSpeed :  CLLocationSpeed = 0.0 // 속도 (m/s)
 
+    @Published var previousBoatCourse: CLLocationDirection = 0.0
+    @Published var previousBoatSpeed :  CLLocationSpeed = 0.0 // 속도 (m/s)
+    
     let distanceFilter = 0.5
     let headingFilter  = 1.0
     
@@ -86,9 +89,15 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
                 
                // sef.course 가 유효한 값인지 꼭 체크해볼 필요가있음
                 if self.speed > 0.0 {
+                    self.previousBoatCourse  = self.boatCourse
+                    self.previousBoatSpeed = self.boatSpeed
+                    
                     self.boatSpeed = self.speed
                     self.boatCourse = self.course
                 } else {
+                    self.previousBoatCourse  = self.boatCourse
+                    self.previousBoatSpeed = self.boatSpeed
+                    
                     self.boatSpeed = 0
                     self.boatCourse = self.heading?.trueHeading ?? 0
                 }

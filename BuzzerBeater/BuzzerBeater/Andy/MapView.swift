@@ -64,7 +64,7 @@ struct MapView: View {
             //                }
             //                print("sailing data array changed : \(coordinates.count)")
             //            }
-            .onChange(of : sailingDataCollector.sailingDataArray) {newValue, oldValue in
+            .onChange(of : sailingDataCollector.sailingDataPointsArray) { newValue, oldValue in
                 if newValue != oldValue {
                     //                    let location = CLLocation(latitude: sailingDataCollector.sailingDataArray.last?.latitude ?? 36.01737499212958, longitude:sailingDataCollector.sailingDataArray.last?.longitude ?? 129.32226514081427 )
                     //                    updateCameraPosition(with : location)
@@ -104,9 +104,9 @@ struct MapView: View {
     }
 
     private func updateCoordinates() {
-        if !sailingDataCollector.sailingDataArray.isEmpty {
+        if !sailingDataCollector.sailingDataPointsArray.isEmpty {
             coordinates.removeAll()
-            coordinates = sailingDataCollector.sailingDataArray.map { CLLocationCoordinate2D(latitude: $0.latitude, longitude: $0.longitude) }
+            coordinates = sailingDataCollector.sailingDataPointsArray.map { CLLocationCoordinate2D(latitude: $0.latitude, longitude: $0.longitude) }
             print("MapView coordinagtes transferred : \(coordinates)")
         } else{
             

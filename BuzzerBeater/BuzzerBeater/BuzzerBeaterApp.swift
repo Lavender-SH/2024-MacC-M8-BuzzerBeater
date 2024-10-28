@@ -16,7 +16,7 @@ struct BuzzerBeaterApp: App {
         _ = ApparentWind.shared
         _ = SailAngleFind.shared
         _ = SailingDataCollector.shared
-        
+        _ = HealthService.shared
     }
     
     var body: some Scene {
@@ -27,6 +27,7 @@ struct BuzzerBeaterApp: App {
                 .environmentObject(ApparentWind.shared)
                 .environmentObject(SailAngleFind.shared)
                 .environmentObject(SailingDataCollector.shared)
+                .environmentObject(HealthService.shared)
         }
     }
 }

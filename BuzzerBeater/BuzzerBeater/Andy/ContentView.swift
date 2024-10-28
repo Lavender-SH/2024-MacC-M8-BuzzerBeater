@@ -5,6 +5,8 @@
 //  Created by Gi Woo Kim on 9/29/24.
 //
 
+import Foundation
+import HealthKit
 import SwiftUI
 
 struct ContentView: View {
@@ -34,6 +36,7 @@ struct ContentView: View {
                 .environmentObject(WindDetector.shared)
                 .environmentObject(ApparentWind.shared)
                 .environmentObject(SailAngleFind.shared)
+                .environmentObject(SailingDataCollector.shared)
                 .tabItem {
                     Image(systemName: "info.circle.fill")
                     Text("Info")
@@ -89,7 +92,7 @@ struct InfoPage: View {
     @EnvironmentObject  var windDetector : WindDetector
     @EnvironmentObject  var apparentWind :ApparentWind
     @EnvironmentObject  var sailAngleFind : SailAngleFind
-    
+    @EnvironmentObject  var sailingDataCollector : SailingDataCollector
     var body: some View {
         ScrollView{
            
@@ -144,16 +147,59 @@ struct InfoPage: View {
                     Text("Sail Angle: \(sailAngle.degrees, specifier: "%.f")º")
                         .font(.caption2)
                 }
+                
+                Button("시작") {
+                    
+                    //      sailingDataCollector.
+                    
+                    startToSaveHealthStore()
+                    
+                }
+                Button("종료") {
+                    endToSaveHealthData()
+                    
+                }
             }
            
         }
         .padding(.top, 10)
         .navigationTitle("Info Page")
     }
+    
+    func startToSaveHealthStore() {
+        let healthService = HealthService.shared
+        let healthStore = healthService.healthStore
+        
+        // 운동 샘플 생성
+        let startDate = Date()
+        sailingDataCollector.startDate = startDate
+        
+        healthService.startHealthKit()
+        
+        healthService.startWorkout(startDate: startDate)
+    }
+    
+    func endToSaveHealthData(){
+        let jsonData = try? JSONEncoder().encode(sailingDataCollector.sailingDataPointsArray)
+        let jsonString = String(data: jsonData!, encoding: .utf8) ?? "[]"
+        let metadata: [String: Any] = [
+            "sailingName" : "sailing",
+            "sailingDataPointsArray": jsonString // JSON 문자열 형태로 메타데이터에 추가
+        ]
+        let endDate = Date()
+        let startDate = sailingDataCollector.startDate
+        let healthService = HealthService.shared
+        let healthStore = healthService.healthStore
+        
+        healthService.collectData(startDate: startDate, endDate: endDate, totalEnergyBurned: 888, totalDistance: 999, metadata: metadata)
+        
+        
+    }
+
+    
 }
 
 
 #Preview {
     ContentView()
 }
-
