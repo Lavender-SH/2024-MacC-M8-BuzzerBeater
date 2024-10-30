@@ -28,6 +28,7 @@ class WindDetector : ObservableObject{
     @Published var timestamp :Date?
     @Published var direction: Double?
     @Published var speed: Double?
+    @Published var gust: Measurement<UnitSpeed>?
     @Published var adjustedDirection : Double?
     
     

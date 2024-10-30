@@ -15,7 +15,7 @@ struct ContentView: View {
     @EnvironmentObject private var apparentWind :ApparentWind
     @EnvironmentObject private var sailAngleFind : SailAngleFind
     @EnvironmentObject private var sailingDataCollector : SailingDataCollector
-    
+   
     
     var body: some View {
         TabView {
@@ -92,7 +92,10 @@ struct InfoPage: View {
     @EnvironmentObject  var windDetector : WindDetector
     @EnvironmentObject  var apparentWind :ApparentWind
     @EnvironmentObject  var sailAngleFind : SailAngleFind
+    
     @EnvironmentObject  var sailingDataCollector : SailingDataCollector
+    @State  private var isSavingData = false
+    let sharedWorkoutManager  = WorkoutManager.shared
     var body: some View {
         ScrollView{
            
@@ -149,54 +152,33 @@ struct InfoPage: View {
                 }
                 
                 Button("시작") {
-                    
-                    //      sailingDataCollector.
-                    
-                    startToSaveHealthStore()
-                    
+                    isSavingData = true
+                    sharedWorkoutManager.startToSaveHealthStore()
                 }
+                .padding()
+                .background(isSavingData ? Color.gray : Color.blue) // 비활성화 시 회색으로 변경
+                .foregroundColor(.white)
+                .cornerRadius(10)
+                .disabled(isSavingData) // isSavingData가 true일 때 버튼 비활성화
+                
                 Button("종료") {
-                    endToSaveHealthData()
-                    
+                    isSavingData = false
+                    sharedWorkoutManager.endToSaveHealthData()
+                  
                 }
+                .padding()
+                .background(isSavingData ? Color.red : Color.gray) // 활성화 시 빨간색, 비활성화 시 회색으로 변경
+                .foregroundColor(.white)
+                .cornerRadius(10)
+                .disabled(!isSavingData)
             }
-           
+            
         }
         .padding(.top, 10)
         .navigationTitle("Info Page")
     }
     
-    func startToSaveHealthStore() {
-        let healthService = HealthService.shared
-        let healthStore = healthService.healthStore
-        
-        // 운동 샘플 생성
-        let startDate = Date()
-        sailingDataCollector.startDate = startDate
-        
-        healthService.startHealthKit()
-        
-        healthService.startWorkout(startDate: startDate)
-    }
-    
-    func endToSaveHealthData(){
-        let jsonData = try? JSONEncoder().encode(sailingDataCollector.sailingDataPointsArray)
-        let jsonString = String(data: jsonData!, encoding: .utf8) ?? "[]"
-        let metadata: [String: Any] = [
-            "sailingName" : "sailing",
-            "sailingDataPointsArray": jsonString // JSON 문자열 형태로 메타데이터에 추가
-        ]
-        let endDate = Date()
-        let startDate = sailingDataCollector.startDate
-        let healthService = HealthService.shared
-        let healthStore = healthService.healthStore
-        
-        healthService.collectData(startDate: startDate, endDate: endDate, totalEnergyBurned: 888, totalDistance: 999, metadata: metadata)
-        
-        
-    }
 
-    
 }
 
 

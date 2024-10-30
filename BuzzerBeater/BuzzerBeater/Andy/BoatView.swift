@@ -173,14 +173,3 @@ struct BoatView: View{
            print("Timer cancelled")
        }
 }
-
-
-struct BoatView_Previews: PreviewProvider {
-    static var previews: some View {
-        BoatView()
-    }
-}
-
-
-
-

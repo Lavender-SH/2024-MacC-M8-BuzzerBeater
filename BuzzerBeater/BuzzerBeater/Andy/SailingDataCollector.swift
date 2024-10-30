@@ -23,7 +23,7 @@ struct SailingDataPoint: Equatable, Identifiable, Codable{
     var boatCourse: Double // deg
     var boatHeading : Double?
     
-    var windSpeed: Double  // m/s
+    var windSpeed: Double?  // m/s
     var windDirection: Double?  //deg
     var windCorrectionDetent : Double
        
@@ -37,8 +37,8 @@ class SailingDataCollector : ObservableObject {
     let locationManager = LocationManager.shared
     let windDetector = WindDetector.shared
     
-    var startDate = Date()
-    var endDate = Date()
+    var startDate :Date = Date()
+    var endDate  : Date = Date()
     
     // EnvironmentObject를 사용하는것과 어떻게 다르지?? 항상 햇갈림
     // 모델 vs모델 인경우  파라메터로 주입시키고 값을 가져다쓰는 방식을 써봄
@@ -115,7 +115,7 @@ class SailingDataCollector : ObservableObject {
     
     
     func collectSailingData() {
-     
+        
         let currentTime = Date()
         let latitude = locationManager.latitude
         let longitude = locationManager.longitude
@@ -126,28 +126,28 @@ class SailingDataCollector : ObservableObject {
         //boatSpeed > 0 이면  boatCourse = locationManager.course
         
         let boatCourse = locationManager.boatCourse
-        let boatHeading = locationManager.heading?.trueHeading // 값이 존재하지 않으면  nil
+        let boatHeading = locationManager.heading?.trueHeading   // 값이 존재하지 않으면  nil
         
-        let windSpeed = windDetector.speed ?? 0
+        let windSpeed = windDetector.speed
         let windDirection = windDetector.direction
         let windCorrectionDetent = windDetector.windCorrectionDetent
       
         let sailingDataPoint = SailingDataPoint(id: UUID(),
-                                      timeStamp: currentTime,
-                                      latitude: latitude,
-                                      longitude: longitude,
-                                      boatSpeed: boatSpeed,
-                                      boatCourse: boatCourse,
-                                      boatHeading: boatHeading,
-                                      windSpeed: windSpeed,
-                                      windDirection: windDirection,
-                                      windCorrectionDetent: windCorrectionDetent
-                                       )
-        DispatchQueue.main.async {
-            self.sailingDataPointsArray.append(sailingDataPoint)
-            print("SailingDataPointsArray count:\(self.sailingDataPointsArray.count) data: \(self.sailingDataPointsArray.last)")
-        }
-     
+                                                timeStamp: currentTime,
+                                                latitude: latitude,
+                                                longitude: longitude,
+                                                boatSpeed: boatSpeed,
+                                                boatCourse: boatCourse,
+                                                boatHeading: boatHeading,
+                                                windSpeed: windSpeed,
+                                                windDirection: windDirection,
+                                                windCorrectionDetent: windCorrectionDetent
+         )
+        
+        self.sailingDataPointsArray.append(sailingDataPoint)
+        print("SailingDataPointsArray count:\(self.sailingDataPointsArray.count) data: \(self.sailingDataPointsArray.last)")
+        
+        
     }
     
     
