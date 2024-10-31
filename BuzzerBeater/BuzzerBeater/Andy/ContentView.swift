@@ -5,6 +5,8 @@
 //  Created by Gi Woo Kim on 9/29/24.
 //
 
+import Foundation
+import HealthKit
 import SwiftUI
 
 struct ContentView: View {
@@ -13,7 +15,7 @@ struct ContentView: View {
     @EnvironmentObject private var apparentWind :ApparentWind
     @EnvironmentObject private var sailAngleFind : SailAngleFind
     @EnvironmentObject private var sailingDataCollector : SailingDataCollector
-    
+   
     
     var body: some View {
         TabView {
@@ -34,6 +36,7 @@ struct ContentView: View {
                 .environmentObject(WindDetector.shared)
                 .environmentObject(ApparentWind.shared)
                 .environmentObject(SailAngleFind.shared)
+                .environmentObject(SailingDataCollector.shared)
                 .tabItem {
                     Image(systemName: "info.circle.fill")
                     Text("Info")
@@ -90,6 +93,9 @@ struct InfoPage: View {
     @EnvironmentObject  var apparentWind :ApparentWind
     @EnvironmentObject  var sailAngleFind : SailAngleFind
     
+    @EnvironmentObject  var sailingDataCollector : SailingDataCollector
+    @State  private var isSavingData = false
+    let sharedWorkoutManager  = WorkoutManager.shared
     var body: some View {
         ScrollView{
            
@@ -144,16 +150,38 @@ struct InfoPage: View {
                     Text("Sail Angle: \(sailAngle.degrees, specifier: "%.f")º")
                         .font(.caption2)
                 }
+                
+                Button("시작") {
+                    isSavingData = true
+                    sharedWorkoutManager.startToSaveHealthStore()
+                }
+                .padding()
+                .background(isSavingData ? Color.gray : Color.blue) // 비활성화 시 회색으로 변경
+                .foregroundColor(.white)
+                .cornerRadius(10)
+                .disabled(isSavingData) // isSavingData가 true일 때 버튼 비활성화
+                
+                Button("종료") {
+                    isSavingData = false
+                    sharedWorkoutManager.endToSaveHealthData()
+                  
+                }
+                .padding()
+                .background(isSavingData ? Color.red : Color.gray) // 활성화 시 빨간색, 비활성화 시 회색으로 변경
+                .foregroundColor(.white)
+                .cornerRadius(10)
+                .disabled(!isSavingData)
             }
-           
+            
         }
         .padding(.top, 10)
         .navigationTitle("Info Page")
     }
+    
+
 }
 
 
 #Preview {
     ContentView()
 }
-

@@ -5,59 +5,54 @@
 //  Created by Giwoo Kim on 10/28/24.
 //
 
-
 import HealthKit
 import WorkoutKit
+import SwiftUI
 
 class HealthService : ObservableObject {
+    static  let shared = HealthService()
     let healthStore = HKHealthStore()
- 
-    func startHealthKit()
-    {
-      
-        // Create the heart rate and heartbeat type identifiers.
-        var sampleTypes = Set([HKObjectType.quantityType(forIdentifier: .heartRate)!,
-                               HKSeriesType.heartbeat(),
-                               HKQuantityType.quantityType(forIdentifier: .heartRateVariabilitySDNN)!
-                               
-                              ])
+    var workoutBuilder: HKWorkoutBuilder?
+    
+    func startHealthKit() {
+        var sampleTypes = Set<HKSampleType>()
+        guard HKHealthStore.isHealthDataAvailable() else { return }
         
-        if let stepCount  = HKObjectType.quantityType(forIdentifier: .stepCount) {
-            
-            sampleTypes.insert(stepCount)
-        }
-        if let walkingSpeed = HKObjectType.quantityType(forIdentifier: .walkingSpeed) {
-            sampleTypes.insert(walkingSpeed)
+        if let heartRate = HKObjectType.quantityType(forIdentifier: .heartRate) {
+            sampleTypes.insert(heartRate)
         }
         
-        if let walkingSpeedLength =  HKObjectType.quantityType(forIdentifier: .walkingStepLength) {
-            sampleTypes.insert(walkingSpeedLength)
+        let heartbeatSeries = HKSeriesType.heartbeat()
+        sampleTypes.insert(heartbeatSeries)
+        
+        if let heartRateVariability = HKQuantityType.quantityType(forIdentifier: .heartRateVariabilitySDNN) {
+            sampleTypes.insert(heartRateVariability)
         }
         
         if let distanceWalkingRunning = HKObjectType.quantityType(forIdentifier: .distanceWalkingRunning) {
-            
             sampleTypes.insert(distanceWalkingRunning)
         }
+        
+        if let activeEnergyBurned = HKObjectType.quantityType(forIdentifier: .activeEnergyBurned) {
+            sampleTypes.insert(activeEnergyBurned)
+        }
+        
         if let caloriesType = HKObjectType.quantityType(forIdentifier: .activeEnergyBurned)  {
             sampleTypes.insert(caloriesType)
         }
         let workoutType = HKObjectType.workoutType()
         sampleTypes.insert(workoutType)
+     
+        let workoutRouteType = HKSeriesType.workoutRoute()
+        sampleTypes.insert(workoutRouteType)
         
+        // 모든 HKSampleType은 HKObjectType이나 모든  HKObjectType이 반듯이  HKSampleType인것은 아니다.
         
-        // 공유될수없음 toShare 따로  read 따로
-        //            if let walkingHeartRateAverage =   HKObjectType.quantityType(forIdentifier: .walkingHeartRateAverage) {
-        //                sampleTypes.insert(walkingHeartRateAverage)
-        //            }
-        // Request permission to read and write heart rate and heartbeat data.
-        
-        healthStore.requestAuthorization(toShare: sampleTypes, read: sampleTypes) { (success, error) in
+        healthStore.requestAuthorization(toShare: sampleTypes , read: sampleTypes) { (success, error) in
             print("Request Authorization -- Success: ", success, " Error: ", error ?? "nil")
             // Handle authorization errors here.
             
-            
         }
     }
-    
-   
+     
 }

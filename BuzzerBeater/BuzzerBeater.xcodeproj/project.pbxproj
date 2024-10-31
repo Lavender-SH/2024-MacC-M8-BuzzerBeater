@@ -30,12 +30,10 @@
 		0297A2A22CC51A740024AEC9 /* WindDetector.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0297A2832CC51A740024AEC9 /* WindDetector.swift */; };
 		0297A2A32CC51A740024AEC9 /* LocationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0297A27F2CC51A740024AEC9 /* LocationManager.swift */; };
 		0297A2A42CC51A740024AEC9 /* MapView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0297A2802CC51A740024AEC9 /* MapView.swift */; };
+		CE1B721E2CD27B030044895B /* WorkoutManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE1B721D2CD27AFB0044895B /* WorkoutManager.swift */; };
+		CE1B721F2CD27B030044895B /* WorkoutManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE1B721D2CD27AFB0044895B /* WorkoutManager.swift */; };
 		CEF0D8622CCEFFF800243992 /* HealthService.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEF0D8612CCEFFDD00243992 /* HealthService.swift */; };
 		CEF0D8632CCEFFF800243992 /* HealthService.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEF0D8612CCEFFDD00243992 /* HealthService.swift */; };
-		CEF0D8652CCF02A800243992 /* CalorieManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEF0D8642CCF029D00243992 /* CalorieManager.swift */; };
-		CEF0D8662CCF02A800243992 /* CalorieManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEF0D8642CCF029D00243992 /* CalorieManager.swift */; };
-		CEF0D8682CCF03CF00243992 /* MiscforHealthkit.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEF0D8672CCF03BA00243992 /* MiscforHealthkit.swift */; };
-		CEF0D8692CCF03CF00243992 /* MiscforHealthkit.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEF0D8672CCF03BA00243992 /* MiscforHealthkit.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -82,9 +80,8 @@
 		0297A28B2CC51A740024AEC9 /* BuzzerBeaterRelease.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = BuzzerBeaterRelease.entitlements; sourceTree = "<group>"; };
 		0297A28C2CC51A740024AEC9 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		9291A7892CB37D6300E44161 /* BuzzerBeater.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = BuzzerBeater.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		CE1B721D2CD27AFB0044895B /* WorkoutManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkoutManager.swift; sourceTree = "<group>"; };
 		CEF0D8612CCEFFDD00243992 /* HealthService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthService.swift; sourceTree = "<group>"; };
-		CEF0D8642CCF029D00243992 /* CalorieManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalorieManager.swift; sourceTree = "<group>"; };
-		CEF0D8672CCF03BA00243992 /* MiscforHealthkit.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MiscforHealthkit.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -125,6 +122,7 @@
 			isa = PBXGroup;
 			children = (
 				0297A27E2CC51A740024AEC9 /* ContentView.swift */,
+				CE1B721D2CD27AFB0044895B /* WorkoutManager.swift */,
 				0297A27D2CC51A740024AEC9 /* CompassView.swift */,
 				0297A27C2CC51A740024AEC9 /* BoatView.swift */,
 				0297A2802CC51A740024AEC9 /* MapView.swift */,
@@ -134,8 +132,6 @@
 				0297A2812CC51A740024AEC9 /* SailAngleFind.swift */,
 				0297A2822CC51A740024AEC9 /* SailingDataCollector.swift */,
 				CEF0D8612CCEFFDD00243992 /* HealthService.swift */,
-				CEF0D8642CCF029D00243992 /* CalorieManager.swift */,
-				CEF0D8672CCF03BA00243992 /* MiscforHealthkit.swift */,
 			);
 			path = Andy;
 			sourceTree = "<group>";
@@ -292,11 +288,10 @@
 			buildActionMask = 2147483647;
 			files = (
 				0297A29C2CC51A740024AEC9 /* ContentView.swift in Sources */,
-				CEF0D8652CCF02A800243992 /* CalorieManager.swift in Sources */,
+				CE1B721E2CD27B030044895B /* WorkoutManager.swift in Sources */,
 				0297A29D2CC51A740024AEC9 /* SailingDataCollector.swift in Sources */,
 				0297A29E2CC51A740024AEC9 /* CompassView.swift in Sources */,
 				0297A29F2CC51A740024AEC9 /* BoatView.swift in Sources */,
-				CEF0D8682CCF03CF00243992 /* MiscforHealthkit.swift in Sources */,
 				0297A2A02CC51A740024AEC9 /* ApparentWind.swift in Sources */,
 				CEF0D8632CCEFFF800243992 /* HealthService.swift in Sources */,
 				0297A2A12CC51A740024AEC9 /* SailAngleFind.swift in Sources */,
@@ -311,11 +306,10 @@
 			buildActionMask = 2147483647;
 			files = (
 				0297A28E2CC51A740024AEC9 /* ApparentWind.swift in Sources */,
-				CEF0D8662CCF02A800243992 /* CalorieManager.swift in Sources */,
+				CE1B721F2CD27B030044895B /* WorkoutManager.swift in Sources */,
 				0297A28F2CC51A740024AEC9 /* BoatView.swift in Sources */,
 				0297A2902CC51A740024AEC9 /* CompassView.swift in Sources */,
 				0297A2912CC51A740024AEC9 /* ContentView.swift in Sources */,
-				CEF0D8692CCF03CF00243992 /* MiscforHealthkit.swift in Sources */,
 				0297A2922CC51A740024AEC9 /* LocationManager.swift in Sources */,
 				CEF0D8622CCEFFF800243992 /* HealthService.swift in Sources */,
 				0297A2932CC51A740024AEC9 /* MapView.swift in Sources */,
@@ -354,6 +348,9 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "BuzzerBeaterWatch-Watch-App-Info.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = BuzzerBeaterWatch;
+				INFOPLIST_KEY_NSHealthClinicalHealthRecordsShareUsageDescription = "App uses health Info";
+				INFOPLIST_KEY_NSHealthShareUsageDescription = "App uses health Info";
+				INFOPLIST_KEY_NSHealthUpdateUsageDescription = "App uses health Info";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
 				INFOPLIST_KEY_WKCompanionAppBundleIdentifier = com.lavender.buzzbeater;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -379,7 +376,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				CODE_SIGN_ENTITLEMENTS = "BuzzerBeaterWatch Watch App/BuzzerBeaterWatch Watch App.entitlements";
+				CODE_SIGN_ENTITLEMENTS = "BuzzerBeaterWatch Watch App/BuzzerBeaterWatch Watch AppRelease.entitlements";
 				CODE_SIGN_IDENTITY = "Apple Development";
 				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "iPhone Developer";
 				CODE_SIGN_STYLE = Manual;
@@ -391,6 +388,9 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "BuzzerBeaterWatch-Watch-App-Info.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = BuzzerBeaterWatch;
+				INFOPLIST_KEY_NSHealthClinicalHealthRecordsShareUsageDescription = "App uses health Info";
+				INFOPLIST_KEY_NSHealthShareUsageDescription = "App uses health Info";
+				INFOPLIST_KEY_NSHealthUpdateUsageDescription = "App uses health Info";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
 				INFOPLIST_KEY_WKCompanionAppBundleIdentifier = com.lavender.buzzbeater;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -545,11 +545,14 @@
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = BuzzerBeater/Info.plist;
+				INFOPLIST_KEY_NSHealthClinicalHealthRecordsShareUsageDescription = "App uses health Info";
+				INFOPLIST_KEY_NSHealthShareUsageDescription = "App uses health Info";
+				INFOPLIST_KEY_NSHealthUpdateUsageDescription = "App uses health Info";
+				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "App use location info";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
 				IPHONEOS_DEPLOYMENT_TARGET = 17.6;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -582,11 +585,14 @@
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = BuzzerBeater/Info.plist;
+				INFOPLIST_KEY_NSHealthClinicalHealthRecordsShareUsageDescription = "App uses health Info";
+				INFOPLIST_KEY_NSHealthShareUsageDescription = "App uses health Info";
+				INFOPLIST_KEY_NSHealthUpdateUsageDescription = "App uses health Info";
+				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "App use location info";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
 				IPHONEOS_DEPLOYMENT_TARGET = 17.6;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",

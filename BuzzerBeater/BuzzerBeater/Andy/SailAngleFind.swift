@@ -4,7 +4,6 @@
 //
 //  Created by Giwoo Kim on 10/7/24.
 //
-
 import SwiftUI
 import Combine
 import CoreLocation
