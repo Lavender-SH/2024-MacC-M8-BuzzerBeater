@@ -6,25 +6,38 @@
 //
 
 import SwiftUI
+
 struct WorkoutListView: View {
-    @StateObject private var viewModel = WorkoutViewModel()
+    @StateObject  var viewModel = WorkoutViewModel()
+    @State private var isLoading = true
+    let shared = WorkoutViewModel.shared
     
     var body: some View {
         VStack {
+            Text("Text: Workouts")
+          
             List(viewModel.workouts) { workout in
-                VStack(alignment: .leading) {
-                    Text("Start: \(workout.startDate.formatted())")
-                    Text("End: \(workout.endDate.formatted())")
-                    Text("Duration: \(workout.duration / 60, specifier: "%.1f") mins")
-                    Text("Calories Burned: \(workout.totalEnergyBurned, specifier: "%.1f") kcal")
-                    Text("Distance: \(workout.totalDistance / 1000, specifier: "%.2f") km")
-                }
-                .padding(.vertical, 4)
+              
+                        Text("Start: \(workout.startDate)")
+                
             }
-            .navigationTitle("Workouts")
-            .onAppear {
-                viewModel.loadWorkout(appIdentifier: "seastheday")
-            }
+            
+        }.task {
+            await viewModel.fetchWorkout(appIdentifier: "seastheDay")
+            print("shared workouts: \(viewModel.workouts)")
+            print("viewModel.workouts.count: \(viewModel.workouts.count)")
+            isLoading = false
+           
         }
+        .navigationTitle("Title: Workouts")
+        
+    }
+}
+
+struct WorkoutListView_Previews: PreviewProvider {
+    static var previews: some View {
+        // 미리보기용으로 더미 데이터를 설정합니다.
+        WorkoutListView()
+         
     }
 }
