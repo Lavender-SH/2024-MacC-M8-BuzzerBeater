@@ -32,6 +32,12 @@
 		0297A2A42CC51A740024AEC9 /* MapView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0297A2802CC51A740024AEC9 /* MapView.swift */; };
 		CE1B721E2CD27B030044895B /* WorkoutManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE1B721D2CD27AFB0044895B /* WorkoutManager.swift */; };
 		CE1B721F2CD27B030044895B /* WorkoutManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE1B721D2CD27AFB0044895B /* WorkoutManager.swift */; };
+		CE1B72212CD299B00044895B /* WorkoutListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE1B72202CD299A30044895B /* WorkoutListView.swift */; };
+		CE1B72222CD299B00044895B /* WorkoutListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE1B72202CD299A30044895B /* WorkoutListView.swift */; };
+		CE1B72242CD299F60044895B /* WorkoutViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE1B72232CD299EB0044895B /* WorkoutViewModel.swift */; };
+		CE1B72252CD299F60044895B /* WorkoutViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE1B72232CD299EB0044895B /* WorkoutViewModel.swift */; };
+		CE31016E2CD308A0002A81D5 /* result.txt in Resources */ = {isa = PBXBuildFile; fileRef = CE31016D2CD30892002A81D5 /* result.txt */; };
+		CE31016F2CD308A0002A81D5 /* result.txt in Resources */ = {isa = PBXBuildFile; fileRef = CE31016D2CD30892002A81D5 /* result.txt */; };
 		CEF0D8622CCEFFF800243992 /* HealthService.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEF0D8612CCEFFDD00243992 /* HealthService.swift */; };
 		CEF0D8632CCEFFF800243992 /* HealthService.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEF0D8612CCEFFDD00243992 /* HealthService.swift */; };
 /* End PBXBuildFile section */
@@ -81,6 +87,9 @@
 		0297A28C2CC51A740024AEC9 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		9291A7892CB37D6300E44161 /* BuzzerBeater.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = BuzzerBeater.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		CE1B721D2CD27AFB0044895B /* WorkoutManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkoutManager.swift; sourceTree = "<group>"; };
+		CE1B72202CD299A30044895B /* WorkoutListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkoutListView.swift; sourceTree = "<group>"; };
+		CE1B72232CD299EB0044895B /* WorkoutViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkoutViewModel.swift; sourceTree = "<group>"; };
+		CE31016D2CD30892002A81D5 /* result.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = result.txt; sourceTree = "<group>"; };
 		CEF0D8612CCEFFDD00243992 /* HealthService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthService.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -123,6 +132,8 @@
 			children = (
 				0297A27E2CC51A740024AEC9 /* ContentView.swift */,
 				CE1B721D2CD27AFB0044895B /* WorkoutManager.swift */,
+				CE1B72202CD299A30044895B /* WorkoutListView.swift */,
+				CE1B72232CD299EB0044895B /* WorkoutViewModel.swift */,
 				0297A27D2CC51A740024AEC9 /* CompassView.swift */,
 				0297A27C2CC51A740024AEC9 /* BoatView.swift */,
 				0297A2802CC51A740024AEC9 /* MapView.swift */,
@@ -139,6 +150,7 @@
 		0297A2862CC51A740024AEC9 /* Preview Content */ = {
 			isa = PBXGroup;
 			children = (
+				CE31016D2CD30892002A81D5 /* result.txt */,
 				0297A2852CC51A740024AEC9 /* Preview Assets.xcassets */,
 			);
 			path = "Preview Content";
@@ -267,6 +279,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				CE31016E2CD308A0002A81D5 /* result.txt in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -277,6 +290,7 @@
 				0297A2982CC51A740024AEC9 /* Preview Assets.xcassets in Resources */,
 				0297A2992CC51A740024AEC9 /* .gitignore in Resources */,
 				0297A29A2CC51A740024AEC9 /* Assets.xcassets in Resources */,
+				CE31016F2CD308A0002A81D5 /* result.txt in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -287,8 +301,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				CE1B72252CD299F60044895B /* WorkoutViewModel.swift in Sources */,
 				0297A29C2CC51A740024AEC9 /* ContentView.swift in Sources */,
 				CE1B721E2CD27B030044895B /* WorkoutManager.swift in Sources */,
+				CE1B72212CD299B00044895B /* WorkoutListView.swift in Sources */,
 				0297A29D2CC51A740024AEC9 /* SailingDataCollector.swift in Sources */,
 				0297A29E2CC51A740024AEC9 /* CompassView.swift in Sources */,
 				0297A29F2CC51A740024AEC9 /* BoatView.swift in Sources */,
@@ -305,8 +321,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				CE1B72242CD299F60044895B /* WorkoutViewModel.swift in Sources */,
 				0297A28E2CC51A740024AEC9 /* ApparentWind.swift in Sources */,
 				CE1B721F2CD27B030044895B /* WorkoutManager.swift in Sources */,
+				CE1B72222CD299B00044895B /* WorkoutListView.swift in Sources */,
 				0297A28F2CC51A740024AEC9 /* BoatView.swift in Sources */,
 				0297A2902CC51A740024AEC9 /* CompassView.swift in Sources */,
 				0297A2912CC51A740024AEC9 /* ContentView.swift in Sources */,

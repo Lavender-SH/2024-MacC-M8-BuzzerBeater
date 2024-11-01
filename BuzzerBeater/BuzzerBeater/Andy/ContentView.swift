@@ -15,33 +15,35 @@ struct ContentView: View {
     @EnvironmentObject private var apparentWind :ApparentWind
     @EnvironmentObject private var sailAngleFind : SailAngleFind
     @EnvironmentObject private var sailingDataCollector : SailingDataCollector
-   
+    
     
     var body: some View {
-        TabView {
-            
-            CompassPage()
-                .tabItem {
-                    Image(systemName: "location.north.fill")
-                    Text("Compass")
-                }
-            MapPage()
-                .tabItem {
-                    Image(systemName: "map.fill")
-                    Text("Map")
-                }
-            
-            InfoPage()
-                .environmentObject(LocationManager.shared)
-                .environmentObject(WindDetector.shared)
-                .environmentObject(ApparentWind.shared)
-                .environmentObject(SailAngleFind.shared)
-                .environmentObject(SailingDataCollector.shared)
-                .tabItem {
-                    Image(systemName: "info.circle.fill")
-                    Text("Info")
-                }
-            
+        NavigationStack {
+            TabView {
+                
+                CompassPage()
+                    .tabItem {
+                        Image(systemName: "location.north.fill")
+                        Text("Compass")
+                    }
+                MapPage()
+                    .tabItem {
+                        Image(systemName: "map.fill")
+                        Text("Map")
+                    }
+                
+                InfoPage()
+                    .environmentObject(LocationManager.shared)
+                    .environmentObject(WindDetector.shared)
+                    .environmentObject(ApparentWind.shared)
+                    .environmentObject(SailAngleFind.shared)
+                    .environmentObject(SailingDataCollector.shared)
+                    .tabItem {
+                        Image(systemName: "info.circle.fill")
+                        Text("Info")
+                    }
+                
+            }
         }
     }
 }
@@ -59,7 +61,7 @@ struct CompassPage: View {
                 .frame(width: geometry.size.width * 0.8 , height: geometry.size.width * 0.8)
                 .position(x: geometry.size.width / 2, y: geometry.size.height / 2)
                 .padding(5)
-                .navigationTitle("Compass Page")
+                .navigationTitle("Compass")
         }
     }
 }
@@ -74,7 +76,7 @@ struct MapPage: View {
                     .environmentObject(LocationManager.shared)
                     .environmentObject(SailingDataCollector.shared)
                     .frame(width: minOfWidthAndHeight * 0.9, height: minOfWidthAndHeight * 0.9) // 전체 크기로 설정
-                    .navigationTitle("Map Page")
+                    .navigationTitle("Map")
                 // 적당한 패딩을 추가하여 가장자리에 여유 공간 추가
                 Spacer()
             } .frame(width: geometry.size.width, height: geometry.size.height)
@@ -92,9 +94,10 @@ struct InfoPage: View {
     @EnvironmentObject  var windDetector : WindDetector
     @EnvironmentObject  var apparentWind :ApparentWind
     @EnvironmentObject  var sailAngleFind : SailAngleFind
-    
     @EnvironmentObject  var sailingDataCollector : SailingDataCollector
+    
     @State  private var isSavingData = false
+    @State var isShowingWorkoutList = false
     let sharedWorkoutManager  = WorkoutManager.shared
     var body: some View {
         ScrollView{
@@ -165,17 +168,31 @@ struct InfoPage: View {
                     isSavingData = false
                     sharedWorkoutManager.endToSaveHealthData()
                   
-                }
+                }.padding()
+                    .background(isSavingData ? Color.yellow : Color.gray) // 비활성화 시 회색으로 변경
+                    .foregroundColor(.white)
+                    .cornerRadius(10)
+                    .disabled(!isSavingData) // isSavingData가 true일 때 버튼 비활성화
+                    
+                
+                Button("가져오기") {
+                    isShowingWorkoutList.toggle()
+                
+              }
                 .padding()
-                .background(isSavingData ? Color.red : Color.gray) // 활성화 시 빨간색, 비활성화 시 회색으로 변경
+                .background(Color.red ) // 활성화 시 빨간색, 비활성화 시 회색으로 변경
                 .foregroundColor(.white)
                 .cornerRadius(10)
-                .disabled(!isSavingData)
+                
+                NavigationLink(destination: WorkoutListView(), isActive: $isShowingWorkoutList) {
+                                EmptyView() // NavigationLink는 보이지 않게 설정
+                            }
+                
             }
             
         }
         .padding(.top, 10)
-        .navigationTitle("Info Page")
+        .navigationTitle("Info")
     }
     
 
