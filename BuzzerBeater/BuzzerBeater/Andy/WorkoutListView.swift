@@ -20,6 +20,7 @@ struct WorkoutListView: View {
               
                         Text("Start: \(workout.startDate)")
                 
+                
             }
             
         }.task {

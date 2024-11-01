@@ -43,9 +43,10 @@ class HealthService : ObservableObject {
         let workoutType = HKObjectType.workoutType()
         sampleTypes.insert(workoutType)
      
+        
         let workoutRouteType = HKSeriesType.workoutRoute()
         sampleTypes.insert(workoutRouteType)
-        
+       
         // 모든 HKSampleType은 HKObjectType이나 모든  HKObjectType이 반듯이  HKSampleType인것은 아니다.
         
         healthStore.requestAuthorization(toShare: sampleTypes , read: sampleTypes) { (success, error) in

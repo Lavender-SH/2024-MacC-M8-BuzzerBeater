@@ -49,9 +49,11 @@ class WorkoutManager: NSObject, ObservableObject, HKWorkoutSessionDelegate
     
     var workout: HKWorkout?
     var workoutBuilder: HKWorkoutBuilder?
+    
 #if os(watchOS)
     var liveWorkoutBuilder: HKLiveWorkoutBuilder?
 #endif
+    
     var workoutSession: HKWorkoutSession?
     var workoutRouteBuilder: HKWorkoutRouteBuilder?
     
@@ -68,7 +70,7 @@ class WorkoutManager: NSObject, ObservableObject, HKWorkoutSessionDelegate
     var metadataForRoute: [String: Any] = [:]   // RouteIdentifer, timeStamp, WindDirection, WindSpeed
     var metadataForRouteDataPointArray : [metadataForRouteDataPoint] = []
     
-    // endTime은 3시간 이내로 제한 즉 한세션의 최대 크기를 제한하도록 함.
+    // endTime은 3시간 이내로 제한 즉 한세션의 최대 크기를 제한하도록 함. 나중에 사용예정
     var startDate: Date?
     var endDate : Date?
     
@@ -363,12 +365,12 @@ class WorkoutManager: NSObject, ObservableObject, HKWorkoutSessionDelegate
     func startTimer() {
         timerForLocation = Timer.scheduledTimer(withTimeInterval: timeIntervalForRoute, repeats: true) { [weak self] _ in
             guard let self = self else { return }
-            
+
             if let location = self.locationManager.lastLocation  {
                 print("location inserRouteData: \(location)")
                 // path정보 추가   LocationManager의 location, direction, heading 정보를 저장
                 //finishRoute: 모든 경로 데이터를 추가한 후, 경로 데이터를 HealthKit에 저장하기 위해 호출하는 메서드입니다
-                self.insertRouteData(location)
+                self.insertRouteData([location])
                 print("insterting RouteData")
                 //
             } else {
@@ -403,7 +405,7 @@ class WorkoutManager: NSObject, ObservableObject, HKWorkoutSessionDelegate
         
     }
     
-    func insertRouteData(_ location: CLLocation) {
+    func insertRouteData(_ locations: [CLLocation]) {
         let status = healthStore.authorizationStatus(for: .workoutType())
         if status != .sharingAuthorized {
             print("HealthKit authorization is failed. Cannot insert route data.\(status)")
@@ -413,7 +415,8 @@ class WorkoutManager: NSObject, ObservableObject, HKWorkoutSessionDelegate
             print("HealthKit authorization is successful. \(status)")
         }
         
-        workoutRouteBuilder?.insertRouteData([location]) { success, error in
+        
+        workoutRouteBuilder?.insertRouteData(locations) { success, error in
             if success {
                 print("Route data inserted successfully.")
                 
@@ -421,6 +424,7 @@ class WorkoutManager: NSObject, ObservableObject, HKWorkoutSessionDelegate
                 print("Error inserting route data: \(String(describing: error))")
             }
         }
+       
     }
     
     func finishRoute(workout : HKWorkout, metadataForRoute: [String: Any]?) {
