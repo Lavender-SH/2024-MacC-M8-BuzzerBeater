@@ -236,6 +236,7 @@ class WorkoutManager: NSObject, ObservableObject, HKWorkoutSessionDelegate
                 if success {
                     print("===================workoutBuilder addMetadata successfully ===================")
                     self.finishWorkout(endDate: endDate, metadatForWorkout: metadatForWorkout)
+                  
                     
                 } else if let error = error {
                     print("==========Error adding metadata:\(error.localizedDescription)")
@@ -277,8 +278,10 @@ class WorkoutManager: NSObject, ObservableObject, HKWorkoutSessionDelegate
                         self.printWorkoutActivityType(workout: workout)
                         // ====================== workout과  workoutRoute 연결 ========================
                         //finishRoute: 모든 경로 데이터를 추가한 후, 경로 데이터를 HealthKit에 저장하기 위해 호출하는 메서드
-                     
+                        self.metadataForRoute = self.makeMetadataForRoute(routeIdentifier: "seastheDayroute", metadataForRouteDataPointArray: self.metadataForRouteDataPointArray)
+                        
                         self.finishRoute(workout: workout, metadataForRoute: self.metadataForRoute)
+                        
                         print("========== finishWorkout successfully workout:==========  \(String(describing: workout.metadata))")
                     } else if let error = error {
                         print("Error finishing workout: \(error.localizedDescription)")
@@ -463,13 +466,12 @@ class WorkoutManager: NSObject, ObservableObject, HKWorkoutSessionDelegate
 //        let startDate = sailingDataCollector.startDate
         
         let metadata: [String: Any] = [
-            "AppIdentifier" : "seastheday" ,   // 삭제하면  에러가없음
-  //          "sailingDataPointsArray": jsonString // JSON 문자열 형태로 메타데이터에 추가
+            "AppIdentifier" : "seastheDay" ,   // 삭제하면  에러가없음
+  //         "sailingDataPointsArray": jsonString // JSON 문자열 형태로 메타데이터에 추가
         ]
         print("metadata in the endToSaveHealthData: \(metadata)")
         
-
-    
+  
        if let startDate = startDate, let endDate = endDate {
            workoutManager.collectData(startDate: startDate, endDate: endDate, totalEnergyBurned: 888, totalDistance: 999, metadatForWorkout: metadata)
            print("collectData works successfully  in the endToSaveHealthData")

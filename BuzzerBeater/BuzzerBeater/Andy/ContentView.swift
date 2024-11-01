@@ -168,7 +168,12 @@ struct InfoPage: View {
                     isSavingData = false
                     sharedWorkoutManager.endToSaveHealthData()
                   
-                }
+                }.padding()
+                    .background(isSavingData ? Color.yellow : Color.gray) // 비활성화 시 회색으로 변경
+                    .foregroundColor(.white)
+                    .cornerRadius(10)
+                    .disabled(!isSavingData) // isSavingData가 true일 때 버튼 비활성화
+                    
                 
                 Button("가져오기") {
                     isShowingWorkoutList.toggle()
