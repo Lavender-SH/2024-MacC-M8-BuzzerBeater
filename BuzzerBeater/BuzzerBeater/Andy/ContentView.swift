@@ -18,7 +18,7 @@ struct ContentView: View {
     
     
     var body: some View {
-        NavigationStack {
+      
             TabView {
                 
                 CompassPage()
@@ -44,7 +44,7 @@ struct ContentView: View {
                     }
                 
             }
-        }
+        
     }
 }
 
@@ -184,9 +184,9 @@ struct InfoPage: View {
                 .foregroundColor(.white)
                 .cornerRadius(10)
                 
-                NavigationLink(destination: WorkoutListView(), isActive: $isShowingWorkoutList) {
-                                EmptyView() // NavigationLink는 보이지 않게 설정
-                            }
+                .sheet(isPresented: $isShowingWorkoutList) {
+                    WorkoutListView()
+                }
                 
             }
             

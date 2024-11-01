@@ -6,9 +6,10 @@
 //
 import CoreLocation
 import HealthKit
+
 import Foundation
 import SwiftUI
-
+import WorkoutKit
 
 struct metadataForRouteDataPoint: Equatable, Identifiable, Codable{
     var id: UUID = UUID()
@@ -27,7 +28,7 @@ class WorkoutManager: NSObject, ObservableObject, HKWorkoutSessionDelegate
 {
     @objc(workoutSession:didChangeToState:fromState:date:) func workoutSession(_ workoutSession: HKWorkoutSession, didChangeTo toState: HKWorkoutSessionState, from fromState: HKWorkoutSessionState, date: Date) {
            // Handle the state change of the workout session here
-           print("Workout session changed from \(fromState) to \(toState) at \(date)")
+        print("Workout session changed from \(fromState) to \(toState) at \(date) \(workoutSession.currentActivity)")
        }
        
     @objc func workoutSession(_ workoutSession: HKWorkoutSession, didFailWithError error: Error) {
@@ -45,8 +46,8 @@ class WorkoutManager: NSObject, ObservableObject, HKWorkoutSessionDelegate
     
     
     let timeIntervalForRoute = TimeInterval(10)
-    let timeIntervalForWind = TimeInterval(60*10)
-    
+    let timeIntervalForWind = TimeInterval(60*1)
+
     var workout: HKWorkout?
     var workoutBuilder: HKWorkoutBuilder?
     
@@ -116,10 +117,7 @@ class WorkoutManager: NSObject, ObservableObject, HKWorkoutSessionDelegate
                 print("Error starting live workout collection: \(error?.localizedDescription ?? "Unknown error")")
             }
         })
-        //        HKWorkoutRouteBuilder의 주요 메서드
-        //        insertRouteData: CLLocation 배열을 전달해 경로 데이터를 추가
-        //        finishRoute: 모든 경로 데이터를 추가한 후, 경로 데이터를 HealthKit에 저장
-        
+       
         workoutRouteBuilder = HKWorkoutRouteBuilder(healthStore: healthStore, device: .local())
         startTimer()
 #endif
@@ -136,10 +134,7 @@ class WorkoutManager: NSObject, ObservableObject, HKWorkoutSessionDelegate
                 print("Error starting workout collection: \(error?.localizedDescription ?? "Unknown error")")
             }
         })
-        //        HKWorkoutRouteBuilder의 주요 메서드
-        //        insertRouteData: CLLocation 배열을 전달해 경로 데이터를 추가
-        //        finishRoute: 모든 경로 데이터를 추가한 후, 경로 데이터를 HealthKit에 저장
-        
+    
         workoutRouteBuilder = HKWorkoutRouteBuilder(healthStore: healthStore, device: .local())
         startTimer()
 #endif
@@ -186,7 +181,7 @@ class WorkoutManager: NSObject, ObservableObject, HKWorkoutSessionDelegate
                 print("Error adding distance data: \(error?.localizedDescription ?? "Unknown error")")
             }
         }
-        metadataForWorkout = makeMetadataForWorkout(workoutIdentifier: "seastheDay" )
+       
         
         if let metadatForWorkout = metadatForWorkout {
             print("metadata in the collectData\(metadatForWorkout)")
@@ -229,8 +224,7 @@ class WorkoutManager: NSObject, ObservableObject, HKWorkoutSessionDelegate
             }
         }
         
-        metadataForWorkout = makeMetadataForWorkout(workoutIdentifier: "seastheDay" )
-        
+       
         if let metadatForWorkout = metadatForWorkout {
             print("metadata in the collectData\(metadatForWorkout)")
             
@@ -265,6 +259,7 @@ class WorkoutManager: NSObject, ObservableObject, HKWorkoutSessionDelegate
         }
         isWorkoutActive = false
         // Use the parameter `endDate`
+        
         timerForLocation?.invalidate() // 타이머 중지
         timerForWind?.invalidate()
         
@@ -273,57 +268,78 @@ class WorkoutManager: NSObject, ObservableObject, HKWorkoutSessionDelegate
             guard let self = self else { return } // Ensure `self` is valid
             
             if success {
-                print("Workout ended at \(endDate)")
+                print("Workout ended Collection at \(endDate)")
                 // Finish the workout and save it to HealthKit
                 workoutBuilder?.finishWorkout { workout, error in
                     if let workout = workout {
                         self.printWorkoutActivityType(workout: workout)
                         // ====================== workout과  workoutRoute 연결 ========================
                         //finishRoute: 모든 경로 데이터를 추가한 후, 경로 데이터를 HealthKit에 저장하기 위해 호출하는 메서드
+                        
                         self.metadataForRoute = self.makeMetadataForRoute(routeIdentifier: "seastheDayroute", metadataForRouteDataPointArray: self.metadataForRouteDataPointArray)
                         
-                        self.finishRoute(workout: workout, metadataForRoute: self.metadataForRoute)
+                        Task{
+                            let result =   await self.finishRoute(workout: workout, metadataForRoute: self.metadataForRoute)
+                            switch result {
+                            case .success(let route):
+                                print("Successfully finished route: \(route)")
+                                
+                                
+                            case .failure(let error):
+                                print("Failed to finish route with error: \(error.localizedDescription)")
+                                
+                            }
+                            
+                        }
                         
                         print("========== finishWorkout successfully workout:==========  \(String(describing: workout.metadata))")
                     } else if let error = error {
                         print("Error finishing workout: \(error.localizedDescription)")
+                    } else {
+                        print("Error finishing workout: unknown error")
                     }
                 }
             } else if let error = error {
                 print("Error ending workout: \(error.localizedDescription)")
+            } else {
+                print("Error ending workout: unknown error" )
             }
         }
+        
+       
  
 #endif
         
         
 #if os(watchOS)  // workoutBuilder 대신에  liveWorkoutBuilder를 사용함
-        
         liveWorkoutBuilder?.endCollection(withEnd: endDate) { [weak self] success, error in
             guard let self = self else { return } // Ensure `self` is valid
             
             if success {
-                print("Workout ended at \(endDate)")
+                print("Workout endCollection at \(endDate)")
                 
                 // Finish the workout and save it to HealthKit
+              
                 liveWorkoutBuilder?.finishWorkout { workout, error in
                     if let workout = workout {
                         self.printWorkoutActivityType(workout: workout)
-                        // ====================== workout과  workoutRoute 연결 ========================
-                        //finishRoute: 모든 경로 데이터를 추가한 후, 경로 데이터를 HealthKit에 저장하기 위해 호출하는 메서드
-                        
+                
                         self.metadataForRoute = self.makeMetadataForRoute(routeIdentifier: "seastheDayroute", metadataForRouteDataPointArray: self.metadataForRouteDataPointArray)
+                        print("metadataForRoute \(self.metadataForRoute)")
                         
-                        
-                        self.finishRoute(workout: workout, metadataForRoute: self.metadataForRoute)
-                        if let workoutSession = self.workoutSession {
-                            // 현재 활동 종료
-                            workoutSession.endCurrentActivity(on: endDate)
-                            // HealthStore에 운동 세션 종료
-                        } else {
-                            print("workoutSession is nil !!!")
+                        Task{
+                            let result =   await self.finishRoute(workout: workout, metadataForRoute: self.metadataForRoute)
+                            switch result {
+                            case .success(let route):
+                                print("Successfully finished route: \(route)")
+                                
+                                
+                            case .failure(let error):
+                                print("Failed to finish route with error: \(error.localizedDescription)")
+                                
+                            }
                         }
-                        print("========== finishWorkout successfully workout:==========  \(String(describing: workout.metadata))")
+                        
                     } else if let error = error {
                         print("Error finishing workout: \(error.localizedDescription)")
                     } else {
@@ -338,8 +354,17 @@ class WorkoutManager: NSObject, ObservableObject, HKWorkoutSessionDelegate
             }
             
         }
-#endif
         
+        
+        if let workoutSession = self.workoutSession {
+            workoutSession.end()
+        } else {
+            print("No current activity to end.")
+        }
+        
+        
+    
+#endif
         
     }
     
@@ -427,21 +452,27 @@ class WorkoutManager: NSObject, ObservableObject, HKWorkoutSessionDelegate
        
     }
     
-    func finishRoute(workout : HKWorkout, metadataForRoute: [String: Any]?) {
-       
-        
-        workoutRouteBuilder?.finishRoute(with: workout, metadata: metadataForRoute)  { route, error in
-            
-            if (route != nil && error == nil) {
-                print("===================finishRoute: workoutRoute saved successfully====================")
-            }
-            else {
-                
-                print("===================finishRoute: workoutRoute saving failed: \(String(describing: error))")
-                
+    func finishRoute(workout: HKWorkout, metadataForRoute: [String: Any]?) async -> Result<HKWorkoutRoute, Error> {
+        await withCheckedContinuation { continuation in
+            workoutRouteBuilder?.finishRoute(with: workout, metadata: metadataForRoute) { route, error in
+                if let error = error {
+                    print("===================finishRoute: workoutRoute saving failed: \(error.localizedDescription)")
+                    // Resume with the error wrapped in a Result
+                    continuation.resume(returning: .failure(error))
+                } else if let route = route {
+                    print("===================finishRoute: workoutRoute saved successfully====================")
+                    // Resume with the successful route wrapped in a Result
+                    print("route in the finishRoute \(route)")
+                    continuation.resume(returning: .success(route))
+                } else {
+                    // Resume with an unknown error if neither route nor error is present
+                    let unknownError = NSError(domain: "UnknownError", code: -1, userInfo: [NSLocalizedDescriptionKey: "An unknown error occurred."])
+                    continuation.resume(returning: .failure(unknownError))
+                }
             }
         }
     }
+
     
     func startToSaveHealthStore() {
         
@@ -463,21 +494,22 @@ class WorkoutManager: NSObject, ObservableObject, HKWorkoutSessionDelegate
         let healthService = HealthService.shared
         let healthStore = healthService.healthStore
         let workoutManager = WorkoutManager.shared
-        
-        //        let jsonData = try? JSONEncoder().encode(sailingDataCollector.sailingDataPointsArray)
-        //        let jsonString = String(data: jsonData!, encoding: .utf8) ?? "[]"
-        endDate = Date()
+//
+//        let jsonData = try? JSONEncoder().encode(sailingDataCollector.sailingDataPointsArray)
+//        let jsonString = String(data: jsonData!, encoding: .utf8) ?? "[]"
 //        let startDate = sailingDataCollector.startDate
+//        let metadata: [String: Any] = [
+//            "AppIdentifier" : "seastheDay" ,   // 삭제하면  에러가없음
+//            "sailingDataPointsArray": jsonString // JSON 문자열 형태로 메타데이터에 추가
+//        ]
         
-        let metadata: [String: Any] = [
-            "AppIdentifier" : "seastheDay" ,   // 삭제하면  에러가없음
-  //         "sailingDataPointsArray": jsonString // JSON 문자열 형태로 메타데이터에 추가
-        ]
-        print("metadata in the endToSaveHealthData: \(metadata)")
+        endDate = Date()
+        metadataForWorkout = makeMetadataForWorkout(appIdentifier: "seastheDay")
+        print("metadata in the endToSaveHealthData: \(metadataForWorkout)")
         
   
        if let startDate = startDate, let endDate = endDate {
-           workoutManager.collectData(startDate: startDate, endDate: endDate, totalEnergyBurned: 888, totalDistance: 999, metadatForWorkout: metadata)
+           workoutManager.collectData(startDate: startDate, endDate: endDate, totalEnergyBurned: 888, totalDistance: 999, metadatForWorkout: metadataForWorkout)
            print("collectData works successfully  in the endToSaveHealthData")
        }  else {
            print("startDate or endDate is nil")
@@ -509,17 +541,13 @@ class WorkoutManager: NSObject, ObservableObject, HKWorkoutSessionDelegate
         return metadataForRoute
     }
     
-    func makeMetadataForWorkout(workoutIdentifier: String) -> [String: Any] {
+    func makeMetadataForWorkout(appIdentifier: String) -> [String: Any] {
         var metadataForWorkout: [String: Any] = [:]
-        metadataForWorkout["WorkoutIdentifier"] = workoutIdentifier
-        
-        #if os(watchOS)
-        
-        
-        #endif
-        
+        metadataForWorkout["AppIdentifier"] = appIdentifier
         return metadataForWorkout
     }
+    
+
 }
 
 

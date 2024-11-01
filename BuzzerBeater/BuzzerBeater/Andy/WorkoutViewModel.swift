@@ -46,22 +46,23 @@ class WorkoutViewModel: NSObject, ObservableObject {
                     continuation.resume() // 작업 종료 알림
                     return
                 }
-                print("results \(results)")
+                
+                print("results workouts : \(results)")
                 
                 guard let results = results as? [HKWorkout] else {
                     print("No workouts found or results are not of type HKWorkout.")
                     continuation.resume() // 작업 종료 알림
                     return
                 }
-                print("Found \(results.count) workouts.")
+                print("Found workouts : \(results.count) .")
                 
                 if let workout = results.first {
                     print("Found Workout: \(workout.startDate) to \(workout.endDate)")
                     //Task 사용: 새로운 비동기 작업을 생성하여 현재의 작업을 차단하지 않고 독립적으로 실행되도록 하고 서스펜딩상태로 돌입.
                     Task{
-                        await self?.fetchWorkoutRoute(for: workout)
-                        
-                        
+                      
+                            await self?.fetchWorkoutRoute(for: workout)
+                      
                     }
                 }
                 
@@ -75,7 +76,7 @@ class WorkoutViewModel: NSObject, ObservableObject {
                     )
                 }
                 
-                print(convertedWorkouts)
+        
                 
                 DispatchQueue.main.async { [weak self] in
                     guard let self = self else { return }
@@ -91,53 +92,50 @@ class WorkoutViewModel: NSObject, ObservableObject {
     }
     // workout 과 1:1 매칭이 되는   workoutRoute가져오기
     func fetchWorkoutRoute(for workout: HKWorkout) async {
-// HKSampleQuery vs HKAnchoredObjectQuery 의 특성을 이해합시다!!!!
-//       let predicate = HKQuery.predicateForObjects(from: workout)
-//        let routeQuery = HKSampleQuery(sampleType: HKSeriesType.workoutRoute(), predicate: predicate, limit: HKObjectQueryNoLimit, sortDescriptors: nil) { [weak self] query, results, error in
-//
-//            if let error = error {
-//                print("Error fetching workout route: \(error)")
-//                return
-//            }
-//            
-//            guard let workoutRoutes = results as? [HKWorkoutRoute] else {
-//                print("No workout routes found.")
-//                return
-//            }
-//         print("workoutRoutes \(workoutRoutes)")
-//        }
-//      healthStore.execute(routeQuery)
-        let routePredicate = HKQuery.predicateForObjects(from: workout)
-        let routeQuery = HKAnchoredObjectQuery(type: HKSeriesType.workoutRoute(), predicate: routePredicate, anchor: nil, limit: HKObjectQueryNoLimit) { query, samples, deletedObjects, newAnchor, error in
-               guard let routes = samples as? [HKWorkoutRoute], error == nil else {
-                   print("Error fetching route: \(String(describing: error))")
-                   return
-               }
-
-               // Route가 성공적으로 조회되었는지 확인
-               print("Route data count: \(routes.count)")
-               if let firstRoute = routes.first {
-                   DispatchQueue.main.async {
-                       self.fetchRouteLocations(for: firstRoute)
-                   }
-               }
-           }
-           healthStore.execute(routeQuery)
-
+        await withCheckedContinuation { continuation in
+            
+            let routePredicate = HKQuery.predicateForObjects(from: workout)
+            let routeQuery = HKAnchoredObjectQuery(type: HKSeriesType.workoutRoute(), predicate: routePredicate, anchor: nil, limit: HKObjectQueryNoLimit) { query, samples, deletedObjects, newAnchor, error in
+                guard let routes = samples as? [HKWorkoutRoute], error == nil else {
+                    print("Error fetching route: \(String(describing: error))")
+                    continuation.resume()
+                    return
+                }
+                
+                // Route가 성공적으로 조회되었는지 확인
+              
+                print("Route data count: \(routes.count)")
+                if let firstRoute = routes.first {
+                    // Fetch locations for the first route
+                    Task {
+                        await self.fetchRouteLocations(for: firstRoute)
+                        continuation.resume() // Resume only after fetching route locations
+                    }
+                } else {
+                    continuation.resume() // Resume if no routes found
+                }
+            }
+            healthStore.execute(routeQuery)
         }
+    }
     
-    func fetchRouteLocations(for route: HKWorkoutRoute) {
-        let locationQuery = HKWorkoutRouteQuery(route: route) { (query, locations, done, error) in
-            guard let locations = locations, error == nil else {
-                print("Error fetching route locations: \(String(describing: error))")
-                return
+    func fetchRouteLocations(for route: HKWorkoutRoute) async {
+        await withCheckedContinuation { continuation in
+            let locationQuery = HKWorkoutRouteQuery(route: route) { (query, locations, done, error) in
+                guard let locations = locations, error == nil else {
+                    print("Error fetching route locations: \(String(describing: error))")
+                    continuation.resume()
+                    return
+                }
+                
+                print("Fetched locations : \(locations.count)")
+                for location in locations {
+                    print("time: \(location.timestamp.formatted()) Location:\(location.coordinate.latitude), \(location.coordinate.longitude) ")
+                }
+                continuation.resume()
             }
-
-            print("Fetched \(locations.count) locations")
-            for location in locations {
-                print("Location: \(location.coordinate.latitude), \(location.coordinate.longitude)")
-            }
+            healthStore.execute(locationQuery)
+          
         }
-        healthStore.execute(locationQuery)
     }
 }

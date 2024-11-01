@@ -43,7 +43,7 @@ class HealthService : ObservableObject {
         let workoutType = HKObjectType.workoutType()
         sampleTypes.insert(workoutType)
      
-        
+    
         let workoutRouteType = HKSeriesType.workoutRoute()
         sampleTypes.insert(workoutRouteType)
        
