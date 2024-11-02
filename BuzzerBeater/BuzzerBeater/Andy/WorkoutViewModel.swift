@@ -46,26 +46,13 @@ class WorkoutViewModel: NSObject, ObservableObject {
                     continuation.resume() // 작업 종료 알림
                     return
                 }
-                
-                print("results workouts : \(results)")
-                
                 guard let results = results as? [HKWorkout] else {
                     print("No workouts found or results are not of type HKWorkout.")
                     continuation.resume() // 작업 종료 알림
                     return
                 }
-                print("Found workouts : \(results.count) .")
                 
-                if let workout = results.first {
-                    print("Found Workout: \(workout.startDate) to \(workout.endDate)")
-                    //Task 사용: 새로운 비동기 작업을 생성하여 현재의 작업을 차단하지 않고 독립적으로 실행되도록 하고 서스펜딩상태로 돌입.
-                    Task{
-                      
-                            await self?.fetchWorkoutRoute(for: workout)
-                      
-                    }
-                }
-                
+                print("Found workouts : \(results.count) \(results.debugDescription).")
                 let convertedWorkouts = results.map { workout in
                     WorkoutData(
                         startDate: workout.startDate,
@@ -76,12 +63,21 @@ class WorkoutViewModel: NSObject, ObservableObject {
                     )
                 }
                 
-        
+                
                 
                 DispatchQueue.main.async { [weak self] in
                     guard let self = self else { return }
                     self.workouts = convertedWorkouts
                     print("fetchWorkout workouts: \(self.workouts)")
+                }
+                
+                for workout in results {
+                    Task{
+    
+                        await self?.fetchWorkoutRoute(for: workout)
+                        
+                    }
+                    
                 }
                 continuation.resume() // 모든 작업이 완료된 후에 종료 알림
             }
@@ -98,18 +94,17 @@ class WorkoutViewModel: NSObject, ObservableObject {
             let routeQuery = HKAnchoredObjectQuery(type: HKSeriesType.workoutRoute(), predicate: routePredicate, anchor: nil, limit: HKObjectQueryNoLimit) { query, samples, deletedObjects, newAnchor, error in
                 guard let routes = samples as? [HKWorkoutRoute], error == nil else {
                     print("Error fetching route: \(String(describing: error))")
-                    continuation.resume(returning: .failure(error ?? NSError(domain: "", code: 0, userInfo: nil) ) )
+                    continuation.resume(returning: .failure(error ?? NSError(domain: "Error fetching route", code: 0, userInfo: nil) ) )
                     return
                 }
                 
                 // Route가 성공적으로 조회되었는지 확인
-              
-                print("Route data count: \(routes.count)")
                 if let firstRoute = routes.first {
                     // Fetch locations for the first route
                     Task {
+                      
                         await self.fetchRouteLocations(for: firstRoute)
-                        continuation.resume(returning: .success(firstRoute)) // Resume only after fetching route locations
+                        continuation.resume(returning: .success(firstRoute)) // Resume only after fetchRouteLocations
                     }
                 } else {
                     continuation.resume(returning: .failure(error ?? NSError(domain: "", code: 0, userInfo: nil)))
@@ -127,10 +122,15 @@ class WorkoutViewModel: NSObject, ObservableObject {
                     continuation.resume()
                     return
                 }
-                
-                print("Fetched locations : \(locations.count)")
+                print("----------------fetchRouteLocations for route:--------------")
+                print("startDate: \(route.startDate.formatted())  endDate:\(route.endDate.formatted()) locations : \(locations.count) ")
                 for location in locations {
-                    print("time: \(location.timestamp.formatted()) Location:\(location.coordinate.latitude), \(location.coordinate.longitude) ")
+                    let dateFormatter = DateFormatter()
+                    dateFormatter.dateFormat = "yy-MM-dd HH:mm:ss" // Customize the format as needed
+                    let formattedDate = dateFormatter.string(from: location.timestamp)
+
+                    print("time: \(formattedDate) lat: \(String(format: "%.4f", location.coordinate.latitude)), lon: \(String(format: "%.4f", location.coordinate.longitude))")
+
                 }
                 continuation.resume()
             }

@@ -52,6 +52,7 @@ class WorkoutManager: NSObject, ObservableObject
     var metadataForWorkout: [String: Any] = [:] // AppIdentifier, 날짜,
     var metadataForRoute: [String: Any] = [:]   // RouteIdentifer, timeStamp, WindDirection, WindSpeed
     var metadataForRouteDataPointArray : [metadataForRouteDataPoint] = []
+    let routeDataQueue = DispatchQueue(label: "com.lavender.buzzbeater.routeDataQueue")
     
     // endTime은 3시간 이내로 제한 즉 한세션의 최대 크기를 제한하도록 함. 나중에 사용예정
     var startDate: Date?
@@ -100,7 +101,7 @@ class WorkoutManager: NSObject, ObservableObject
      
     }
     
-    func collectData(startDate: Date, endDate: Date,  metadatForWorkout: [String: Any]?) {
+    func collectData(startDate: Date, endDate: Date,  metadataForWorkout: [String: Any]?) {
         // 데이터 수집 예시
         
         guard let workoutBuilder = workoutBuilder else {
@@ -108,10 +109,10 @@ class WorkoutManager: NSObject, ObservableObject
             return
         }
         
-        if let metadatForWorkout = metadatForWorkout {
-            print("metadata in the collectData\(metadatForWorkout)")
+        if let metadataForWorkout = metadataForWorkout {
+            print("metadata in the collectData\(metadataForWorkout)")
             
-            workoutBuilder.addMetadata(metadatForWorkout) { (success, error) in
+            workoutBuilder.addMetadata(metadataForWorkout) { (success, error) in
                 guard success else {
                     print("==========Error adding metadata:\(error?.localizedDescription ?? "Unknown error")")
                     return
@@ -123,7 +124,7 @@ class WorkoutManager: NSObject, ObservableObject
             }
         }
         else{
-            print("metadatForWorkout is nil or invalid")
+            print("metadataForWorkout is nil or invalid")
             //  self.finishWorkout(endDate: endDate, metadataForWorkout: metadataForWorkout)
             Task {
                 await self.finishWorkoutAsync(endDate: endDate, metadataForWorkout: self.metadataForWorkout)
@@ -133,7 +134,7 @@ class WorkoutManager: NSObject, ObservableObject
     
     
     
-    func finishWorkout(endDate: Date, metadatForWorkout: [String: Any]?) {
+    func finishWorkout(endDate: Date, metadataForWorkout: [String: Any]?) {
         
         if !isWorkoutActive {
             return
@@ -355,23 +356,25 @@ class WorkoutManager: NSObject, ObservableObject
     
     func insertRouteData(_ locations: [CLLocation]) async throws {
         let status = healthStore.authorizationStatus(for: .workoutType())
-        if status != .sharingAuthorized {
+        guard status == .sharingAuthorized else {
             throw NSError(domain: "HealthKitAuthorization", code: 1, userInfo: [NSLocalizedDescriptionKey: "HealthKit authorization failed. Cannot insert route data."])
-        } else {
-            print("HealthKit authorization is successful. \(status)")
         }
+        print("HealthKit authorization is successful. \(status)")
         
         // 비동기 작업으로 변환
         try await withCheckedThrowingContinuation { continuation in
-            workoutRouteBuilder?.insertRouteData(locations) { success, error in
-                if success {
-                    print("routedata inserted successfully.")
-                    continuation.resume()
-                } else if let error = error {
-                    print("Error inserting routedata: \(error)")
-                    continuation.resume(throwing: error)
-                } else {
-                    continuation.resume(throwing: NSError(domain: "HealthKit", code: 2, userInfo: [NSLocalizedDescriptionKey: "Unknown error inserting route data."]))
+            // Use the serial queue to ensure that this insertion is handled sequentially
+            routeDataQueue.async { [weak self] in
+                self?.workoutRouteBuilder?.insertRouteData(locations) { success, error in
+                    if success {
+                        print("Route data inserted successfully.")
+                        continuation.resume()
+                    } else if let error = error {
+                        print("Error inserting route data: \(error)")
+                        continuation.resume(throwing: error)
+                    } else {
+                        continuation.resume(throwing: NSError(domain: "HealthKit", code: 2, userInfo: [NSLocalizedDescriptionKey: "Unknown error inserting route data."]))
+                    }
                 }
             }
         }
@@ -419,22 +422,14 @@ class WorkoutManager: NSObject, ObservableObject
         let healthStore = healthService.healthStore
 
         let workoutManager = WorkoutManager.shared
-
-//        let jsonData = try? JSONEncoder().encode(sailingDataCollector.sailingDataPointsArray)
-//        let jsonString = String(data: jsonData!, encoding: .utf8) ?? "[]"
-//        let startDate = sailingDataCollector.startDate
-//        let metadata: [String: Any] = [
-//            "AppIdentifier" : "seastheDay" ,   // 삭제하면  에러가없음
-//            "sailingDataPointsArray": jsonString // JSON 문자열 형태로 메타데이터에 추가
-//        ]
-        
+      
         endDate = Date()
         metadataForWorkout = makeMetadataForWorkout(appIdentifier: "seastheDay")
         print("metadata in the endToSaveHealthData: \(metadataForWorkout)")
         
   
        if let startDate = startDate, let endDate = endDate {
-           workoutManager.collectData(startDate: startDate, endDate: endDate, metadatForWorkout: metadataForWorkout)
+           workoutManager.collectData(startDate: startDate, endDate: endDate, metadataForWorkout: metadataForWorkout)
            print("collectData works successfully  in the endToSaveHealthData")
        }  else {
            print("startDate or endDate is nil")
