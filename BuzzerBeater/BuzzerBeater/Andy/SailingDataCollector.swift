@@ -71,7 +71,7 @@ class SailingDataCollector : ObservableObject {
               }
         
         let timerPublisher60 = Timer.publish(every: 60, on: .main,  in: .common)
-        let timerPublisher01 = Timer.publish(every: 1, on:  .main, in :.common)
+        let timerPublisher01 = Timer.publish(every: 3, on:  .main, in :.common)
         
         timerPublisher60
             .autoconnect()
@@ -96,14 +96,18 @@ class SailingDataCollector : ObservableObject {
     }
     
     func isHeadingChange(by: Double) -> Bool {
-        if locationManager.boatSpeed > 0 {
+        
+        if locationManager.boatSpeed > 0.3 {
+          
+            let currentAngle = Int(locationManager.boatCourse)
+            let previousAngle = Int(locationManager.previousBoatCourse)
             let difference =  locationManager.boatCourse  - locationManager.previousBoatCourse
-            print("difference Angle curr:\(locationManager.boatCourse)  prev:\(locationManager.previousBoatCourse)")
+            print("difference Angle current: \(currentAngle) prev: \(previousAngle)")
+
             if  difference > by {
                 return true
             }
         } else {
-            
             print("boat Speed is 0")
             return false
         }
@@ -145,7 +149,7 @@ class SailingDataCollector : ObservableObject {
          )
         
         self.sailingDataPointsArray.append(sailingDataPoint)
-        print("SailingDataPointsArray count:\(self.sailingDataPointsArray.count) data: \(self.sailingDataPointsArray.last)")
+        print("SailingDataPointsArray count:\(self.sailingDataPointsArray.count) data: \(String(describing: self.sailingDataPointsArray.last))")
         
         
     }

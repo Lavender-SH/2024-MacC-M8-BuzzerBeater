@@ -17,6 +17,7 @@ struct BuzzerBeaterWatch_Watch_AppApp: App {
         _ = ApparentWind.shared
         _ = SailAngleFind.shared
         _ = SailingDataCollector.shared
+        _ = HealthService.shared
         
     }
     
@@ -28,6 +29,7 @@ struct BuzzerBeaterWatch_Watch_AppApp: App {
                 .environmentObject(ApparentWind.shared)
                 .environmentObject(SailAngleFind.shared)
                 .environmentObject(SailingDataCollector.shared)
+                .environmentObject(HealthService.shared)
         }
     }
 }

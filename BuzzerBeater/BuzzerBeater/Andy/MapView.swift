@@ -4,7 +4,7 @@
 //
 //  Created by Giwoo Kim on 10/5/24.
 //
-
+//SailingDataCollector는 보여주기 전용으로 데이타를 모은다면.. WorkoutManager는 저장용으로 데이타를 모음.
 import CoreLocation
 import MapKit
 import SwiftUI

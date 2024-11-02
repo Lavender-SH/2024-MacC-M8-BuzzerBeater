@@ -14,22 +14,22 @@ struct WorkoutListView: View {
     
     var body: some View {
         VStack {
-            Text("Text: Workouts")
+           
           
             List(viewModel.workouts) { workout in
               
                         Text("Start: \(workout.startDate)")
                 
+                
             }
             
         }.task {
             await viewModel.fetchWorkout(appIdentifier: "seastheDay")
-            print("shared workouts: \(viewModel.workouts)")
             print("viewModel.workouts.count: \(viewModel.workouts.count)")
             isLoading = false
            
         }
-        .navigationTitle("Title: Workouts")
+       
         
     }
 }
