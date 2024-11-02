@@ -98,7 +98,9 @@ struct InfoPage: View {
     
     @State  private var isSavingData = false
     @State var isShowingWorkoutList = false
+
     let sharedWorkoutManager  = WorkoutManager.shared
+
     var body: some View {
         ScrollView{
            

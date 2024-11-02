@@ -91,14 +91,14 @@ class WorkoutViewModel: NSObject, ObservableObject {
         
     }
     // workout 과 1:1 매칭이 되는   workoutRoute가져오기
-    func fetchWorkoutRoute(for workout: HKWorkout) async {
+    func fetchWorkoutRoute(for workout: HKWorkout) async   -> Result<HKWorkoutRoute, Error> {
         await withCheckedContinuation { continuation in
             
             let routePredicate = HKQuery.predicateForObjects(from: workout)
             let routeQuery = HKAnchoredObjectQuery(type: HKSeriesType.workoutRoute(), predicate: routePredicate, anchor: nil, limit: HKObjectQueryNoLimit) { query, samples, deletedObjects, newAnchor, error in
                 guard let routes = samples as? [HKWorkoutRoute], error == nil else {
                     print("Error fetching route: \(String(describing: error))")
-                    continuation.resume()
+                    continuation.resume(returning: .failure(error ?? NSError(domain: "", code: 0, userInfo: nil) ) )
                     return
                 }
                 
@@ -109,10 +109,10 @@ class WorkoutViewModel: NSObject, ObservableObject {
                     // Fetch locations for the first route
                     Task {
                         await self.fetchRouteLocations(for: firstRoute)
-                        continuation.resume() // Resume only after fetching route locations
+                        continuation.resume(returning: .success(firstRoute)) // Resume only after fetching route locations
                     }
                 } else {
-                    continuation.resume() // Resume if no routes found
+                    continuation.resume(returning: .failure(error ?? NSError(domain: "", code: 0, userInfo: nil)))
                 }
             }
             healthStore.execute(routeQuery)

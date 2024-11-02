@@ -10,10 +10,10 @@ import WorkoutKit
 import SwiftUI
 
 class HealthService : ObservableObject {
-    static  let shared = HealthService()
+    static let shared = HealthService()
     let healthStore = HKHealthStore()
-    var workoutBuilder: HKWorkoutBuilder?
     
+  
     func startHealthKit() {
         var sampleTypes = Set<HKSampleType>()
         guard HKHealthStore.isHealthDataAvailable() else { return }
@@ -21,39 +21,33 @@ class HealthService : ObservableObject {
         if let heartRate = HKObjectType.quantityType(forIdentifier: .heartRate) {
             sampleTypes.insert(heartRate)
         }
-        
-        let heartbeatSeries = HKSeriesType.heartbeat()
-        sampleTypes.insert(heartbeatSeries)
-        
-        if let heartRateVariability = HKQuantityType.quantityType(forIdentifier: .heartRateVariabilitySDNN) {
-            sampleTypes.insert(heartRateVariability)
-        }
-        
+
         if let distanceWalkingRunning = HKObjectType.quantityType(forIdentifier: .distanceWalkingRunning) {
             sampleTypes.insert(distanceWalkingRunning)
         }
-        
+
         if let activeEnergyBurned = HKObjectType.quantityType(forIdentifier: .activeEnergyBurned) {
             sampleTypes.insert(activeEnergyBurned)
         }
-        
-        if let caloriesType = HKObjectType.quantityType(forIdentifier: .activeEnergyBurned)  {
-            sampleTypes.insert(caloriesType)
-        }
+       
         let workoutType = HKObjectType.workoutType()
         sampleTypes.insert(workoutType)
-     
-    
         let workoutRouteType = HKSeriesType.workoutRoute()
         sampleTypes.insert(workoutRouteType)
-       
-        // 모든 HKSampleType은 HKObjectType이나 모든  HKObjectType이 반듯이  HKSampleType인것은 아니다.
+        
+     // 모든 HKSampleType은 HKObjectType이나 모든  HKObjectType이 반듯이  HKSampleType인것은 아니다.
         
         healthStore.requestAuthorization(toShare: sampleTypes , read: sampleTypes) { (success, error) in
-            print("Request Authorization -- Success: ", success, " Error: ", error ?? "nil")
-            // Handle authorization errors here.
-            
+            DispatchQueue.main.async {
+                if success {
+                    print("HealthKit Request Authorization -- Success")
+                    // Handle post-authorization logic here, if needed.
+                } else {
+                    print("HealthKit Request Authorization -- Failed: \(error?.localizedDescription ?? "Unknown error")")
+                    // Handle authorization failure here, e.g., notify the user.
+                }
+            }
         }
     }
-     
+    
 }

@@ -31,13 +31,13 @@
 		0297A2A32CC51A740024AEC9 /* LocationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0297A27F2CC51A740024AEC9 /* LocationManager.swift */; };
 		0297A2A42CC51A740024AEC9 /* MapView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0297A2802CC51A740024AEC9 /* MapView.swift */; };
 		CE1B721E2CD27B030044895B /* WorkoutManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE1B721D2CD27AFB0044895B /* WorkoutManager.swift */; };
-		CE1B721F2CD27B030044895B /* WorkoutManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE1B721D2CD27AFB0044895B /* WorkoutManager.swift */; };
 		CE1B72212CD299B00044895B /* WorkoutListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE1B72202CD299A30044895B /* WorkoutListView.swift */; };
 		CE1B72222CD299B00044895B /* WorkoutListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE1B72202CD299A30044895B /* WorkoutListView.swift */; };
 		CE1B72242CD299F60044895B /* WorkoutViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE1B72232CD299EB0044895B /* WorkoutViewModel.swift */; };
 		CE1B72252CD299F60044895B /* WorkoutViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE1B72232CD299EB0044895B /* WorkoutViewModel.swift */; };
 		CE31016E2CD308A0002A81D5 /* result.txt in Resources */ = {isa = PBXBuildFile; fileRef = CE31016D2CD30892002A81D5 /* result.txt */; };
 		CE31016F2CD308A0002A81D5 /* result.txt in Resources */ = {isa = PBXBuildFile; fileRef = CE31016D2CD30892002A81D5 /* result.txt */; };
+		CEA9CBA82CD5F63F005F1814 /* WorkoutManagerIOS.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEA9CBA62CD5F63A005F1814 /* WorkoutManagerIOS.swift */; };
 		CEF0D8622CCEFFF800243992 /* HealthService.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEF0D8612CCEFFDD00243992 /* HealthService.swift */; };
 		CEF0D8632CCEFFF800243992 /* HealthService.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEF0D8612CCEFFDD00243992 /* HealthService.swift */; };
 /* End PBXBuildFile section */
@@ -90,6 +90,7 @@
 		CE1B72202CD299A30044895B /* WorkoutListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkoutListView.swift; sourceTree = "<group>"; };
 		CE1B72232CD299EB0044895B /* WorkoutViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkoutViewModel.swift; sourceTree = "<group>"; };
 		CE31016D2CD30892002A81D5 /* result.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = result.txt; sourceTree = "<group>"; };
+		CEA9CBA62CD5F63A005F1814 /* WorkoutManagerIOS.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkoutManagerIOS.swift; sourceTree = "<group>"; };
 		CEF0D8612CCEFFDD00243992 /* HealthService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthService.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -132,6 +133,7 @@
 			children = (
 				0297A27E2CC51A740024AEC9 /* ContentView.swift */,
 				CE1B721D2CD27AFB0044895B /* WorkoutManager.swift */,
+				CEA9CBA62CD5F63A005F1814 /* WorkoutManagerIOS.swift */,
 				CE1B72202CD299A30044895B /* WorkoutListView.swift */,
 				CE1B72232CD299EB0044895B /* WorkoutViewModel.swift */,
 				0297A27D2CC51A740024AEC9 /* CompassView.swift */,
@@ -323,10 +325,10 @@
 			files = (
 				CE1B72242CD299F60044895B /* WorkoutViewModel.swift in Sources */,
 				0297A28E2CC51A740024AEC9 /* ApparentWind.swift in Sources */,
-				CE1B721F2CD27B030044895B /* WorkoutManager.swift in Sources */,
 				CE1B72222CD299B00044895B /* WorkoutListView.swift in Sources */,
 				0297A28F2CC51A740024AEC9 /* BoatView.swift in Sources */,
 				0297A2902CC51A740024AEC9 /* CompassView.swift in Sources */,
+				CEA9CBA82CD5F63F005F1814 /* WorkoutManagerIOS.swift in Sources */,
 				0297A2912CC51A740024AEC9 /* ContentView.swift in Sources */,
 				0297A2922CC51A740024AEC9 /* LocationManager.swift in Sources */,
 				CEF0D8622CCEFFF800243992 /* HealthService.swift in Sources */,
@@ -369,6 +371,9 @@
 				INFOPLIST_KEY_NSHealthClinicalHealthRecordsShareUsageDescription = "App uses health Info";
 				INFOPLIST_KEY_NSHealthShareUsageDescription = "App uses health Info";
 				INFOPLIST_KEY_NSHealthUpdateUsageDescription = "App uses health Info";
+				INFOPLIST_KEY_NSLocationAlwaysAndWhenInUseUsageDescription = "we will use location";
+				INFOPLIST_KEY_NSLocationAlwaysUsageDescription = "we will use location";
+				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "we will use location";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
 				INFOPLIST_KEY_WKCompanionAppBundleIdentifier = com.lavender.buzzbeater;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -409,6 +414,9 @@
 				INFOPLIST_KEY_NSHealthClinicalHealthRecordsShareUsageDescription = "App uses health Info";
 				INFOPLIST_KEY_NSHealthShareUsageDescription = "App uses health Info";
 				INFOPLIST_KEY_NSHealthUpdateUsageDescription = "App uses health Info";
+				INFOPLIST_KEY_NSLocationAlwaysAndWhenInUseUsageDescription = "we will use location";
+				INFOPLIST_KEY_NSLocationAlwaysUsageDescription = "we will use location";
+				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "we will use location";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
 				INFOPLIST_KEY_WKCompanionAppBundleIdentifier = com.lavender.buzzbeater;
 				LD_RUNPATH_SEARCH_PATHS = (
