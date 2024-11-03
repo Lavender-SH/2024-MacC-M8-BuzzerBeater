@@ -25,6 +25,7 @@ struct CompassView: View {
     @State var windCorrectionDetent : Double  = 0
     @State var isCrownIdle = true
     @State var showBoatView = false
+    @State private var countdown: Int? = nil
     
     var body: some View {
         VStack{
@@ -241,41 +242,41 @@ struct CompassView: View {
                             
 #if !os(watchOS)
                             HStack(alignment: .center,spacing: 0) { // 수평 정렬 및 가운데 정렬
-                                       // 현재 보정값을 표시하는 Text
-                                       Text(String(format: "%+2d°", Int(windCorrectionDetent)))
-                                           .font(.system(size: 20)) // 텍스트 크기 증가
-                                           .foregroundColor(.black)
-                                           .background(Color.gray.opacity(0.3))
-                                           .cornerRadius(5)
-                                           .frame(width: 50, height:50) // 텍스트 박스의 너비를 고정
-
-                                       VStack(spacing: 0) { // 버튼 간의 간격을 0으로 설정하여 붙여줌
-                                           Button(action: {
-                                               adjustWindCorrection(by: -5) // -5도 감소
-                                           }) {
-                                               Text("-")
-                                                   .font(.system(size: 30)) // 버튼 크기 증가
-                                                   .foregroundColor(.white)
-                                                   .frame(width: 50, height: 30) // 버튼 크기 지정
-                                                   .background(Color.red)
-                                                   .cornerRadius(5) // 직사각형 모양
-                                           }
-
-                                           Button(action: {
-                                               adjustWindCorrection(by: 5) // +5도 증가
-                                           }) {
-                                               Text("+")
-                                                   .font(.system(size: 30)) // 버튼 크기 증가
-                                                   .foregroundColor(.white)
-                                                   .frame(width: 50, height: 30) // 버튼 크기 지정
-                                                   .background(Color.yellow)
-                                                   .cornerRadius(5) // 직사각형 모양
-                                           }
-                                       }
-                                       .frame(height: 50) // 버튼 높이를 설정하여 텍스트 박스와 맞춤
-
-                                   }
-                                   .position(x: cx + 75, y: cy)
+                                // 현재 보정값을 표시하는 Text
+                                Text(String(format: "%+2d°", Int(windCorrectionDetent)))
+                                    .font(.system(size: 20)) // 텍스트 크기 증가
+                                    .foregroundColor(.black)
+                                    .background(Color.gray.opacity(0.3))
+                                    .cornerRadius(5)
+                                    .frame(width: 50, height:50) // 텍스트 박스의 너비를 고정
+                                
+                                VStack(spacing: 0) { // 버튼 간의 간격을 0으로 설정하여 붙여줌
+                                    Button(action: {
+                                        adjustWindCorrection(by: -5) // -5도 감소
+                                    }) {
+                                        Text("-")
+                                            .font(.system(size: 30)) // 버튼 크기 증가
+                                            .foregroundColor(.white)
+                                            .frame(width: 50, height: 30) // 버튼 크기 지정
+                                            .background(Color.red)
+                                            .cornerRadius(5) // 직사각형 모양
+                                    }
+                                    
+                                    Button(action: {
+                                        adjustWindCorrection(by: 5) // +5도 증가
+                                    }) {
+                                        Text("+")
+                                            .font(.system(size: 30)) // 버튼 크기 증가
+                                            .foregroundColor(.white)
+                                            .frame(width: 50, height: 30) // 버튼 크기 지정
+                                            .background(Color.yellow)
+                                            .cornerRadius(5) // 직사각형 모양
+                                    }
+                                }
+                                .frame(height: 50) // 버튼 높이를 설정하여 텍스트 박스와 맞춤
+                                
+                            }
+                            .position(x: cx + 75, y: cy)
 #endif
                             
                         }
@@ -285,7 +286,7 @@ struct CompassView: View {
                                     .offset(x: cx, y: cy)
                                     .environmentObject(sailAngleFind)
                                 
-                                    
+                                
                                 
                                 
                                 
@@ -293,52 +294,75 @@ struct CompassView: View {
                                 Button(action: {
                                     showBoatView.toggle()
                                 }) {
-                                    Image(systemName: "figure.sailing")
-                                        .font(.system(size: 40))
-                                        .foregroundColor(.blue)
+                                    ZStack {
+                                        Circle()
+                                            .stroke(Color.blue, lineWidth: 2)
+                                            .background(Circle().fill(Color.clear))
+
+                                        VStack {
+                                            Image(systemName: "figure.sailing")
+                                                .font(.system(size: 40))
+                                                .foregroundColor(.blue)
+
+                                            Text("Start")
+                                                .font(.system(size: 16))
+                                                .foregroundColor(.blue)
+                                        }
+                                        .padding(17)
+                                        
+                                        if showLottieAnimation {
+                                                                            LottieAnimationViewRepresentable()
+                                                                                .frame(width: 100, height: 100)
+                                                                                .transition(.scale) // 애니메이션 효과
+                                                                        }
+                                    }
+                                    .padding(18)
                                 }
                                 .position(x: cx, y: cy)
+                                .background(Color.clear)
+
                             }
+                            
                         }
                     }
                 }
             }
             
-           
-                HStack {
-                    VStack {
-                        Text("SOG")
-                            .foregroundColor(.orange)
-                            .font(.system(size: 10).bold())
-                            .multilineTextAlignment(.center)
-                        Text("\(LocationManager.shared.speed > 0 ? LocationManager.shared.speed : 0.0, specifier: "%.1f")")
-                            .foregroundColor(.orange)
-                            .font(.system(size: 17).bold())
-                            .multilineTextAlignment(.center)
-                        Text("m/s")
-                            .foregroundColor(.orange)
-                            .font(.system(size: 10).bold())
-                            .multilineTextAlignment(.center)
-                    }
-                    Spacer()
-                    
-                    VStack {
-                        Text("TWS")
-                            .foregroundColor(.blue)
-                            .font(.system(size: 10).bold())
-                            .multilineTextAlignment(.center)
-                        Text("\(WindDetector.shared.speed ?? 0, specifier: "%.1f")")
-                            .foregroundColor(.blue)
-                            .font(.system(size: 17).bold())
-                            .multilineTextAlignment(.center)
-                        Text("m/s")
-                            .foregroundColor(.blue)
-                            .font(.system(size: 10).bold())
-                            .multilineTextAlignment(.center)
-                    }
+            
+            HStack {
+                VStack {
+                    Text("SOG")
+                        .foregroundColor(.orange)
+                        .font(.system(size: 10).bold())
+                        .multilineTextAlignment(.center)
+                    Text("\(LocationManager.shared.speed > 0 ? LocationManager.shared.speed : 0.0, specifier: "%.1f")")
+                        .foregroundColor(.orange)
+                        .font(.system(size: 17).bold())
+                        .multilineTextAlignment(.center)
+                    Text("m/s")
+                        .foregroundColor(.orange)
+                        .font(.system(size: 10).bold())
+                        .multilineTextAlignment(.center)
                 }
-                .padding([.leading, .trailing], 5)
-                .padding(.bottom, -20)
+                Spacer()
+                
+                VStack {
+                    Text("TWS")
+                        .foregroundColor(.blue)
+                        .font(.system(size: 10).bold())
+                        .multilineTextAlignment(.center)
+                    Text("\(WindDetector.shared.speed ?? 0, specifier: "%.1f")")
+                        .foregroundColor(.blue)
+                        .font(.system(size: 17).bold())
+                        .multilineTextAlignment(.center)
+                    Text("m/s")
+                        .foregroundColor(.blue)
+                        .font(.system(size: 10).bold())
+                        .multilineTextAlignment(.center)
+                }
+            }
+            .padding([.leading, .trailing], 5)
+            .padding(.bottom, -20)
             
         }
     }
@@ -349,8 +373,20 @@ struct CompassView: View {
         // WindDetector 모델의 값을 변경
         windDetector.windCorrectionDetent = windCorrectionDetent
         print("windCorrectionDetent:\(windCorrectionDetent)")
-         
-       }
+        
+    }
+    
+    private func startLottieAnimation() {
+            showLottieAnimation = true
+            showBoatView = false
+            
+            DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
+                withAnimation {
+                    showLottieAnimation = false
+                    showBoatView = true
+                }
+            }
+        }
 }
 
 
