@@ -23,7 +23,7 @@ struct metadataForRouteDataPoint: Equatable, Identifiable, Codable{
 }
 
 
-class WorkoutManager: NSObject, ObservableObject
+class WorkoutManager: ObservableObject
 {
     static let shared = WorkoutManager()
     let locationManager = LocationManager.shared
@@ -59,10 +59,7 @@ class WorkoutManager: NSObject, ObservableObject
     var endDate : Date?
     // 기존의  locationManager사용
     
-    override init() {
-        super.init()
-        healthService.startHealthKit()
-    }
+   
     
     
     func startWorkout(startDate: Date) {
@@ -76,11 +73,11 @@ class WorkoutManager: NSObject, ObservableObject
         
        
         do {
-//            workoutSession = try HKWorkoutSession(healthStore: healthStore, configuration: workoutConfiguration)
+
             workoutBuilder =  HKWorkoutBuilder(healthStore: healthStore, configuration: workoutConfiguration, device: .local())
         } catch {
             // Handle failure here.
-            print("workoutSession creation failed: \(error)" )
+            print("workoutBuilder for Ios creation failed: \(error)" )
             return
         }
         guard let workoutBuilder = workoutBuilder else {
@@ -97,6 +94,7 @@ class WorkoutManager: NSObject, ObservableObject
         })
     
         workoutRouteBuilder = HKWorkoutRouteBuilder(healthStore: healthStore, device: .local())
+        
         startTimer()
      
     }
@@ -137,6 +135,7 @@ class WorkoutManager: NSObject, ObservableObject
     func finishWorkout(endDate: Date, metadataForWorkout: [String: Any]?) {
         
         if !isWorkoutActive {
+            print("Workout is not active \(isWorkoutActive)")
             return
         }
         isWorkoutActive = false
@@ -205,7 +204,7 @@ class WorkoutManager: NSObject, ObservableObject
     func finishWorkoutAsync(endDate: Date, metadataForWorkout: [String: Any]?) async {
         
         if !isWorkoutActive {
-            print("Workout is not active")
+            print("Workout is not active \(isWorkoutActive)")
             return
         }
         isWorkoutActive = false
@@ -240,7 +239,7 @@ class WorkoutManager: NSObject, ObservableObject
                     } else if let workout = workout {
                         continuation.resume(returning: workout)
                     } else {
-                        continuation.resume(throwing: NSError(domain: "FinishWorkoutError", code: -1, userInfo: [NSLocalizedDescriptionKey: "Unknown error in finishWorkout"]))
+                        continuation.resume(throwing: HealthKitError.unknownError)
                     }
                 }
             }
@@ -350,50 +349,57 @@ class WorkoutManager: NSObject, ObservableObject
         }
         
     }
-    //    1: 권한 부족
-    //    2: 데이터 삽입 실패
-    //    3: 네트워크 오류
+    
     
     func insertRouteData(_ locations: [CLLocation]) async throws {
         let status = healthStore.authorizationStatus(for: .workoutType())
         guard status == .sharingAuthorized else {
-            throw NSError(domain: "HealthKitAuthorization", code: 1, userInfo: [NSLocalizedDescriptionKey: "HealthKit authorization failed. Cannot insert route data."])
+            throw HealthKitError.authorizationFailed
         }
-        print("HealthKit authorization is successful. \(status)")
         
         // 비동기 작업으로 변환
-        try await withCheckedThrowingContinuation { continuation in
-            // Use the serial queue to ensure that this insertion is handled sequentially
+        try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, Error>) in
             routeDataQueue.async { [weak self] in
-                self?.workoutRouteBuilder?.insertRouteData(locations) { success, error in
-                    if success {
-                        print("Route data inserted successfully.")
-                        continuation.resume()
-                    } else if let error = error {
-                        print("Error inserting route data: \(error)")
-                        continuation.resume(throwing: error)
-                    } else {
-                        continuation.resume(throwing: NSError(domain: "HealthKit", code: 2, userInfo: [NSLocalizedDescriptionKey: "Unknown error inserting route data."]))
+                guard let self = self else {
+                    continuation.resume(throwing: HealthKitError.selfNilError)
+                    return
+                }
+                
+                self.workoutRouteBuilder?.insertRouteData(locations) { success, error in
+                    if let error = error {
+                        print("Error inserting route data: \(error.localizedDescription)")
+                        return  continuation.resume(throwing: HealthKitError.routeInsertionFailed(error.localizedDescription))
                     }
+                    guard success else {
+                        return  continuation.resume(throwing: HealthKitError.unknownError)
+                    }
+                    print("Route data inserted successfully.")
+                    continuation.resume()
                 }
             }
         }
     }
-
     
-    func finishRoute(workout: HKWorkout, metadataForRoute: [String: Any]?) async -> Result<HKWorkoutRoute,Error> {
-        await withCheckedContinuation { continuation in
+    
+    
+    
+    func finishRoute(workout: HKWorkout, metadataForRoute: [String: Any]?) async -> Result<HKWorkoutRoute, Error> {
+        return await withCheckedContinuation { continuation in
             workoutRouteBuilder?.finishRoute(with: workout, metadata: metadataForRoute) { route, error in
                 
-                guard let   route = route else  {
-                    print("finishRoute: error \(error!)")
-                    return  continuation.resume(returning: .failure(error!))
+                if let error = error {
+                    print("finishRoute: error \(error.localizedDescription)")
+                    return continuation.resume(returning: .failure(error))
+                }
+                
+                guard let route = route else {
+                    print("finishRoute: Unknown error occurred, route is nil")
+                    let unknownError = NSError(domain: "FinishRouteError", code: -1, userInfo: [NSLocalizedDescriptionKey: "Route is nil"])
+                    return continuation.resume(returning: .failure(unknownError))
                 }
                 
                 print("finishRoute: workoutRoute saved successfully route \(route)")
-                // Resume with the successful route wrapped in a Result
                 continuation.resume(returning: .success(route))
-                
             }
         }
     }
@@ -402,8 +408,7 @@ class WorkoutManager: NSObject, ObservableObject
     func startToSaveHealthStore() {
         
         let healthService = HealthService.shared
-        let healthStore = healthService.healthStore
-
+     
         let workoutManager = WorkoutManager.shared
 
         startDate = Date()
@@ -419,8 +424,6 @@ class WorkoutManager: NSObject, ObservableObject
     
     func endToSaveHealthData(){
         let healthService = HealthService.shared
-        let healthStore = healthService.healthStore
-
         let workoutManager = WorkoutManager.shared
       
         endDate = Date()

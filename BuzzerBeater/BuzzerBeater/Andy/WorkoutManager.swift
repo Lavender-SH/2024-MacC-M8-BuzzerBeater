@@ -58,13 +58,7 @@ class WorkoutManager:  ObservableObject
     var startDate: Date?
     var endDate : Date?
     
-    
-    init() {
-        healthService.startHealthKit()
-    }
-    
-    
-    func startWorkout(startDate: Date) {
+   func startWorkout(startDate: Date) {
         // 운동을 시작하기 전에 HKWorkoutBuilder를 초기화
         if isWorkoutActive  { return }
         isWorkoutActive = true
@@ -77,29 +71,27 @@ class WorkoutManager:  ObservableObject
         do {
             workoutSession = try HKWorkoutSession(healthStore: healthStore, configuration: workoutConfiguration)
             workoutBuilder =  HKWorkoutBuilder(healthStore: healthStore, configuration: workoutConfiguration, device: .local())
+            liveWorkoutBuilder = workoutSession?.associatedWorkoutBuilder()
+    
             print("workoutSession: \(workoutSession) liveworkoutBuilder: \(liveWorkoutBuilder.debugDescription) created succesfully")
         } catch {
             // Handle failure here.
-            print("workoutSession creation failed: \(error)" )
+            print("workoutSession for applewatch creation failed: \(error)" )
             return
         }
-        
-        liveWorkoutBuilder = workoutSession?.associatedWorkoutBuilder()
-        liveWorkoutBuilder?.dataSource = HKLiveWorkoutDataSource(healthStore: healthStore,
-                                                                 workoutConfiguration: workoutConfiguration)
-        workoutSession?.startActivity(with: Date())
-        
-        guard let liveWorkoutBuilder = liveWorkoutBuilder,
-              let workoutBuilder = workoutBuilder,
-              let workoutSession = workoutSession else {
-            print("liveWorkoutBuilder, workoutBuilder, workoutSession is nil ")
-            return
-        }
-        workoutSession.startActivity(with:startDate)
-        workoutRouteBuilder = HKWorkoutRouteBuilder(healthStore: healthStore, device: .local())
-        
-        
-        liveWorkoutBuilder.beginCollection(withStart: startDate, completion: { (success, error) in
+       
+       guard let liveWorkoutBuilder = liveWorkoutBuilder,
+             let workoutBuilder = workoutBuilder,
+             let workoutSession = workoutSession else {
+           print("liveWorkoutBuilder, workoutBuilder, workoutSession may be nil ")
+           return
+       }
+       workoutSession.startActivity(with:startDate)
+       workoutRouteBuilder = HKWorkoutRouteBuilder(healthStore: healthStore, device: .local())
+       liveWorkoutBuilder.dataSource = HKLiveWorkoutDataSource(healthStore: healthStore,
+                                                               workoutConfiguration: workoutConfiguration)
+       
+       liveWorkoutBuilder.beginCollection(withStart: startDate, completion: { (success, error) in
             if success {
                 print("Started collecting live workout dat from  ")
                 
@@ -120,7 +112,7 @@ class WorkoutManager:  ObservableObject
               //Apple Watch에서는 workoutBuilder 와 liveWorkoutBuilder를 어떻게 사용할지 명확하지 않지만 현재는 liveWorkoutBuilder로 충분함.
               let workoutBuilder = self.workoutBuilder,
               let workoutSession = self.workoutSession else {
-            print("liveWorkoutBuilder, workoutBuilder, workoutSession is nil ")
+            print("liveWorkoutBuilder, workoutBuilder, workoutSession maybe nil ")
             return
         }
         // workoutSession.end()가  finishWorkout보다 먼저 실행되어야 하는데  finishWorkout()안에서 같이 처리하기로함.
@@ -176,14 +168,15 @@ class WorkoutManager:  ObservableObject
         // Apple  공식문서에  session.end()를 build.endCollection보다 먼저 실행함
         //https://developer.apple.com/documentation/healthkit/workouts_and_activity_rings/running_workout_sessions
         
-        print("workout session ended./(workoutSession) /(workoutSession.state.rawValue)")
-        workoutSession.end()
-        
+       
         // 종료 순서가 중요함
         // 1.workoutSession을 가장 먼저 종료
         // 2.liveWorkoutBuilder?.endCollection 을 함
         // 3.liveWorkoutBuilder?.finishWorkout
         // 4.workoutRouteBuilder.finishRoute
+        
+        print("workout session ended./(workoutSession) /(workoutSession.state.rawValue)")
+        workoutSession.end()
         
         liveWorkoutBuilder.endCollection(withEnd: endDate) { [weak self] success, error in
             guard let self = self else { return } // Ensure `self` is valid
@@ -229,7 +222,7 @@ class WorkoutManager:  ObservableObject
     // let workout = try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<HKWorkout, Error>)
     func finishWorkoutAsync(endDate: Date, metadataForWorkout: [String: Any]?) async {
         if !isWorkoutActive {
-            print("Workout is not active")
+            print("Workout is not active \(isWorkoutActive)")
             return
         }
         isWorkoutActive = false
@@ -244,7 +237,7 @@ class WorkoutManager:  ObservableObject
             print("liveWorkoutBuilder or workoutSession is nil")
             return
         }
-
+// workoutSession이 먼저 종료되어야 한다고 공식문서에 되있음.
         print("Ending workout session: \(workoutSession) with state: \(workoutSession.state.rawValue)")
         workoutSession.end()
 
@@ -269,19 +262,20 @@ class WorkoutManager:  ObservableObject
                     } else if let workout = workout {
                         continuation.resume(returning: workout)
                     } else {
-                        continuation.resume(throwing: NSError(domain: "FinishWorkoutError", code: -1, userInfo: [NSLocalizedDescriptionKey: "Unknown error in finishWorkout"]))
+                        continuation.resume(throwing: HealthKitError.unknownError)
                     }
                 }
             }
 
             self.printWorkoutActivityType(workout: workout)
             self.metadataForRoute = self.makeMetadataForRoute(routeIdentifier: "seastheDayroute", metadataForRouteDataPointArray: self.metadataForRouteDataPointArray)
-            print("metadataForRoute: \(self.metadataForRoute)")
-
-            let routeResult = await self.finishRoute(workout: workout, metadataForRoute: self.metadataForRoute)
+            
+            print("Preparing to finish route with workout: \(workout) and metadata: \(String(describing: self.metadataForRoute))")
+          
+            let routeResult = await finishRoute(workout: workout, metadataForRoute: self.metadataForRoute)
             switch routeResult {
             case .success(let route):
-                print("Successfully finished route: \(route)")
+                print("Successfully finished route: route:  work: \(workout.uuid) route: \(route.uuid) routeIdentifier: \(route)")
             case .failure(let error):
                 print("Failed to finish route with error: \(error.localizedDescription)")
             }
@@ -379,52 +373,62 @@ class WorkoutManager:  ObservableObject
             }
             
         }
-        //    1: 권한 부족
-        //    2: 데이터 삽입 실패
-        //    3: 네트워크 오류
+      
         
     func insertRouteData(_ locations: [CLLocation]) async throws {
         let status = healthStore.authorizationStatus(for: .workoutType())
         guard status == .sharingAuthorized else {
-            throw NSError(domain: "HealthKitAuthorization", code: 1, userInfo: [NSLocalizedDescriptionKey: "HealthKit authorization failed. Cannot insert route data."])
+            throw HealthKitError.authorizationFailed
         }
-        print("HealthKit authorization is successful. \(status)")
         
         // 비동기 작업으로 변환
-        try await withCheckedThrowingContinuation { continuation in
-            // Use the serial queue to ensure that this insertion is handled sequentially
+        try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, Error>) in
             routeDataQueue.async { [weak self] in
-                self?.workoutRouteBuilder?.insertRouteData(locations) { success, error in
-                    if success {
-                        print("Route data inserted successfully.")
-                        continuation.resume()
-                    } else if let error = error {
-                        print("Error inserting route data: \(error)")
-                        continuation.resume(throwing: error)
-                    } else {
-                        continuation.resume(throwing: NSError(domain: "HealthKit", code: 2, userInfo: [NSLocalizedDescriptionKey: "Unknown error inserting route data."]))
+                guard let self = self else {
+                    continuation.resume(throwing: HealthKitError.selfNilError)
+                    return
+                }
+                
+                self.workoutRouteBuilder?.insertRouteData(locations) { success, error in
+                    
+                    if let error = error {
+                        print("Error inserting route data: \(error.localizedDescription)")
+                        return  continuation.resume(throwing: HealthKitError.routeInsertionFailed(error.localizedDescription))
                     }
+                    
+                    guard success else {
+                       return  continuation.resume(throwing: HealthKitError.unknownError)
+                    }
+                    
+                    print("Route data inserted successfully.")
+                    continuation.resume()
                 }
             }
         }
     }
 
-        func finishRoute(workout: HKWorkout, metadataForRoute: [String: Any]?) async -> Result<HKWorkoutRoute,Error> {
-            await withCheckedContinuation { continuation in
-                workoutRouteBuilder?.finishRoute(with: workout, metadata: metadataForRoute) { route, error in
-                    
-                    guard let   route = route else  {
-                        print("finishRoute: error \(error!)")
-                        return  continuation.resume(returning: .failure(error!))
-                    }
-                    
-                    print("finishRoute: workoutRoute saved successfully route \(route)")
-                    // Resume with the successful route wrapped in a Result
-                    continuation.resume(returning: .success(route))
-                    
+
+    func finishRoute(workout: HKWorkout, metadataForRoute: [String: Any]?) async -> Result<HKWorkoutRoute, Error> {
+        return await withCheckedContinuation { continuation in
+            workoutRouteBuilder?.finishRoute(with: workout, metadata: metadataForRoute) { route, error in
+                
+                if let error = error {
+                    print("finishRoute: error \(error.localizedDescription)")
+                    return continuation.resume(returning: .failure(error))
                 }
+                
+                guard let route = route else {
+                    print("finishRoute: Unknown error occurred, route is nil")
+                    let unknownError = NSError(domain: "FinishRouteError", code: -1, userInfo: [NSLocalizedDescriptionKey: "Route is nil"])
+                    return continuation.resume(returning: .failure(unknownError))
+                }
+                
+                print("finishRoute: workoutRoute saved successfully route \(route)")
+                continuation.resume(returning: .success(route))
             }
         }
+    }
+
         
         
         func startToSaveHealthStore() {
@@ -436,6 +440,7 @@ class WorkoutManager:  ObservableObject
             //      sailingDataCollector.startDate = startDate
             
             healthService.startHealthKit()
+            
             if let startDate  = startDate{
                 workoutManager.startWorkout(startDate: startDate)
                 print("-------------------- started to save HealthStore --------------------")
@@ -514,43 +519,43 @@ class WorkoutManager:  ObservableObject
                 return "Data"
             }
         }
-        
-        func workoutSession(_ workoutSession: HKWorkoutSession, didChangeTo toState: HKWorkoutSessionState, from fromState: HKWorkoutSessionState, date: Date) {
-            
-        }
-        
-        func workoutSession(_ workoutSession: HKWorkoutSession, didFailWithError error: any Error) {
-            
-        }
-        
-        func workoutBuilderDidCollectEvent(_ workoutBuilder: HKLiveWorkoutBuilder) {
-            
-        }
-        func workoutBuilder(_ workoutBuilder: HKLiveWorkoutBuilder, didCollectDataOf collectedTypes: Set<HKSampleType>) {
-            for type in collectedTypes {
-                guard let quantityType = type as? HKQuantityType else {
-                    return // Nothing to do.
-                }
-                
-                // Calculate statistics for the type.
-                let statistics = workoutBuilder.statistics(for: quantityType)
-                let label = labelForQuantityType(quantityType)
-                
-                DispatchQueue.main.async() {
-                    if let recentQuantity = statistics?.mostRecentQuantity() {
-                        // Convert the quantity to a user-friendly string with units
-                        let quantityString = recentQuantity.doubleValue(for: HKUnit.meter()) // 예를 들어, 미터 단위로 변환
-                        let formattedQuantity = String(format: "%.2f", quantityString) + " " + label
-                        
-                        // Assume `quantityLabel` is a UILabel for displaying this data
-                        print("Latest \(label): \(formattedQuantity)")
-                    } else {
-                        print( "No data for \(label)")
-                    }
-                }
-            }
-        }
-        
+//        
+//        func workoutSession(_ workoutSession: HKWorkoutSession, didChangeTo toState: HKWorkoutSessionState, from fromState: HKWorkoutSessionState, date: Date) {
+//            
+//        }
+//        
+//        func workoutSession(_ workoutSession: HKWorkoutSession, didFailWithError error: any Error) {
+//            
+//        }
+//        
+//        func workoutBuilderDidCollectEvent(_ workoutBuilder: HKLiveWorkoutBuilder) {
+//            
+//        }
+//        func workoutBuilder(_ workoutBuilder: HKLiveWorkoutBuilder, didCollectDataOf collectedTypes: Set<HKSampleType>) {
+//            for type in collectedTypes {
+//                guard let quantityType = type as? HKQuantityType else {
+//                    return 
+//                }
+//                
+//                // Calculate statistics for the type.
+//                let statistics = workoutBuilder.statistics(for: quantityType)
+//                let label = labelForQuantityType(quantityType)
+//                
+//                DispatchQueue.main.async() {
+//                    if let recentQuantity = statistics?.mostRecentQuantity() {
+//                        // Convert the quantity to a user-friendly string with units
+//                        let quantityString = recentQuantity.doubleValue(for: HKUnit.meter()) // 예를 들어, 미터 단위로 변환
+//                        let formattedQuantity = String(format: "%.2f", quantityString) + " " + label
+//                        
+//                        // Assume `quantityLabel` is a UILabel for displaying this data
+//                        print("Latest \(label): \(formattedQuantity)")
+//                    } else {
+//                        print( "No data for \(label)")
+//                    }
+//                }
+//            }
+//        }
+//        
     }
     
 

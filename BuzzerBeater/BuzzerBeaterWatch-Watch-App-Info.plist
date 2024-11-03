@@ -7,5 +7,9 @@
 		<string>location</string>
 		<string>processing</string>
 	</array>
+	<key>WKBackgroundModes</key>
+	<array>
+		<string>workout-processing</string>
+	</array>
 </dict>
 </plist>
