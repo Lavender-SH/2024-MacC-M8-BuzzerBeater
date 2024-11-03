@@ -60,19 +60,17 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
         locationManager.distanceFilter = distanceFilter
         locationManager.headingFilter = headingFilter
         
+        checkAuthorizationStatus()
+        
         authorizationStatusSubject
                   .sink { [weak self] status in
                       self?.handleAuthorizationStatus(status)
                   }
                   .store(in: &cancellables)
         
-        // locationSericeEnable 체크는 필요없나???
-        checkAuthorizationStatus()
-        
     }
     deinit {
         stopUpdatingLocationAndHeading()
-        updateTimer?.invalidate() // Stop the timer when the instance is deallocated
     }
     func handleAuthorizationStatus(_ status: CLAuthorizationStatus ) {
         switch status {
@@ -212,10 +210,12 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
         authorizationStatusSubject.send(status)
         
     }
+    
+    // 나중 콤바인은 정리 !!!
     func startUpdatingLocationAndHeading() {
         locationManager.startUpdatingLocation()
         locationManager.startUpdatingHeading()
-        
+        startLocationUpdateTimer()
         locationManager.publisher(for: \.location)
             .compactMap { $0 }
             .sink { [weak self] location in
@@ -233,16 +233,14 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
             .store(in: &cancellables)
     }
     
-    func stopUpdatingLocationAndHeading(){
-        
+    func stopUpdatingLocationAndHeading() {
         locationManager.stopUpdatingLocation()
         locationManager.stopUpdatingHeading()
-        
+        if updateTimer != nil {
+            updateTimer?.invalidate()
+        }
         cancellables.removeAll()
-        
-        
     }
-    
 }
 
 

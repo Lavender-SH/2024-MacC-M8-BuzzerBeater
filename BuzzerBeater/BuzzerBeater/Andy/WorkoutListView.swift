@@ -14,13 +14,9 @@ struct WorkoutListView: View {
     
     var body: some View {
         VStack {
-           
-          
             List(viewModel.workouts) { workout in
               
                         Text("Start: \(workout.startDate)")
-                
-                
             }
             
         }.task {
