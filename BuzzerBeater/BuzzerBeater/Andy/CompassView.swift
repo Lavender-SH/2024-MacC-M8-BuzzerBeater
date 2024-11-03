@@ -24,6 +24,7 @@ struct CompassView: View {
     @Environment(\.colorScheme) var colorScheme
     @State var windCorrectionDetent : Double  = 0
     @State var isCrownIdle = true
+    @State var showBoatView = false
     
     var body: some View {
         VStack{
@@ -199,39 +200,41 @@ struct CompassView: View {
                             
                             
 #if os(watchOS)
-                            Text(String(format: "%+d°", Int(windCorrectionDetent)))
-                                .font(.system(size: 12))
-                                .foregroundColor(.white)
-                                .padding(1)
-                                .background(Color.gray.opacity(0.3))
-                                .cornerRadius(5)  // Rounded corners for the box
-                                .position(x: cx, y: cy)
-                                .offset(x: 33, y: 0)
-                            
-                            
-                                .focusable()
-                                .digitalCrownRotation(
-                                    detent: $windCorrectionDetent,
-                                    from: -30,
-                                    through: 30,
-                                    by: 5,
+                            if showBoatView {
+                                Text(String(format: "%+d°", Int(windCorrectionDetent)))
+                                    .font(.system(size: 12))
+                                    .foregroundColor(.white)
+                                    .padding(1)
+                                    .background(Color.gray.opacity(0.3))
+                                    .cornerRadius(5)  // Rounded corners for the box
+                                    .position(x: cx, y: cy)
+                                    .offset(x: 33, y: 0)
+                                
+                                
+                                    .focusable()
+                                    .digitalCrownRotation(
+                                        detent: $windCorrectionDetent,
+                                        from: -30,
+                                        through: 30,
+                                        by: 5,
+                                        
+                                        sensitivity: .medium,
+                                        isHapticFeedbackEnabled :true
+                                    )
+                                {
+                                    crownEvent in
+                                    isCrownIdle = false
+                                    let crownOffset = crownEvent.offset
                                     
-                                    sensitivity: .medium,
-                                    isHapticFeedbackEnabled :true
-                                )
-                            {
-                                crownEvent in
-                                isCrownIdle = false
-                                let crownOffset = crownEvent.offset
-                                
-                                windCorrectionDetent = crownOffset
-                                // 모델 클라스 WindDetector.shared.windCorrectionDetent 값을 변경함..다음번 윈도우 정보는 보정이 반영된값임.
-                                windDetector.windCorrectionDetent = windCorrectionDetent
-                                
-                                windCorrectionDetent = max(min(30, windCorrectionDetent), -30)
-                                print("crownOffset :\(crownOffset) ,  windCorrectionDetent:\(windCorrectionDetent)")
-                            } onIdle: {
-                                isCrownIdle = true
+                                    windCorrectionDetent = crownOffset
+                                    // 모델 클라스 WindDetector.shared.windCorrectionDetent 값을 변경함..다음번 윈도우 정보는 보정이 반영된값임.
+                                    windDetector.windCorrectionDetent = windCorrectionDetent
+                                    
+                                    windCorrectionDetent = max(min(30, windCorrectionDetent), -30)
+                                    print("crownOffset :\(crownOffset) ,  windCorrectionDetent:\(windCorrectionDetent)")
+                                } onIdle: {
+                                    isCrownIdle = true
+                                }
                             }
 #endif
                             
@@ -276,9 +279,26 @@ struct CompassView: View {
 #endif
                             
                         }
-                        .overlay{
-                            BoatView().offset(x: cx, y: cy)
-                                .environmentObject(sailAngleFind)
+                        .overlay {
+                            if showBoatView {
+                                BoatView()
+                                    .offset(x: cx, y: cy)
+                                    .environmentObject(sailAngleFind)
+                                
+                                    
+                                
+                                
+                                
+                            } else {
+                                Button(action: {
+                                    showBoatView.toggle()
+                                }) {
+                                    Image(systemName: "figure.sailing")
+                                        .font(.system(size: 40))
+                                        .foregroundColor(.blue)
+                                }
+                                .position(x: cx, y: cy)
+                            }
                         }
                     }
                 }
