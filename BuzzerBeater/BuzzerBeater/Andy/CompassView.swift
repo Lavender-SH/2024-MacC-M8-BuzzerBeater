@@ -291,35 +291,37 @@ struct CompassView: View {
                                 
                                 
                             } else {
-                                Button(action: {
-                                    showBoatView.toggle()
-                                }) {
-                                    ZStack {
-                                        Circle()
-                                            .stroke(Color.blue, lineWidth: 2)
-                                            .background(Circle().fill(Color.clear))
-
-                                        VStack {
-                                            Image(systemName: "figure.sailing")
-                                                .font(.system(size: 40))
-                                                .foregroundColor(.blue)
-
-                                            Text("Start")
-                                                .font(.system(size: 16))
-                                                .foregroundColor(.blue)
+                                if countdown == nil {
+                                    Button(action: startCountdown) {
+                                        ZStack {
+                                            Circle()
+                                                .stroke(Color.blue, lineWidth: 2)
+                                                .background(Circle().fill(Color.clear))
+                                            
+                                            VStack {
+                                                Image(systemName: "figure.sailing")
+                                                    .font(.system(size: 40))
+                                                    .foregroundColor(.blue)
+                                                
+                                                Text("Start")
+                                                    .font(.system(size: 16))
+                                                    .foregroundColor(.blue)
+                                            }
+                                            .padding(17)
+                                            
                                         }
-                                        .padding(17)
-                                        
-                                        if showLottieAnimation {
-                                                                            LottieAnimationViewRepresentable()
-                                                                                .frame(width: 100, height: 100)
-                                                                                .transition(.scale) // 애니메이션 효과
-                                                                        }
+                                        .padding(18)
                                     }
-                                    .padding(18)
+                                    .position(x: cx, y: cy)
+                                    .background(Color.clear)
                                 }
-                                .position(x: cx, y: cy)
-                                .background(Color.clear)
+                                if let countdown = countdown {
+                                                            Text("\(countdown)")
+                                                                .font(.system(size: 60, weight: .bold))
+                                                                .foregroundColor(.blue)
+                                                                .transition(.scale) // 애니메이션 효과
+                                                                .position(x: cx, y: cy)
+                                                        }
 
                             }
                             
@@ -376,17 +378,26 @@ struct CompassView: View {
         
     }
     
-    private func startLottieAnimation() {
-            showLottieAnimation = true
+    private func startCountdown() {
+            countdown = 3
             showBoatView = false
-            
-            DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
-                withAnimation {
-                    showLottieAnimation = false
-                    showBoatView = true
+
+            Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { timer in
+                if let currentCount = countdown, currentCount > 1 {
+                    withAnimation {
+                        countdown = currentCount - 1
+                    }
+                } else {
+                    timer.invalidate()
+                    withAnimation {
+                        countdown = nil
+                        showBoatView = true
+                    }
                 }
             }
         }
+    
+
 }
 
 

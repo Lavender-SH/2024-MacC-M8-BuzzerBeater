@@ -30,10 +30,6 @@
 		0297A2A22CC51A740024AEC9 /* WindDetector.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0297A2832CC51A740024AEC9 /* WindDetector.swift */; };
 		0297A2A32CC51A740024AEC9 /* LocationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0297A27F2CC51A740024AEC9 /* LocationManager.swift */; };
 		0297A2A42CC51A740024AEC9 /* MapView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0297A2802CC51A740024AEC9 /* MapView.swift */; };
-		02F4A0E12CD788DC009D7DAF /* 숫자.json in Resources */ = {isa = PBXBuildFile; fileRef = 02F4A0E02CD788DC009D7DAF /* 숫자.json */; };
-		02F4A0E22CD788DC009D7DAF /* 숫자.json in Resources */ = {isa = PBXBuildFile; fileRef = 02F4A0E02CD788DC009D7DAF /* 숫자.json */; };
-		02F4A0E42CD78904009D7DAF /* LottieView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02F4A0E32CD78904009D7DAF /* LottieView.swift */; };
-		02F4A0E52CD78904009D7DAF /* LottieView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02F4A0E32CD78904009D7DAF /* LottieView.swift */; };
 		CE1B721E2CD27B030044895B /* WorkoutManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE1B721D2CD27AFB0044895B /* WorkoutManager.swift */; };
 		CE1B72212CD299B00044895B /* WorkoutListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE1B72202CD299A30044895B /* WorkoutListView.swift */; };
 		CE1B72222CD299B00044895B /* WorkoutListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE1B72202CD299A30044895B /* WorkoutListView.swift */; };
@@ -89,8 +85,6 @@
 		0297A28A2CC51A740024AEC9 /* BuzzerBeaterApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BuzzerBeaterApp.swift; sourceTree = "<group>"; };
 		0297A28B2CC51A740024AEC9 /* BuzzerBeaterRelease.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = BuzzerBeaterRelease.entitlements; sourceTree = "<group>"; };
 		0297A28C2CC51A740024AEC9 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		02F4A0E02CD788DC009D7DAF /* 숫자.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "숫자.json"; sourceTree = "<group>"; };
-		02F4A0E32CD78904009D7DAF /* LottieView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LottieView.swift; sourceTree = "<group>"; };
 		9291A7892CB37D6300E44161 /* BuzzerBeater.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = BuzzerBeater.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		CE1B721D2CD27AFB0044895B /* WorkoutManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkoutManager.swift; sourceTree = "<group>"; };
 		CE1B72202CD299A30044895B /* WorkoutListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkoutListView.swift; sourceTree = "<group>"; };
@@ -151,8 +145,6 @@
 				0297A2812CC51A740024AEC9 /* SailAngleFind.swift */,
 				0297A2822CC51A740024AEC9 /* SailingDataCollector.swift */,
 				CEF0D8612CCEFFDD00243992 /* HealthService.swift */,
-				02F4A0E32CD78904009D7DAF /* LottieView.swift */,
-				02F4A0E02CD788DC009D7DAF /* 숫자.json */,
 			);
 			path = Andy;
 			sourceTree = "<group>";
@@ -274,7 +266,6 @@
 			mainGroup = 9291A7802CB37D6300E44161;
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
-				02F4A0DF2CD78822009D7DAF /* XCRemoteSwiftPackageReference "lottie-ios" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 9291A78A2CB37D6300E44161 /* Products */;
@@ -293,7 +284,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				CE31016E2CD308A0002A81D5 /* result.txt in Resources */,
-				02F4A0E12CD788DC009D7DAF /* 숫자.json in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -305,7 +295,6 @@
 				0297A2992CC51A740024AEC9 /* .gitignore in Resources */,
 				0297A29A2CC51A740024AEC9 /* Assets.xcassets in Resources */,
 				CE31016F2CD308A0002A81D5 /* result.txt in Resources */,
-				02F4A0E22CD788DC009D7DAF /* 숫자.json in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -318,7 +307,6 @@
 			files = (
 				CE1B72252CD299F60044895B /* WorkoutViewModel.swift in Sources */,
 				0297A29C2CC51A740024AEC9 /* ContentView.swift in Sources */,
-				02F4A0E52CD78904009D7DAF /* LottieView.swift in Sources */,
 				CE1B721E2CD27B030044895B /* WorkoutManager.swift in Sources */,
 				CE1B72212CD299B00044895B /* WorkoutListView.swift in Sources */,
 				0297A29D2CC51A740024AEC9 /* SailingDataCollector.swift in Sources */,
@@ -339,7 +327,6 @@
 			files = (
 				CE1B72242CD299F60044895B /* WorkoutViewModel.swift in Sources */,
 				0297A28E2CC51A740024AEC9 /* ApparentWind.swift in Sources */,
-				02F4A0E42CD78904009D7DAF /* LottieView.swift in Sources */,
 				CE1B72222CD299B00044895B /* WorkoutListView.swift in Sources */,
 				0297A28F2CC51A740024AEC9 /* BoatView.swift in Sources */,
 				0297A2902CC51A740024AEC9 /* CompassView.swift in Sources */,
@@ -681,17 +668,6 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
-
-/* Begin XCRemoteSwiftPackageReference section */
-		02F4A0DF2CD78822009D7DAF /* XCRemoteSwiftPackageReference "lottie-ios" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/airbnb/lottie-ios.git";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 4.5.0;
-			};
-		};
-/* End XCRemoteSwiftPackageReference section */
 	};
 	rootObject = 9291A7812CB37D6300E44161 /* Project object */;
 }
