@@ -59,7 +59,8 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
         locationManager.delegate = self
         locationManager.distanceFilter = distanceFilter
         locationManager.headingFilter = headingFilter
-        
+        locationManager.allowsBackgroundLocationUpdates = true
+        locationManager.desiredAccuracy = kCLLocationAccuracyBestForNavigation
         checkAuthorizationStatus()
         
         authorizationStatusSubject

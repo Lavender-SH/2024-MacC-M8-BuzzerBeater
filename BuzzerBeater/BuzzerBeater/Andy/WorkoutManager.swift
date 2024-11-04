@@ -58,7 +58,7 @@ class WorkoutManager:  ObservableObject
     var startDate: Date?
     var endDate : Date?
     
-   func startWorkout(startDate: Date) {
+    func startWorkout(startDate: Date)  {
         // 운동을 시작하기 전에 HKWorkoutBuilder를 초기화
         if isWorkoutActive  { return }
         isWorkoutActive = true
@@ -69,39 +69,41 @@ class WorkoutManager:  ObservableObject
         
         
         do {
-            workoutSession = try HKWorkoutSession(healthStore: healthStore, configuration: workoutConfiguration)
-            workoutBuilder =  HKWorkoutBuilder(healthStore: healthStore, configuration: workoutConfiguration, device: .local())
-            liveWorkoutBuilder = workoutSession?.associatedWorkoutBuilder()
+            workoutSession = try  HKWorkoutSession(healthStore: healthStore, configuration: workoutConfiguration)
+        //    workoutBuilder =  HKWorkoutBuilder(healthStore: healthStore, configuration: workoutConfiguration, device: .local())
+            liveWorkoutBuilder =  workoutSession?.associatedWorkoutBuilder()
     
-            print("workoutSession: \(workoutSession) liveworkoutBuilder: \(liveWorkoutBuilder.debugDescription) created succesfully")
+            print("workoutSession: \(String(describing: workoutSession)) liveworkoutBuilder: \(liveWorkoutBuilder.debugDescription) created succesfully")
         } catch {
             // Handle failure here.
             print("workoutSession for applewatch creation failed: \(error)" )
             return
         }
-       
+        
        guard let liveWorkoutBuilder = liveWorkoutBuilder,
-             let workoutBuilder = workoutBuilder,
+           // apple watch에서는 liveWorkoutBuilder 만 사용, workoutBuilder는 뺌.
+          //   let workoutBuilder = workoutBuilder,
              let workoutSession = workoutSession else {
-           print("liveWorkoutBuilder, workoutBuilder, workoutSession may be nil ")
+           print("liveWorkoutBuilder,  workoutSession may be nil ")
            return
        }
-       workoutSession.startActivity(with:startDate)
-       workoutRouteBuilder = HKWorkoutRouteBuilder(healthStore: healthStore, device: .local())
-       liveWorkoutBuilder.dataSource = HKLiveWorkoutDataSource(healthStore: healthStore,
-                                                               workoutConfiguration: workoutConfiguration)
-       
-       liveWorkoutBuilder.beginCollection(withStart: startDate, completion: { (success, error) in
+        
+        liveWorkoutBuilder.dataSource =  HKLiveWorkoutDataSource(healthStore: healthStore,
+                                                                 workoutConfiguration: workoutConfiguration)
+        workoutRouteBuilder =  HKWorkoutRouteBuilder(healthStore: healthStore, device: .local())
+        workoutSession.startActivity(with:startDate)
+        
+        liveWorkoutBuilder.beginCollection(withStart: startDate, completion: { (success, error) in
             if success {
                 print("Started collecting live workout dat from  ")
-                
-            } else {
+                DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+                    self.startTimer()
+                }
+           } else {
                 print("Error starting live workout collection: \(error?.localizedDescription ?? "Unknown error")")
             }
         })
         
-        
-        startTimer()
         
     }
     
@@ -110,13 +112,14 @@ class WorkoutManager:  ObservableObject
         
         guard let liveWorkoutBuilder = self.liveWorkoutBuilder,
               //Apple Watch에서는 workoutBuilder 와 liveWorkoutBuilder를 어떻게 사용할지 명확하지 않지만 현재는 liveWorkoutBuilder로 충분함.
-              let workoutBuilder = self.workoutBuilder,
-              let workoutSession = self.workoutSession else {
+              //let workoutBuilder = self.workoutBuilder,
+                let workoutSession = self.workoutSession else {
             print("liveWorkoutBuilder, workoutBuilder, workoutSession maybe nil ")
             return
         }
         // workoutSession.end()가  finishWorkout보다 먼저 실행되어야 하는데  finishWorkout()안에서 같이 처리하기로함.
-        
+        // Apple  공식문서에  session.end()를 build.endCollection보다 먼저 실행함
+        //https://developer.apple.com/documentation/healthkit/workouts_and_activity_rings/running_workout_sessions
         if let metadataForWorkout = metadataForWorkout {
             print("metadata in the collectData\(metadataForWorkout)")
             
@@ -158,7 +161,7 @@ class WorkoutManager:  ObservableObject
         
         guard let liveWorkoutBuilder = self.liveWorkoutBuilder,
               // apple watch에서 liveWorkoutBuilder 만 있으면 충분하고 , workotuBuilder는 사용하지 않고 있음.
-              let workoutBuilder = self.workoutBuilder,
+       //        let workoutBuilder = self.workoutBuilder,
               let workoutSession = self.workoutSession else {
             print("liveWorkoutBuilder, workoutBuilder, workoutSession is nil ")
             return
@@ -174,7 +177,8 @@ class WorkoutManager:  ObservableObject
         // 2.liveWorkoutBuilder?.endCollection 을 함
         // 3.liveWorkoutBuilder?.finishWorkout
         // 4.workoutRouteBuilder.finishRoute
-        
+        // Apple  공식문서에  session.end()를 build.endCollection보다 먼저 실행함
+        //https://developer.apple.com/documentation/healthkit/workouts_and_activity_rings/running_workout_sessions
         print("workout session ended./(workoutSession) /(workoutSession.state.rawValue)")
         workoutSession.end()
         
@@ -191,9 +195,7 @@ class WorkoutManager:  ObservableObject
             liveWorkoutBuilder.finishWorkout { workout, error in
                 guard  let workout = workout else {
                     print("finishWorkout:\(error?.localizedDescription ?? "Unknown error")")
-                    
                     return
-                    
                 }
                 self.printWorkoutActivityType(workout: workout)
                 
@@ -204,15 +206,12 @@ class WorkoutManager:  ObservableObject
                     let result =   await self.finishRoute(workout: workout, metadataForRoute: self.metadataForRoute)
                     switch result {
                     case .success(let route):
-                        print("Successfully finished route: \(route) ")
+                        print("Successfully finished route: \(route.uuid) count: \(route.count) ")
                         
                     case .failure(let error):
                         print("Failed to finish route with error: \(error.localizedDescription)")
-                        
-                        
-                    }
+                   }
                 }
-                
             }
         }
         
@@ -220,6 +219,7 @@ class WorkoutManager:  ObservableObject
     // async 버전으로 만들고  await 을사용해서 모든 비동기호출을 마치고 종료할수있도록 함
     // try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, Error>)
     // let workout = try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<HKWorkout, Error>)
+    
     func finishWorkoutAsync(endDate: Date, metadataForWorkout: [String: Any]?) async {
         if !isWorkoutActive {
             print("Workout is not active \(isWorkoutActive)")
@@ -231,16 +231,13 @@ class WorkoutManager:  ObservableObject
         timerForWind?.invalidate()
 
         guard let liveWorkoutBuilder = self.liveWorkoutBuilder,
-              // apple watch에서 liveWorkoutBuilder 만 있으면 충분하고 , workotuBuilder는 사용하지 않고 있음.
-              let workoutBuilder = self.workoutBuilder,
-              let workoutSession = self.workoutSession else {
+               let workoutSession = self.workoutSession else {
             print("liveWorkoutBuilder or workoutSession is nil")
             return
         }
 // workoutSession이 먼저 종료되어야 한다고 공식문서에 되있음.
         print("Ending workout session: \(workoutSession) with state: \(workoutSession.state.rawValue)")
         workoutSession.end()
-
         do {
             try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, Error>) in
                 liveWorkoutBuilder.endCollection(withEnd: endDate) { success, error in
@@ -255,30 +252,39 @@ class WorkoutManager:  ObservableObject
             }
 
             let workout = try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<HKWorkout, Error>) in
-                liveWorkoutBuilder.finishWorkout { workout, error in
+                workoutBuilder?.finishWorkout { workout, error in
                     if let error = error {
                         print("finishWorkout Error: \(error.localizedDescription)")
                         continuation.resume(throwing: error)
                     } else if let workout = workout {
-                        continuation.resume(returning: workout)
+                        print("Preparing to finish route with workout: \(workout) and metadata: \(String(describing: self.metadataForRoute))")
+                        
+                        continuation.resume(returning: workout)  // Resume continuation after workout is finalized
                     } else {
                         continuation.resume(throwing: HealthKitError.unknownError)
                     }
                 }
             }
 
-            self.printWorkoutActivityType(workout: workout)
-            self.metadataForRoute = self.makeMetadataForRoute(routeIdentifier: "seastheDayroute", metadataForRouteDataPointArray: self.metadataForRouteDataPointArray)
-            
-            print("Preparing to finish route with workout: \(workout) and metadata: \(String(describing: self.metadataForRoute))")
+            // Handle route completion separately after finishing the workout
+         
           
-            let routeResult = await finishRoute(workout: workout, metadataForRoute: self.metadataForRoute)
-            switch routeResult {
-            case .success(let route):
-                print("Successfully finished route: route:  work: \(workout.uuid) route: \(route.uuid) routeIdentifier: \(route)")
-            case .failure(let error):
-                print("Failed to finish route with error: \(error.localizedDescription)")
+            Task {
+                self.printWorkoutActivityType(workout: workout)
+                self.metadataForRoute = self.makeMetadataForRoute(
+                    routeIdentifier: "seastheDayroute",
+                    metadataForRouteDataPointArray: self.metadataForRouteDataPointArray
+                )
+                let routeResult = await self.finishRoute(workout: workout, metadataForRoute: self.metadataForRoute)
+                switch routeResult {
+                case .success(let route):
+                    print("Successfully finished route. Workout UUID: \(workout.uuid), Route UUID: \(route.uuid)")
+                case .failure(let error):
+                    print("Failed to finish route with error: \(error.localizedDescription)")
+                }
             }
+
+            
         } catch {
             print("An error occurred while finishing the workout: \(error.localizedDescription)")
         }
@@ -303,12 +309,16 @@ class WorkoutManager:  ObservableObject
         }
         
         
-        func startTimer() {
-            timerForLocation = Timer.scheduledTimer(withTimeInterval: timeIntervalForRoute, repeats: true) { [weak self] _ in
-                guard let self = self else { return }
-                
-                if let location = self.locationManager.lastLocation  {
-                    
+    func startTimer() {
+        print("startTimer started")
+        timerForLocation = Timer.scheduledTimer(withTimeInterval: timeIntervalForRoute, repeats: true) { [weak self] _ in
+            print("timerForLocation started ")
+            guard let self = self else {
+                print("weak self is nil")
+                return }
+            if let location = self.locationManager.lastLocation  {
+                print("location.horizontalAccuracy: \(location.horizontalAccuracy) location.verticalAccuracy: \(location.verticalAccuracy) ")
+                if location.horizontalAccuracy < 50 {
                     Task{
                         do {
                             print("insterting RouteData \(location) ")
@@ -318,38 +328,39 @@ class WorkoutManager:  ObservableObject
                             print("insertRouteData error: \(error)")
                         }
                     }
-                    //
                 } else {
-                    
-                    print("location is nil")
-                    
+                    print("location accuracy is too low")
                 }
-                
-            }
-            timerForWind = Timer.scheduledTimer(withTimeInterval: timeIntervalForRoute ,  repeats: true) { [weak self] _ in
-                // locationManager에값이 있지만 직접 다시 불러오는걸로 테스트를 해보기로함.
-                // 이건 태스트목적뿐이고 실제는 그럴 필요가 전혀 없음.
-                guard let self = self else { return }
-                self.locationManager.locationManager.requestLocation()
-                if let location = self.locationManager.locationManager.location {
-                    // wind 정보 추가  WindDetector에서 direction, speed 정보를 가져와서 metadata 에 저장
-                    Task{
-                        await self.windDetector.fetchCurrentWind(for: location)
-                        let metadataForRouteDataPoint = metadataForRouteDataPoint(id: UUID(),
-                                                                                  timeStamp: Date(),
-                                                                                  boatHeading: self.locationManager.heading?.trueHeading,
-                                                                                  windSpeed: self.windDetector.speed ?? 0,
-                                                                                  windDirection: self.windDetector.direction,
-                                                                                  windCorrectionDetent: self.windDetector.windCorrectionDetent
-                        )
-                        
-                        self.metadataForRouteDataPointArray.append(metadataForRouteDataPoint)
-                        print("metadataForRouteDataPointArray appended...")
-                    }
-                }
+            } else {
+                print("location is nil")
             }
             
         }
+
+        timerForWind = Timer.scheduledTimer(withTimeInterval: timeIntervalForRoute ,  repeats: true) { [weak self] _ in
+            // locationManager에값이 있지만 직접 다시 불러오는걸로 테스트를 해보기로함.
+            // 이건 태스트목적뿐이고 실제는 그럴 필요가 전혀 없음.
+            guard let self = self else { return }
+            self.locationManager.locationManager.requestLocation()
+            if let location = self.locationManager.locationManager.location {
+                // wind 정보 추가  WindDetector에서 direction, speed 정보를 가져와서 metadata 에 저장
+                Task{
+                    await self.windDetector.fetchCurrentWind(for: location)
+                    let metadataForRouteDataPoint = metadataForRouteDataPoint(id: UUID(),
+                                                                              timeStamp: Date(),
+                                                                              boatHeading: self.locationManager.heading?.trueHeading,
+                                                                              windSpeed: self.windDetector.speed ?? 0,
+                                                                              windDirection: self.windDetector.direction,
+                                                                              windCorrectionDetent: self.windDetector.windCorrectionDetent
+                    )
+                    
+                    self.metadataForRouteDataPointArray.append(metadataForRouteDataPoint)
+                    print("metadataForRouteDataPointArray appended...")
+                }
+            }
+        }
+        
+    }
         
         
         func insertRouteData(_ locations: [CLLocation]) {
@@ -389,6 +400,13 @@ class WorkoutManager:  ObservableObject
                     return
                 }
                 
+// 만약에  정밀도가 필요하다면..
+//                let filteredLocations  =    locations.filter{ $0.horizontalAccuracy < 50 }
+//                
+//                guard !filteredLocations.isEmpty else {
+//                    return continuation.resume(throwing: HealthKitError.unknownError)
+//                }
+                
                 self.workoutRouteBuilder?.insertRouteData(locations) { success, error in
                     
                     if let error = error {
@@ -397,7 +415,7 @@ class WorkoutManager:  ObservableObject
                     }
                     
                     guard success else {
-                       return  continuation.resume(throwing: HealthKitError.unknownError)
+                        return  continuation.resume(throwing: HealthKitError.unknownError)
                     }
                     
                     print("Route data inserted successfully.")

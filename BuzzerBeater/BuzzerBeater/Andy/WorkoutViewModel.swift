@@ -7,7 +7,6 @@
 
 import HealthKit
 import SwiftUI
-import WorkoutKit
 import Foundation
 
 struct WorkoutData: Identifiable, Sendable {

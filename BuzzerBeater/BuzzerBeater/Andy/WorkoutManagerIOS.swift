@@ -32,7 +32,7 @@ class WorkoutManager: ObservableObject
     let healthStore = HealthService.shared.healthStore
     
     
-    let timeIntervalForRoute = TimeInterval(10)
+    let timeIntervalForRoute = TimeInterval(3)
     let timeIntervalForWind = TimeInterval(60*1)
 
     var workout: HKWorkout?
@@ -71,32 +71,22 @@ class WorkoutManager: ObservableObject
         workoutConfiguration.activityType = .sailing
         workoutConfiguration.locationType = .outdoor
         
-       
-        do {
-
-            workoutBuilder =  HKWorkoutBuilder(healthStore: healthStore, configuration: workoutConfiguration, device: .local())
-        } catch {
-            // Handle failure here.
-            print("workoutBuilder for Ios creation failed: \(error)" )
+        workoutBuilder =  HKWorkoutBuilder(healthStore: healthStore, configuration: workoutConfiguration, device: .local())
+        workoutRouteBuilder = HKWorkoutRouteBuilder(healthStore: self.healthStore, device: .local())
+        guard let workoutBuilder = workoutBuilder, let workoutRouteBuilder =  workoutRouteBuilder else {
+            print("workoutBuilder orworkoutRouteBuilder is nil  ")
             return
         }
-        guard let workoutBuilder = workoutBuilder else {
-            print("workoutBuilder is nil ")
-            return
-        }
-        
         workoutBuilder.beginCollection(withStart: startDate, completion: { (success, error) in
             if success {
-                print("Started collecting workout data from workoutBuilder \(self.workoutBuilder)")
+                print("Started collecting workout data from workoutBuilder \(String(describing: self.workoutBuilder))")
+                DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+                    self.startTimer()
+                }           
             } else {
                 print("Error starting workout collection: \(error?.localizedDescription ?? "Unknown error")")
             }
         })
-    
-        workoutRouteBuilder = HKWorkoutRouteBuilder(healthStore: healthStore, device: .local())
-        
-        startTimer()
-     
     }
     
     func collectData(startDate: Date, endDate: Date,  metadataForWorkout: [String: Any]?) {
@@ -139,8 +129,6 @@ class WorkoutManager: ObservableObject
             return
         }
         isWorkoutActive = false
-        // Use the parameter `endDate`
-        
         timerForLocation?.invalidate() // 타이머 중지
         timerForWind?.invalidate()
         
@@ -150,12 +138,6 @@ class WorkoutManager: ObservableObject
         //https://developer.apple.com/documentation/healthkit/workouts_and_activity_rings/running_workout_sessions
         //     workoutSession.end() 는 IOS버전에는 있으면 안됨
         
-//        if let workoutSession = self.workoutSession {
-//            print("workout session ended./(workoutSession) /(workoutSession.state.rawValue)")
-//            workoutSession.end()
-//        } else {
-//            print("No current activity to end.")
-//        }
 
         guard let workoutBuilder = self.workoutBuilder else {
             print("workoutBuilder is nil ")
@@ -202,22 +184,21 @@ class WorkoutManager: ObservableObject
     // let workout = try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<HKWorkout, Error>)
     
     func finishWorkoutAsync(endDate: Date, metadataForWorkout: [String: Any]?) async {
-        
         if !isWorkoutActive {
             print("Workout is not active \(isWorkoutActive)")
             return
         }
         isWorkoutActive = false
-
         timerForLocation?.invalidate() // 타이머 중지
         timerForWind?.invalidate()
-
-        guard let workoutBuilder = self.workoutBuilder else {
-            print("liveWorkoutBuilder or workoutSession is nil")
+        
+        guard let workoutBuilder = self.workoutBuilder
+        else {
+            print("WorkoutBuilder is nil")
             return
         }
-
-//       workoutSession.end() 는 IOS버전에는 있으면 안됨
+        // workoutSession이 먼저 종료되어야 한다고 공식문서에 되있음.
+      
         do {
             try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, Error>) in
                 workoutBuilder.endCollection(withEnd: endDate) { success, error in
@@ -237,24 +218,32 @@ class WorkoutManager: ObservableObject
                         print("finishWorkout Error: \(error.localizedDescription)")
                         continuation.resume(throwing: error)
                     } else if let workout = workout {
-                        continuation.resume(returning: workout)
+                        print("Preparing to finish route with workout: \(workout) and metadata: \(String(describing: self.metadataForRoute))")
+                        continuation.resume(returning: workout)  // Resume continuation after workout is finalized
                     } else {
-                        continuation.resume(throwing: HealthKitError.unknownError)
+                        continuation.resume(throwing:  HealthKitError.unknownError)
                     }
                 }
             }
 
-            self.printWorkoutActivityType(workout: workout)
-            self.metadataForRoute = self.makeMetadataForRoute(routeIdentifier: "seastheDayroute", metadataForRouteDataPointArray: self.metadataForRouteDataPointArray)
-            print("metadataForRoute: \(self.metadataForRoute)")
-
-            let routeResult = await self.finishRoute(workout: workout, metadataForRoute: self.metadataForRoute)
-            switch routeResult {
-            case .success(let route):
-                print("Successfully finished route: \(route)")
-            case .failure(let error):
-                print("Failed to finish route with error: \(error.localizedDescription)")
+            // Handle route completion separately after finishing the workout
+      
+            Task {
+                self.printWorkoutActivityType(workout: workout)
+                self.metadataForRoute = self.makeMetadataForRoute(
+                    routeIdentifier: "seastheDayroute",
+                    metadataForRouteDataPointArray: self.metadataForRouteDataPointArray
+                )
+                let routeResult = await self.finishRoute(workout: workout, metadataForRoute: self.metadataForRoute)
+                switch routeResult {
+                case .success(let route):
+                    print("Successfully finished route. Workout UUID: \(workout.uuid), Route UUID: \(route.uuid)")
+                case .failure(let error):
+                    print("Failed to finish route with error: \(error.localizedDescription)")
+                }
             }
+
+            
         } catch {
             print("An error occurred while finishing the workout: \(error.localizedDescription)")
         }
@@ -280,28 +269,33 @@ class WorkoutManager: ObservableObject
     
     
     func startTimer() {
+        print("startTimer started")
         timerForLocation = Timer.scheduledTimer(withTimeInterval: timeIntervalForRoute, repeats: true) { [weak self] _ in
-            guard let self = self else { return }
-            
+            print("timerForLocation started ")
+            guard let self = self else {
+                print("weak self is nil")
+                return }
             if let location = self.locationManager.lastLocation  {
-                
-                Task{
-                    do {
-                        print("insterting RouteData \(location) ")
-                        try await self.insertRouteData([location])
-                        
-                    } catch {
-                        print("insertRouteData error: \(error)")
+                print("location.horizontalAccuracy: \(location.horizontalAccuracy) location.verticalAccuracy: \(location.verticalAccuracy) ")
+                if location.horizontalAccuracy < 50 {
+                    Task{
+                        do {
+                            print("insterting RouteData \(location) ")
+                            try await self.insertRouteData([location])
+                            
+                        } catch {
+                            print("insertRouteData error: \(error)")
+                        }
                     }
+                } else {
+                    print("location accuracy is too low")
                 }
-                //
             } else {
-                
                 print("location is nil")
-                
             }
             
         }
+
         timerForWind = Timer.scheduledTimer(withTimeInterval: timeIntervalForRoute ,  repeats: true) { [weak self] _ in
             // locationManager에값이 있지만 직접 다시 불러오는걸로 테스트를 해보기로함.
             // 이건 태스트목적뿐이고 실제는 그럴 필요가 전혀 없음.
