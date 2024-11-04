@@ -7,11 +7,11 @@
 
 import HealthKit
 import SwiftUI
-import WorkoutKit
 import Foundation
 
 struct WorkoutData: Identifiable, Sendable {
     let id : UUID
+    let workout: HKWorkout
     let startDate: Date
     let endDate: Date
     let duration: TimeInterval
@@ -29,14 +29,12 @@ class WorkoutViewModel: NSObject, ObservableObject {
     var appIdentifier: String?
     
     func fetchWorkout(appIdentifier: String) async {
-        let workoutType = HKWorkoutType.workoutType()
-        let predicate = HKQuery.predicateForWorkouts(with: .sailing)
-        
         self.workouts.removeAll()
         
+        let workoutType = HKWorkoutType.workoutType()
+        let predicate = HKQuery.predicateForWorkouts(with: .sailing)
         let appIdentifierPredicate = HKQuery.predicateForObjects(withMetadataKey: "AppIdentifier", operatorType: .equalTo, value: appIdentifier)
         let compoundPredicate = NSCompoundPredicate(andPredicateWithSubpredicates: [predicate, appIdentifierPredicate])
-        
         let sortDescriptors: [NSSortDescriptor] = [NSSortDescriptor(key: HKSampleSortIdentifierStartDate, ascending: false)]
         
         await withCheckedContinuation { continuation in
@@ -57,6 +55,7 @@ class WorkoutViewModel: NSObject, ObservableObject {
                 let convertedWorkouts = results.map { workout in
                     WorkoutData(
                         id : workout.uuid,
+                        workout: workout,
                         startDate: workout.startDate,
                         endDate: workout.endDate,
                         duration: workout.duration,
@@ -106,9 +105,15 @@ class WorkoutViewModel: NSObject, ObservableObject {
                     Task {
                         let workoutFromfetch  = await self.findWorkoutForRoute(firstRoute, healthStore: self.healthStore)
                         print("workout: \(String(describing: workout)) ")
-                        print("workoutFrom:\(workoutFromfetch)" )
+                        print("workoutFrom:\(String(describing: workoutFromfetch))" )
                         print("route: \(firstRoute) to crossCheck route")
-                        await self.fetchRouteLocations(for: firstRoute)
+                        
+                        do {
+                            try await self.fetchRouteLocations(for: firstRoute)
+                        } catch {
+                            print("Error fetching route locations: \(error)")
+                        }
+                        
                         continuation.resume(returning: .success(firstRoute)) // Resume only after fetchRouteLocations
                     }
                 } else {
@@ -136,7 +141,6 @@ class WorkoutViewModel: NSObject, ObservableObject {
                    // Step 2: Iterate through workouts to find one with the target route
                     let group = DispatchGroup()
                  
-                    let accessQueue = DispatchQueue(label: "accessQueue")
                     for workout in workouts {
                         group.enter()
                         // Query routes for this workout
@@ -149,9 +153,12 @@ class WorkoutViewModel: NSObject, ObservableObject {
                                 
                                 if let routes = routeResults as? [HKWorkoutRoute], routes.contains(where: { $0.uuid == targetRoute.uuid }) {
                                     // Found the workout with the target route
-                                    accessQueue.async {
-                                        foundWorkout = workout
-                                    }
+                                    // 의미없는데중복으로 해봄..
+                                   
+                                        DispatchQueue.main.async {
+                                            foundWorkout = workout
+                                        }
+                                    
                                 }
                                 group.leave()
                         }
@@ -161,7 +168,9 @@ class WorkoutViewModel: NSObject, ObservableObject {
                     
                     // Wait until all route queries are complete
                     group.notify(queue: .main) {
-                        continuation.resume(returning: foundWorkout)
+                        DispatchQueue.main.async {
+                            continuation.resume(returning: foundWorkout)
+                        }
                     }
                 }
             
@@ -207,32 +216,42 @@ class WorkoutViewModel: NSObject, ObservableObject {
 //            
 //            healthStore.execute(workoutQuery)
 //        }
-//    }
-    func fetchRouteLocations(for route: HKWorkoutRoute) async {
-        await withCheckedContinuation { continuation in
+    
+    func fetchRouteLocations(for route: HKWorkoutRoute) async throws {
+        try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, Error>) in
             let locationQuery = HKWorkoutRouteQuery(route: route) { (query, locations, done, error) in
-                guard let locations = locations, error == nil else {
-                    print("Error fetching route locations: \(String(describing: error))")
-                    continuation.resume()
+                if let error = error {
+                    print("Error fetching route locations: \(error.localizedDescription)")
+                    continuation.resume(throwing: LocationError.queryFailed(error)) // Resume with the specific error
                     return
                 }
-                print("---------- fetchRouteLocations for route: \(route.uuid) ----------")
-                print("startDate: \(route.startDate.formatted()) endDate:\(route.endDate.formatted())  locations : \(locations.count) ")
-               
-                for location in locations {
-                    let dateFormatter = DateFormatter()
-                    dateFormatter.dateFormat = "yy-MM-dd HH:mm:ss" // Customize the format as needed
-                    let formattedDate = dateFormatter.string(from: location.timestamp)
-
-                    print("time: \(formattedDate) lat: \(String(format: "%.4f", location.coordinate.latitude)), lon: \(String(format: "%.4f", location.coordinate.longitude))")
-
+                
+                guard let locations = locations else {
+                    print("No locations found.")
+                    // Using the custom error for no locations
+                    continuation.resume(throwing: LocationError.noLocations) // Resume with the custom error
+                    return
                 }
                 
+                print("---------- fetchRouteLocations for route: \(route.uuid) ----------")
+                print("startDate: \(route.startDate.formatted()) endDate: \(route.endDate.formatted()) locations: \(locations.count)")
+                
+                for location in locations {
+                    let dateFormatter = DateFormatter()
+                    dateFormatter.dateFormat = "yy-MM-dd HH:mm:ss"
+                    let formattedDate = dateFormatter.string(from: location.timestamp)
+                    
+                    print("time: \(formattedDate) lat: \(String(format: "%.4f", location.coordinate.latitude)), lon: \(String(format: "%.4f", location.coordinate.longitude))")
+                }
                 print("----------------------------------end ----------------------------------")
+                
+                // Resume after processing locations
                 continuation.resume()
             }
-            healthStore.execute(locationQuery)
-          
+            
+            healthStore.execute(locationQuery) // Execute the query
         }
     }
 }
+
+

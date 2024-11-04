@@ -65,7 +65,7 @@ class SailingDataCollector : ObservableObject {
       }
     
     func startCollectingData() {
-        DispatchQueue.main.asyncAfter(deadline: .now() + 5) {
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
                   self.collectSailingData()
             
               }
@@ -119,7 +119,10 @@ class SailingDataCollector : ObservableObject {
     
     
     func collectSailingData() {
-        
+        if locationManager.lastLocation == nil {
+            print("lastLocation is nil")
+            return
+        }
         let currentTime = Date()
         let latitude = locationManager.latitude
         let longitude = locationManager.longitude

@@ -134,9 +134,9 @@ struct InfoPage: View {
                 }
                 
                 if let location = locationManager.lastLocation {
-                    Text("LAT: \(location.coordinate.latitude, specifier: "%.2f")º")
+                    Text("LAT: \(location.coordinate.latitude, specifier: "%.4f")º")
                         .font(.caption2)
-                    Text("LAT: \(location.coordinate.longitude, specifier: "%.2f")º")
+                    Text("LAT: \(location.coordinate.longitude, specifier: "%.4f")º")
                         .font(.caption2)
                     Text("TWD: \(windDetector.direction ?? 0 , specifier: "%.f")°")
                         .font(.caption2)
