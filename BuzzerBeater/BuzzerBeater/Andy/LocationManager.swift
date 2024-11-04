@@ -20,6 +20,20 @@
 import CoreLocation
 import Combine
 
+enum LocationError: LocalizedError {
+    case noLocations
+    case queryFailed(Error)
+
+    var errorDescription: String? {
+        switch self {
+        case .noLocations:
+            return "No locations found for this route."
+        case .queryFailed(let error):
+            return "Failed to fetch locations: \(error.localizedDescription)"
+        }
+    }
+}
+
 class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
     static let shared = LocationManager() // Singleton instance
     var locationManager = CLLocationManager()
@@ -49,7 +63,7 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
     @Published var previousBoatCourse: CLLocationDirection = 0.0
     @Published var previousBoatSpeed :  CLLocationSpeed = 0.0 // 속도 (m/s)
     
-    let distanceFilter = 0.5
+    let distanceFilter = 1.0
     let headingFilter  = 1.0
     let locationUpdateTimeInterval = 1.0
     let boatSpeedBuffer = 0.3
@@ -60,7 +74,7 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
         locationManager.distanceFilter = distanceFilter
         locationManager.headingFilter = headingFilter
         locationManager.allowsBackgroundLocationUpdates = true
-        locationManager.desiredAccuracy = kCLLocationAccuracyBestForNavigation
+        locationManager.desiredAccuracy = kCLLocationAccuracyBest
         checkAuthorizationStatus()
         
         authorizationStatusSubject
@@ -71,6 +85,7 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
         
     }
     deinit {
+        
         stopUpdatingLocationAndHeading()
     }
     func handleAuthorizationStatus(_ status: CLAuthorizationStatus ) {
@@ -86,12 +101,10 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
             showAlert = false
             
         case .denied, .restricted:
-            
             print("denied or restricted")
             showAlert = true
             
         case .notDetermined:
-            
             print("Authorization not determined.")
             locationManager.requestWhenInUseAuthorization()
             showAlert = false
@@ -121,6 +134,7 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
         }
     }
     private func updateLocation(_ location: CLLocation) {
+        
         DispatchQueue.main.async {
             self.latitude = location.coordinate.latitude
             self.longitude = location.coordinate.longitude
@@ -134,7 +148,7 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
             self.boatSpeed = self.speed
             // 약간의 버퍼를 주자
             self.boatCourse = self.boatSpeed > self.boatSpeedBuffer ? self.course : self.heading?.trueHeading ?? 0
-            print("didUpdateLocations: speed: \(self.boatSpeed)m/s course: \(String(format: "%.2f", self.boatCourse))º")
+            print("didUpdateLocations: lat: \(String(format: "%.4f", self.latitude)) lon: \(String(format: "%.4f", self.longitude))  speed:\(self.boatSpeed)m/s course:\(String(format: "%f", self.boatCourse))º")
             
         }
     }
@@ -143,7 +157,7 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
         DispatchQueue.main.async {
             self.heading = heading
             self.boatCourse = self.boatSpeed > self.boatSpeedBuffer ? self.course : heading.trueHeading
-            print("didUpdateHeading: speed: \(self.boatSpeed)m/s course: \(String(format: "%.2f", self.boatCourse))º")
+            print("didUpdateHeading: speed: \(self.boatSpeed)m/s course: \(String(format: "%.f", self.boatCourse))º")
         }
     }
     // 나중이라도  locationManager.speed == 0 이 되는 상황이 수시로 발생할수있다는 점을 염두에 두어야함
@@ -152,14 +166,13 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
     // 추후에  CoreLocation에서 들어오는 정보가 맞지 않는다면 Noise Reduction을 해주어야함.
     
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
-        if let location = locations.last {
-            updateLocation(location)
-            locationPublisher.send(location)
+        if let newLocation = locations.last {
+            updateLocation(newLocation)
+            locationPublisher.send(newLocation)
         }
     }
     // Magnetic Info : 그래서 분리했음.
     func locationManager(_ manager: CLLocationManager, didUpdateHeading newHeading: CLHeading) {
-        
         //주의 :  sef.course 가 유효한 값인지 꼭 체크해볼 필요가있음
         updateHeading(newHeading)
         headingPublisher.send(newHeading)
@@ -191,22 +204,7 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
         }
     
     func locationManagerDidChangeAuthorization(_ manager: CLLocationManager) {
-        // 여기서는 상태만 Publish하면 이 상태(status)를 구독한 subscriber가 상태에대한 핸들링을 하도록 함
-        //        switch manager.authorizationStatus {
-        //        case .authorizedWhenInUse , .authorizedAlways:
-        //            manager.startUpdatingLocation()
-        //            manager.startUpdatingHeading()
-        //            showAlert = false
-        //        case .denied, .restricted:
-        //            showAlert = true
-        //            print("denied")
-        //        case .notDetermined:
-        //            manager.requestWhenInUseAuthorization()
-        //            showAlert = false
-        //        default:
-        //            showAlert = false
-        //            return
-        //        }
+       
         let status = manager.authorizationStatus
         authorizationStatusSubject.send(status)
         

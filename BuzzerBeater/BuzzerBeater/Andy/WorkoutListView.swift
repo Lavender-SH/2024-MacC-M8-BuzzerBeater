@@ -8,32 +8,34 @@
 import SwiftUI
 
 struct WorkoutListView: View {
-    @StateObject  var viewModel = WorkoutViewModel()
+    @StateObject var viewModel = WorkoutViewModel()
     @State private var isLoading = true
-    let shared = WorkoutViewModel.shared
-    
+
     var body: some View {
         VStack {
-            List(viewModel.workouts) { workout in
-              
-                        Text("Start: \(workout.startDate)")
+            if isLoading {
+                // 로딩 중일 때 ProgressView를 표시
+                ProgressView("Loading Workouts...")
+            } else {
+                List(viewModel.workouts) { workout in
+                    Text("Start: \(workout.startDate)")
+                }
             }
-            
-        }.task {
+        }
+        .task {
             await viewModel.fetchWorkout(appIdentifier: "seastheDay")
             print("viewModel.workouts.count: \(viewModel.workouts.count)")
             isLoading = false
-           
         }
-       
-        
     }
 }
 
+
 struct WorkoutListView_Previews: PreviewProvider {
+
     static var previews: some View {
         // 미리보기용으로 더미 데이터를 설정합니다.
-        WorkoutListView()
+        WorkoutListView(viewModel:WorkoutViewModel())
          
     }
 }
