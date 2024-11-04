@@ -32,7 +32,7 @@ class WorkoutManager:  ObservableObject
     let healthStore = HealthService.shared.healthStore
     
     
-    let timeIntervalForRoute = TimeInterval(10)
+    let timeIntervalForRoute = TimeInterval(5)
     let timeIntervalForWind = TimeInterval(60*1)
     
     var workout: HKWorkout?

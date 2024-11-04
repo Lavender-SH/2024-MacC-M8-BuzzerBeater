@@ -71,22 +71,34 @@ class WorkoutManager: ObservableObject
         workoutConfiguration.activityType = .sailing
         workoutConfiguration.locationType = .outdoor
         
-        workoutBuilder =  HKWorkoutBuilder(healthStore: healthStore, configuration: workoutConfiguration, device: .local())
-        workoutRouteBuilder = HKWorkoutRouteBuilder(healthStore: self.healthStore, device: .local())
-        guard let workoutBuilder = workoutBuilder, let workoutRouteBuilder =  workoutRouteBuilder else {
-            print("workoutBuilder orworkoutRouteBuilder is nil  ")
+       
+        do {
+
+            workoutBuilder =  HKWorkoutBuilder(healthStore: healthStore, configuration: workoutConfiguration, device: .local())
+        } catch {
+            // Handle failure here.
+            print("workoutBuilder for Ios creation failed: \(error)" )
             return
         }
+        guard let workoutBuilder = workoutBuilder else {
+            print("workoutBuilder is nil ")
+            return
+        }
+        self.workoutRouteBuilder = HKWorkoutRouteBuilder(healthStore: self.healthStore, device: .local())
+        
         workoutBuilder.beginCollection(withStart: startDate, completion: { (success, error) in
             if success {
-                print("Started collecting workout data from workoutBuilder \(String(describing: self.workoutBuilder))")
+                print("Started collecting workout data from workoutBuilder \(self.workoutBuilder)")
                 DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
                     self.startTimer()
-                }           
+                }
+           
             } else {
                 print("Error starting workout collection: \(error?.localizedDescription ?? "Unknown error")")
             }
         })
+    
+      
     }
     
     func collectData(startDate: Date, endDate: Date,  metadataForWorkout: [String: Any]?) {
@@ -295,7 +307,7 @@ class WorkoutManager: ObservableObject
             }
             
         }
-
+    
         timerForWind = Timer.scheduledTimer(withTimeInterval: timeIntervalForRoute ,  repeats: true) { [weak self] _ in
             // locationManager에값이 있지만 직접 다시 불러오는걸로 테스트를 해보기로함.
             // 이건 태스트목적뿐이고 실제는 그럴 필요가 전혀 없음.
