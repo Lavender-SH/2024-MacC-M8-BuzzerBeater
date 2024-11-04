@@ -37,6 +37,8 @@
 		CE1B72252CD299F60044895B /* WorkoutViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE1B72232CD299EB0044895B /* WorkoutViewModel.swift */; };
 		CE31016E2CD308A0002A81D5 /* result.txt in Resources */ = {isa = PBXBuildFile; fileRef = CE31016D2CD30892002A81D5 /* result.txt */; };
 		CE31016F2CD308A0002A81D5 /* result.txt in Resources */ = {isa = PBXBuildFile; fileRef = CE31016D2CD30892002A81D5 /* result.txt */; };
+		CE5E09992CD8F576005DCB57 /* MapPathView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE5E09982CD8F563005DCB57 /* MapPathView.swift */; };
+		CE5E099A2CD8F576005DCB57 /* MapPathView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE5E09982CD8F563005DCB57 /* MapPathView.swift */; };
 		CEA9CBA82CD5F63F005F1814 /* WorkoutManagerIOS.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEA9CBA62CD5F63A005F1814 /* WorkoutManagerIOS.swift */; };
 		CEF0D8622CCEFFF800243992 /* HealthService.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEF0D8612CCEFFDD00243992 /* HealthService.swift */; };
 		CEF0D8632CCEFFF800243992 /* HealthService.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEF0D8612CCEFFDD00243992 /* HealthService.swift */; };
@@ -90,6 +92,7 @@
 		CE1B72202CD299A30044895B /* WorkoutListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkoutListView.swift; sourceTree = "<group>"; };
 		CE1B72232CD299EB0044895B /* WorkoutViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkoutViewModel.swift; sourceTree = "<group>"; };
 		CE31016D2CD30892002A81D5 /* result.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = result.txt; sourceTree = "<group>"; };
+		CE5E09982CD8F563005DCB57 /* MapPathView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapPathView.swift; sourceTree = "<group>"; };
 		CEA9CBA62CD5F63A005F1814 /* WorkoutManagerIOS.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkoutManagerIOS.swift; sourceTree = "<group>"; };
 		CEF0D8612CCEFFDD00243992 /* HealthService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthService.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -138,6 +141,7 @@
 				CE1B72232CD299EB0044895B /* WorkoutViewModel.swift */,
 				0297A27D2CC51A740024AEC9 /* CompassView.swift */,
 				0297A27C2CC51A740024AEC9 /* BoatView.swift */,
+				CE5E09982CD8F563005DCB57 /* MapPathView.swift */,
 				0297A2802CC51A740024AEC9 /* MapView.swift */,
 				0297A27F2CC51A740024AEC9 /* LocationManager.swift */,
 				0297A2832CC51A740024AEC9 /* WindDetector.swift */,
@@ -304,6 +308,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				CE1B72252CD299F60044895B /* WorkoutViewModel.swift in Sources */,
+				CE5E099A2CD8F576005DCB57 /* MapPathView.swift in Sources */,
 				0297A29C2CC51A740024AEC9 /* ContentView.swift in Sources */,
 				CE1B721E2CD27B030044895B /* WorkoutManager.swift in Sources */,
 				CE1B72212CD299B00044895B /* WorkoutListView.swift in Sources */,
@@ -324,6 +329,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				CE1B72242CD299F60044895B /* WorkoutViewModel.swift in Sources */,
+				CE5E09992CD8F576005DCB57 /* MapPathView.swift in Sources */,
 				0297A28E2CC51A740024AEC9 /* ApparentWind.swift in Sources */,
 				CE1B72222CD299B00044895B /* WorkoutListView.swift in Sources */,
 				0297A28F2CC51A740024AEC9 /* BoatView.swift in Sources */,

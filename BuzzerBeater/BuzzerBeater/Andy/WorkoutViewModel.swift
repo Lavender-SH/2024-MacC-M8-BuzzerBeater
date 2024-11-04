@@ -11,6 +11,7 @@ import Foundation
 
 struct WorkoutData: Identifiable, Sendable {
     let id : UUID
+    let workout: HKWorkout
     let startDate: Date
     let endDate: Date
     let duration: TimeInterval
@@ -54,6 +55,7 @@ class WorkoutViewModel: NSObject, ObservableObject {
                 let convertedWorkouts = results.map { workout in
                     WorkoutData(
                         id : workout.uuid,
+                        workout: workout,
                         startDate: workout.startDate,
                         endDate: workout.endDate,
                         duration: workout.duration,
