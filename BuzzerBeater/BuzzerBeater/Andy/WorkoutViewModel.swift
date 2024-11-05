@@ -245,8 +245,10 @@ class WorkoutViewModel: NSObject, ObservableObject {
                 }
                 print("----------------------------------end ----------------------------------")
                 
-                // Resume after processing locations
-                continuation.resume()
+                // If done, resume the continuation to end processing
+                if done {
+                   return continuation.resume()
+                }
             }
             
             healthStore.execute(locationQuery) // Execute the query
