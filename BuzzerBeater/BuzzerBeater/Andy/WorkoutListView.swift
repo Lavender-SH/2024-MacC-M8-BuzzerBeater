@@ -17,10 +17,10 @@ struct WorkoutListView: View {
                     // 로딩 중일 때 ProgressView를 표시
                     ProgressView("Loading Workouts...")
                 } else {
-                    List(viewModel.workouts) { workout in
-                        NavigationLink(destination: MapPathView(workout: workout.workout)) {
+                    List(viewModel.workouts) { workoutData in
+                        NavigationLink(destination: MapPathView(workout: workoutData.workout)) {
                             // Pass the selected workout to MapView
-                            Text("Start: \(workout.startDate)")
+                            Text("Start: \(workoutData.startDate)")
                         }
                     }
                 }
