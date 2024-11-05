@@ -35,8 +35,6 @@
 		CE1B72222CD299B00044895B /* WorkoutListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE1B72202CD299A30044895B /* WorkoutListView.swift */; };
 		CE1B72242CD299F60044895B /* WorkoutViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE1B72232CD299EB0044895B /* WorkoutViewModel.swift */; };
 		CE1B72252CD299F60044895B /* WorkoutViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE1B72232CD299EB0044895B /* WorkoutViewModel.swift */; };
-		CE31016E2CD308A0002A81D5 /* result.txt in Resources */ = {isa = PBXBuildFile; fileRef = CE31016D2CD30892002A81D5 /* result.txt */; };
-		CE31016F2CD308A0002A81D5 /* result.txt in Resources */ = {isa = PBXBuildFile; fileRef = CE31016D2CD30892002A81D5 /* result.txt */; };
 		CE5E09992CD8F576005DCB57 /* MapPathView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE5E09982CD8F563005DCB57 /* MapPathView.swift */; };
 		CE5E099A2CD8F576005DCB57 /* MapPathView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE5E09982CD8F563005DCB57 /* MapPathView.swift */; };
 		CEA9CBA82CD5F63F005F1814 /* WorkoutManagerIOS.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEA9CBA62CD5F63A005F1814 /* WorkoutManagerIOS.swift */; };
@@ -91,7 +89,6 @@
 		CE1B721D2CD27AFB0044895B /* WorkoutManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkoutManager.swift; sourceTree = "<group>"; };
 		CE1B72202CD299A30044895B /* WorkoutListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkoutListView.swift; sourceTree = "<group>"; };
 		CE1B72232CD299EB0044895B /* WorkoutViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkoutViewModel.swift; sourceTree = "<group>"; };
-		CE31016D2CD30892002A81D5 /* result.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = result.txt; sourceTree = "<group>"; };
 		CE5E09982CD8F563005DCB57 /* MapPathView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapPathView.swift; sourceTree = "<group>"; };
 		CEA9CBA62CD5F63A005F1814 /* WorkoutManagerIOS.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkoutManagerIOS.swift; sourceTree = "<group>"; };
 		CEF0D8612CCEFFDD00243992 /* HealthService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthService.swift; sourceTree = "<group>"; };
@@ -156,7 +153,6 @@
 		0297A2862CC51A740024AEC9 /* Preview Content */ = {
 			isa = PBXGroup;
 			children = (
-				CE31016D2CD30892002A81D5 /* result.txt */,
 				0297A2852CC51A740024AEC9 /* Preview Assets.xcassets */,
 			);
 			path = "Preview Content";
@@ -287,7 +283,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				CE31016E2CD308A0002A81D5 /* result.txt in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -298,7 +293,6 @@
 				0297A2982CC51A740024AEC9 /* Preview Assets.xcassets in Resources */,
 				0297A2992CC51A740024AEC9 /* .gitignore in Resources */,
 				0297A29A2CC51A740024AEC9 /* Assets.xcassets in Resources */,
-				CE31016F2CD308A0002A81D5 /* result.txt in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

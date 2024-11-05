@@ -331,7 +331,7 @@ class WorkoutManager:  ObservableObject
                 return }
             if let location = self.locationManager.lastLocation  {
                 print("location.horizontalAccuracy: \(location.horizontalAccuracy) location.verticalAccuracy: \(location.verticalAccuracy) ")
-                if location.horizontalAccuracy < 50 {
+                if location.horizontalAccuracy < 30 && location.horizontalAccuracy > 0 {
                     Task{
                         do {
                             print("insterting RouteData \(location) ")
@@ -523,10 +523,12 @@ class WorkoutManager:  ObservableObject
         
         return metadataForRoute
     }
-    
+
     func makeMetadataForWorkout(appIdentifier: String) -> [String: Any] {
         var metadataForWorkout: [String: Any] = [:]
         metadataForWorkout["AppIdentifier"] = appIdentifier
+       
+        
         return metadataForWorkout
     }
     
