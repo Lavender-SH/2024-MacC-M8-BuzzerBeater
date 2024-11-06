@@ -313,7 +313,7 @@ struct CompassView: View {
                                         .padding(18)
                                     }
                                     .position(x: cx, y: cy)
-                                    .background(Color.clear)
+                                    .buttonStyle(.plain)
                                 }
                                 if let countdown = countdown {
                                                             Text("\(countdown)")
