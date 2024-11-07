@@ -85,6 +85,7 @@ struct MapPage: View {
                 }
             
         }
+        .ignoresSafeArea(.all)
     }
 }
 
