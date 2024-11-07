@@ -17,6 +17,7 @@ struct WorkoutListView: View {
                     // 로딩 중일 때 ProgressView를 표시
                     ProgressView("Loading Workouts...")
                 } else {
+
                     //                    List(viewModel.workouts) { workoutData in
                     //                        NavigationLink(destination: MapPathView(workout: workoutData.workout)) {
                     //                            // Pass the selected workout to MapView
@@ -25,6 +26,7 @@ struct WorkoutListView: View {
      
                     List(viewModel.workouts , id:\.self ) { workout in
                         NavigationLink(destination: MapPathView(workout: workout)) {
+
                             // Pass the selected workout to MapView
                             Text("Start: \(workout.startDate)")
                         }
@@ -37,6 +39,7 @@ struct WorkoutListView: View {
                 isLoading = false
             }
             .navigationTitle("Workouts") // Optional: Set the title for the navigation bar
+            
         }
     }
 }

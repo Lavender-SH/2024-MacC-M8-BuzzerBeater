@@ -19,6 +19,7 @@ import Foundation
 //    let totalDistance: Double
 //}
 
+
 @MainActor
 class WorkoutViewModel: NSObject, ObservableObject {
     static let shared = WorkoutViewModel()
@@ -63,7 +64,6 @@ class WorkoutViewModel: NSObject, ObservableObject {
 //                        totalDistance: workout.totalDistance?.doubleValue(for: .meter()) ?? 0.0
 //                    )
 //                }
-                
                 
                 
                 DispatchQueue.main.async { [weak self] in

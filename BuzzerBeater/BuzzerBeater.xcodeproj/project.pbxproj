@@ -40,6 +40,22 @@
 		CEA9CBA82CD5F63F005F1814 /* WorkoutManagerIOS.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEA9CBA62CD5F63A005F1814 /* WorkoutManagerIOS.swift */; };
 		CEF0D8622CCEFFF800243992 /* HealthService.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEF0D8612CCEFFDD00243992 /* HealthService.swift */; };
 		CEF0D8632CCEFFF800243992 /* HealthService.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEF0D8612CCEFFDD00243992 /* HealthService.swift */; };
+		EF7997452CDB5E3F004FF039 /* InfoList.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF7997442CDB5E3F004FF039 /* InfoList.swift */; };
+		EF7997462CDB5E3F004FF039 /* InfoList.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF7997442CDB5E3F004FF039 /* InfoList.swift */; };
+		EF7997492CDB6336004FF039 /* Dummy.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF7997482CDB6331004FF039 /* Dummy.swift */; };
+		EF79974A2CDB6336004FF039 /* Dummy.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF7997482CDB6331004FF039 /* Dummy.swift */; };
+		EF79974D2CDB660A004FF039 /* Date+startOfDay.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF79974C2CDB65F6004FF039 /* Date+startOfDay.swift */; };
+		EF79974E2CDB660A004FF039 /* Date+startOfDay.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF79974C2CDB65F6004FF039 /* Date+startOfDay.swift */; };
+		EF7997502CDB6881004FF039 /* InfoRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF79974F2CDB686A004FF039 /* InfoRow.swift */; };
+		EF7997512CDB6881004FF039 /* InfoRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF79974F2CDB686A004FF039 /* InfoRow.swift */; };
+		EF7997562CDB692D004FF039 /* InfoDetail.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF7997552CDB692D004FF039 /* InfoDetail.swift */; };
+		EF7997572CDB692D004FF039 /* InfoDetail.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF7997552CDB692D004FF039 /* InfoDetail.swift */; };
+		EF7997592CDB7469004FF039 /* DateFormatter+Formats.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF7997582CDB7446004FF039 /* DateFormatter+Formats.swift */; };
+		EF79975A2CDB7469004FF039 /* DateFormatter+Formats.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF7997582CDB7446004FF039 /* DateFormatter+Formats.swift */; };
+		EF79975C2CDB7C34004FF039 /* InfoIcon.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF79975B2CDB7C34004FF039 /* InfoIcon.swift */; };
+		EF79975D2CDB7C34004FF039 /* InfoIcon.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF79975B2CDB7C34004FF039 /* InfoIcon.swift */; };
+		EFA4CD732CDB960A003FBF78 /* TimeInterval+Formats.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFA4CD722CDB95E9003FBF78 /* TimeInterval+Formats.swift */; };
+		EFA4CD742CDB960A003FBF78 /* TimeInterval+Formats.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFA4CD722CDB95E9003FBF78 /* TimeInterval+Formats.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -92,6 +108,14 @@
 		CE5E09982CD8F563005DCB57 /* MapPathView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapPathView.swift; sourceTree = "<group>"; };
 		CEA9CBA62CD5F63A005F1814 /* WorkoutManagerIOS.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkoutManagerIOS.swift; sourceTree = "<group>"; };
 		CEF0D8612CCEFFDD00243992 /* HealthService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthService.swift; sourceTree = "<group>"; };
+		EF7997442CDB5E3F004FF039 /* InfoList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InfoList.swift; sourceTree = "<group>"; };
+		EF7997482CDB6331004FF039 /* Dummy.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Dummy.swift; sourceTree = "<group>"; };
+		EF79974C2CDB65F6004FF039 /* Date+startOfDay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Date+startOfDay.swift"; sourceTree = "<group>"; };
+		EF79974F2CDB686A004FF039 /* InfoRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InfoRow.swift; sourceTree = "<group>"; };
+		EF7997552CDB692D004FF039 /* InfoDetail.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InfoDetail.swift; sourceTree = "<group>"; };
+		EF7997582CDB7446004FF039 /* DateFormatter+Formats.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DateFormatter+Formats.swift"; sourceTree = "<group>"; };
+		EF79975B2CDB7C34004FF039 /* InfoIcon.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InfoIcon.swift; sourceTree = "<group>"; };
+		EFA4CD722CDB95E9003FBF78 /* TimeInterval+Formats.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TimeInterval+Formats.swift"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -161,6 +185,7 @@
 		0297A28D2CC51A740024AEC9 /* BuzzerBeater */ = {
 			isa = PBXGroup;
 			children = (
+				EF7997392CDB5D9E004FF039 /* Gep */,
 				0297A2842CC51A740024AEC9 /* Andy */,
 				0297A2862CC51A740024AEC9 /* Preview Content */,
 				0297A2872CC51A740024AEC9 /* .gitignore */,
@@ -190,6 +215,45 @@
 				0297A2512CC3E65C0024AEC9 /* BuzzerBeaterWatch Watch App.app */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		EF7997392CDB5D9E004FF039 /* Gep */ = {
+			isa = PBXGroup;
+			children = (
+				EF79974B2CDB65E5004FF039 /* Extension */,
+				EF7997472CDB6325004FF039 /* Model */,
+				EF79973D2CDB5DC8004FF039 /* View */,
+			);
+			path = Gep;
+			sourceTree = "<group>";
+		};
+		EF79973D2CDB5DC8004FF039 /* View */ = {
+			isa = PBXGroup;
+			children = (
+				EF79974F2CDB686A004FF039 /* InfoRow.swift */,
+				EF7997442CDB5E3F004FF039 /* InfoList.swift */,
+				EF7997552CDB692D004FF039 /* InfoDetail.swift */,
+				EF79975B2CDB7C34004FF039 /* InfoIcon.swift */,
+			);
+			path = View;
+			sourceTree = "<group>";
+		};
+		EF7997472CDB6325004FF039 /* Model */ = {
+			isa = PBXGroup;
+			children = (
+				EF7997482CDB6331004FF039 /* Dummy.swift */,
+			);
+			path = Model;
+			sourceTree = "<group>";
+		};
+		EF79974B2CDB65E5004FF039 /* Extension */ = {
+			isa = PBXGroup;
+			children = (
+				EFA4CD722CDB95E9003FBF78 /* TimeInterval+Formats.swift */,
+				EF79974C2CDB65F6004FF039 /* Date+startOfDay.swift */,
+				EF7997582CDB7446004FF039 /* DateFormatter+Formats.swift */,
+			);
+			path = Extension;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -304,11 +368,19 @@
 			buildActionMask = 2147483647;
 			files = (
 				CE1B72252CD299F60044895B /* WorkoutViewModel.swift in Sources */,
+				EF7997502CDB6881004FF039 /* InfoRow.swift in Sources */,
 				CE5E099A2CD8F576005DCB57 /* MapPathView.swift in Sources */,
+				EF79974D2CDB660A004FF039 /* Date+startOfDay.swift in Sources */,
+				EF79974A2CDB6336004FF039 /* Dummy.swift in Sources */,
 				0297A29C2CC51A740024AEC9 /* ContentView.swift in Sources */,
+				EF7997562CDB692D004FF039 /* InfoDetail.swift in Sources */,
 				CE1B721E2CD27B030044895B /* WorkoutManager.swift in Sources */,
 				CE1B72212CD299B00044895B /* WorkoutListView.swift in Sources */,
 				0297A29D2CC51A740024AEC9 /* SailingDataCollector.swift in Sources */,
+				EF7997452CDB5E3F004FF039 /* InfoList.swift in Sources */,
+				EF79975A2CDB7469004FF039 /* DateFormatter+Formats.swift in Sources */,
+				EF79975C2CDB7C34004FF039 /* InfoIcon.swift in Sources */,
+				EFA4CD732CDB960A003FBF78 /* TimeInterval+Formats.swift in Sources */,
 				0297A29E2CC51A740024AEC9 /* CompassView.swift in Sources */,
 				0297A29F2CC51A740024AEC9 /* BoatView.swift in Sources */,
 				0297A2A02CC51A740024AEC9 /* ApparentWind.swift in Sources */,
@@ -325,12 +397,20 @@
 			buildActionMask = 2147483647;
 			files = (
 				CE1B72242CD299F60044895B /* WorkoutViewModel.swift in Sources */,
+				EF7997512CDB6881004FF039 /* InfoRow.swift in Sources */,
 				CE5E09992CD8F576005DCB57 /* MapPathView.swift in Sources */,
+				EF79974E2CDB660A004FF039 /* Date+startOfDay.swift in Sources */,
+				EF7997492CDB6336004FF039 /* Dummy.swift in Sources */,
 				0297A28E2CC51A740024AEC9 /* ApparentWind.swift in Sources */,
+				EF7997572CDB692D004FF039 /* InfoDetail.swift in Sources */,
 				CE1B72222CD299B00044895B /* WorkoutListView.swift in Sources */,
 				0297A28F2CC51A740024AEC9 /* BoatView.swift in Sources */,
 				0297A2902CC51A740024AEC9 /* CompassView.swift in Sources */,
+				EF7997462CDB5E3F004FF039 /* InfoList.swift in Sources */,
+				EF7997592CDB7469004FF039 /* DateFormatter+Formats.swift in Sources */,
+				EF79975D2CDB7C34004FF039 /* InfoIcon.swift in Sources */,
 				CEA9CBA82CD5F63F005F1814 /* WorkoutManagerIOS.swift in Sources */,
+				EFA4CD742CDB960A003FBF78 /* TimeInterval+Formats.swift in Sources */,
 				0297A2912CC51A740024AEC9 /* ContentView.swift in Sources */,
 				0297A2922CC51A740024AEC9 /* LocationManager.swift in Sources */,
 				CEF0D8622CCEFFF800243992 /* HealthService.swift in Sources */,
