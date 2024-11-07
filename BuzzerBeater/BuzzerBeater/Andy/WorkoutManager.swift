@@ -57,14 +57,15 @@ class WorkoutManager:  ObservableObject
     var metadataForRouteDataPointArray : [metadataForRouteDataPoint] = []
     let routeDataQueue = DispatchQueue(label: "com.lavender.buzzbeater.routeDataQueue")
     // endTime은 3시간 이내로 제한 즉 한세션의 최대 크기를 제한하도록 함. 나중에 사용예정
-    var startDate: Date?
-    var endDate : Date?
+    var startDate: Date? = Date()
+    var endDate : Date?  = Date()
+    var previousLocation: CLLocation?
+    var totalDistance: Double = 0
     
     func startWorkout(startDate: Date)  {
         // 운동을 시작하기 전에 HKWorkoutBuilder를 초기화
         if isWorkoutActive  { return }
         isWorkoutActive = true
-        
         let workoutConfiguration = HKWorkoutConfiguration()
         workoutConfiguration.activityType = .sailing
         workoutConfiguration.locationType = .outdoor
@@ -275,6 +276,8 @@ class WorkoutManager:  ObservableObject
                         continuation.resume(throwing: error)
                     } else if let workout = workout {
                         print("Preparing to finish route with workout: \(workout) and metadata: \(String(describing: self.metadataForRoute))")
+                        self.updateWorkoutDistance(self.totalDistance )
+                       
                         continuation.resume(returning: workout)  // Resume continuation after workout is finalized
                     } else {
                         print("finishWorkout Error: No workout returned from finishWorkout")
@@ -303,11 +306,34 @@ class WorkoutManager:  ObservableObject
         }
     }
     
-    
+    func updateWorkoutDistance(_ distanceInMeters: Double) {
+            guard let builder = liveWorkoutBuilder else { return }
+
+            let distanceQuantity = HKQuantity(unit: .meter(), doubleValue: distanceInMeters)
+            let distanceSample = HKQuantitySample(
+                type: HKQuantityType.quantityType(forIdentifier: .distanceWalkingRunning)!,
+                quantity: distanceQuantity,
+                start: self.startDate ?? Date() ,
+                end: self.endDate ?? Date()
+            )
+
+            builder.add([distanceSample]) { (success, error) in
+                if success {
+                    print("Distance updated successfully.")
+                } else if let error = error {
+                    print("Error updating distance: \(error)")
+                }
+            }
+        }
+
     func printWorkoutActivityType(workout: HKWorkout) {
         let activityType = workout.workoutActivityType
         print("Activity Type: \(activityType.rawValue)")
         
+        if let totalDistance = workout.metadata?["TotalDistance"] as? Double  {
+            let totalDistanceInt = Int(totalDistance)
+            print("Total Distance: \(totalDistanceInt) m ")
+        }
         switch activityType {
         case .sailing:
             print("This workout is sailing.")
@@ -334,8 +360,14 @@ class WorkoutManager:  ObservableObject
                 if location.horizontalAccuracy < 30 && location.horizontalAccuracy > 0 {
                     Task{
                         do {
-                            print("insterting RouteData \(location) ")
+                            let distance = location.distance(from: self.previousLocation ?? location)
+                            print("insterting RouteData \(location) distance: \(distance)")
                             try await self.insertRouteData([location])
+                            //  현재의  location값을 과거 location 값으로 정함
+                            self.previousLocation = location
+                            self.totalDistance += distance
+                            
+                            print("totalDistance: \(self.totalDistance ) ")
                             
                         } catch {
                             print("insertRouteData error: \(error)")
@@ -459,7 +491,7 @@ class WorkoutManager:  ObservableObject
         let healthService = HealthService.shared
         let workoutManager = WorkoutManager.shared
         
-        startDate = Date()
+        self.startDate = Date()
         //      sailingDataCollector.startDate = startDate
         
         healthService.startHealthKit()
@@ -483,7 +515,7 @@ class WorkoutManager:  ObservableObject
         //            "sailingDataPointsArray": jsonString // JSON 문자열 형태로 메타데이터에 추가
         //        ]
         
-        endDate = Date()
+        self.endDate = Date()
         metadataForWorkout = makeMetadataForWorkout(appIdentifier: "seastheDay")
         print("metadata in the endToSaveHealthData: \(metadataForWorkout)")
         
@@ -527,8 +559,7 @@ class WorkoutManager:  ObservableObject
     func makeMetadataForWorkout(appIdentifier: String) -> [String: Any] {
         var metadataForWorkout: [String: Any] = [:]
         metadataForWorkout["AppIdentifier"] = appIdentifier
-       
-        
+        metadataForWorkout["TotalDistance"] =  self.totalDistance
         return metadataForWorkout
     }
     

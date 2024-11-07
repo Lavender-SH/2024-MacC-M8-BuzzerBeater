@@ -30,18 +30,24 @@ struct MapPathView: View {
                 center: CLLocationCoordinate2D(latitude: 36.017470189362115, longitude: 129.32224097538742),
                 span: MKCoordinateSpan(latitudeDelta: minDegree, longitudeDelta: minDegree)
             )
+       
     }
     
     var body: some View {
         
         VStack{
             Text("\(formattedDuration(workout.duration))").font(.caption2)
+            let totaldistance = workout.metadata?["TotalDistance"]  as? Double ?? 0
+            Text("Total Distance: \(formattedDistance(totaldistance))")
+                .font(.caption2)
+          
+
             Map(position: $position, interactionModes: [.all] ){
                 if coordinates.count >= 2 {
                     ForEach(0..<coordinates.count - 1, id: \.self) { index in
                         let start = coordinates[index]
                         let end = coordinates[index + 1]
-                        
+                    
                         let velocity = velocities[index]
                         let maxVelocity = velocities.max() ?? 10.0
                         let minVelocity = velocities.min() ?? 0.0
@@ -196,5 +202,18 @@ struct MapPathView: View {
         let seconds = Int(duration) % 60
         
         return String(format: "%02d:%02d:%02d", hours, minutes, seconds)
+    }
+    
+   
+    func formattedDistance(_ distance: Double?) -> String {
+        // distance가 nil이 아니면, 미터 단위로 값을 가져와서 킬로미터로 변환
+        guard let distance = distance else { return "0.00 km" }
+        
+        // 미터 단위로 값을 가져온 후, 1000으로 나누어 킬로미터로 변환
+        let kilometer = distance / 1000
+        
+        print("kilo: \(kilometer)")
+        // 킬로미터 단위로 포맷팅해서 반환
+        return String(format: "%.2f km", kilometer)
     }
 }
