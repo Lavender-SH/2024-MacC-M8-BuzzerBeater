@@ -16,9 +16,6 @@ struct WindData  {
     var timestamp: Date
 }
 
-
-
-
 class WindDetector : ObservableObject{
     static let shared = WindDetector()
     

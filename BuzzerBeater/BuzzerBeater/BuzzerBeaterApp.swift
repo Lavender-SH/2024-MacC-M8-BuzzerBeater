@@ -21,7 +21,7 @@ struct BuzzerBeaterApp: App {
     
     var body: some Scene {
         WindowGroup {
-            ContentView().ignoresSafeArea(.all)
+            ContentView()
                 .environmentObject(LocationManager.shared)
                 .environmentObject(WindDetector.shared)
                 .environmentObject(ApparentWind.shared)

@@ -11,7 +11,7 @@ import Foundation
 import SwiftUI
 
 
-class ApparentWind : ObservableObject {
+class ApparentWind: ObservableObject {
     static let shared =  ApparentWind()
     
     @Published  var direction: Double? = nil
@@ -85,7 +85,7 @@ class ApparentWind : ObservableObject {
             return  windY + boatY
         }
         
-        speed = sqrt(pow(apparentWindX,2) + pow(apparentWindY,2) )
+        speed = sqrt(pow(apparentWindX,2) + pow(apparentWindY,2))
         
         if speed != 0 {
             direction =  calculateThetaY(x: apparentWindX, y: apparentWindY)   // caclcuateTheta from Y axis   atan(x over  y) 임
@@ -104,6 +104,7 @@ class ApparentWind : ObservableObject {
         print("apparent wind speed \(speed!)")
         print("apparent wind direction dir: \(direction!)  spd:\(speed!) ax: \(apparentWindX) ay: \(apparentWindY)")
     }
+    
     func calculateThetaY(x: Double, y: Double) -> Double {
         let theta = atan2(x, y) * (180 / .pi) // y축에 대한 각도 계산
         return theta < 0 ? theta + 360 : theta // 음수 각도를 양수로 변환
