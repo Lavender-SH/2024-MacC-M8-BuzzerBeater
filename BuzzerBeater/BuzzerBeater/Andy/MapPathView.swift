@@ -23,6 +23,12 @@ struct MapPathView: View {
     @State var coordinates: [CLLocationCoordinate2D] = []
     @State var velocities: [CLLocationSpeed] = []
     @State var position: MapCameraPosition = .automatic
+    @State var totalEnergyBurned: Double = 0
+    @State var totalDistance: Double = 0
+    @State var activeEnergyBurned: Double = 0
+    @State var duration : TimeInterval = 0
+    
+    let workoutManager = WorkoutManager.shared
     
     init(workout: HKWorkout) {
         self.workout = workout
@@ -36,12 +42,14 @@ struct MapPathView: View {
     var body: some View {
         
         VStack{
-            Text("\(formattedDuration(workout.duration))").font(.caption2)
-            let totaldistance = workout.metadata?["TotalDistance"]  as? Double ?? 0
-            Text("Total Distance: \(formattedDistance(totaldistance))")
+            Text("\(formattedDuration(duration))").font(.caption2)
+            Text("Total Distance: \(formattedDistance(totalDistance))")
                 .font(.caption2)
-          
-
+            Text("Total Energy Burned: \(formattedEnergyBurned(totalEnergyBurned))")
+                .font(.caption2)
+            Text("Active Energy Burned: \(formattedEnergyBurned(activeEnergyBurned))")
+                .font(.caption2)
+            
             Map(position: $position, interactionModes: [.all] ){
                 if coordinates.count >= 2 {
                     ForEach(0..<coordinates.count - 1, id: \.self) { index in
@@ -74,9 +82,31 @@ struct MapPathView: View {
             DispatchQueue.main.async {
                 loadWorkoutData()
             }
+            let totaldistance = workout.metadata?["TotalDistance"]  as? Double ?? 0.0
+            self.totalDistance = totaldistance
+            self.workoutManager.fetchTotalEnergyBurned(for: workout) { totalEnergyBurned in
+                if let totalEnergyBurned  = totalEnergyBurned{
+                    self.totalEnergyBurned = totalEnergyBurned.doubleValue(for: .kilocalorie())
+                    print("totalEnergyBurned fetched successfully \(totalEnergyBurned)")
+                } else {
+                    print("totalEnergyBurned is nil")
+                }
+            }
+            
+            self.workoutManager.fetchActiveEnergyBurned(startDate: workout.startDate, endDate: workout.endDate) { activeEnergyBurned in
+                if let activeEnergyBurned  = activeEnergyBurned{
+                    self.activeEnergyBurned = activeEnergyBurned.doubleValue(for: .kilocalorie())
+                    print("activeEnergyBurned fetched successfully \(activeEnergyBurned)")
+                } else {
+                    print("activeEnergyBurned is nil")
+                }
+            }
+            self.duration = workout.endDate.timeIntervalSince(workout.startDate)
+         
             print("velocities \(velocities.count), coordinates \(coordinates.count) routePoints\(routePoints.count)" )
-          
+         
         }
+//
 //        .onChange(of: routePoints) { _ , _ in
 //            DispatchQueue.main.async {
 //                loadWorkoutData()
@@ -215,5 +245,13 @@ struct MapPathView: View {
         print("kilo: \(kilometer)")
         // 킬로미터 단위로 포맷팅해서 반환
         return String(format: "%.2f km", kilometer)
+    }
+    func formattedEnergyBurned(_ calories: Double?) -> String {
+        // distance가 nil이 아니면, 미터 단위로 값을 가져와서 킬로미터로 변환
+        guard let calories = calories else { return "0.00 Kcal" }
+        let caloriesInt = Int( calories )
+        print("Kcal \(caloriesInt)")
+        // 킬로미터 단위로 포맷팅해서 반환
+        return String(format: "%d Kcal", caloriesInt)
     }
 }

@@ -518,6 +518,48 @@ class WorkoutManager: ObservableObject
             return "Data"
         }
     }
+ 
+    func fetchTotalEnergyBurned(for workout: HKWorkout, completion: @escaping (HKQuantity?) -> Void) {
+        // Get the total energy burned directly from the HKWorkout object
+        let totalEnergyBurned = workout.totalEnergyBurned
+        
+        // Return the total energy burned value
+        completion(totalEnergyBurned)
+    }
+
+    func fetchActiveEnergyBurned(startDate: Date, endDate: Date, completion: @escaping (HKQuantity?) -> Void) {
+        let healthStore = HKHealthStore()
+        
+        // Create the quantity type for active energy burned
+        let activeEnergyBurnedType = HKObjectType.quantityType(forIdentifier: .activeEnergyBurned)!
+        
+        // Create a predicate to filter data between the start and end date
+        let predicate = HKQuery.predicateForSamples(withStart: startDate, end: endDate, options: .strictEndDate)
+        
+        // Create the sort descriptor to get the most recent data
+        let sortDescriptor = NSSortDescriptor(key: HKSampleSortIdentifierEndDate, ascending: false)
+        
+        // Create the sample query to fetch the data
+        let query = HKSampleQuery(sampleType: activeEnergyBurnedType,
+                                  predicate: predicate,
+                                  limit: 1,
+                                  sortDescriptors: [sortDescriptor]) { (query, results, error) in
+            guard let results = results, let sample = results.first as? HKQuantitySample else {
+                completion(nil)
+                return
+            }
+            
+            // Get the active energy burned value
+            let energyQuantity = sample.quantity
+            
+            // Return the quantity
+            completion(energyQuantity)
+        }
+        
+        // Execute the query
+        healthStore.execute(query)
+    }
+
 }
 
 /*

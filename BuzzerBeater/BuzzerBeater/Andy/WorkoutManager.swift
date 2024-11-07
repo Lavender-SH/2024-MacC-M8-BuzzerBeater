@@ -24,9 +24,6 @@ struct metadataForRouteDataPoint: Equatable, Identifiable, Codable{
 
 class WorkoutManager:  ObservableObject
 {
-    
-    
-    
     static let shared = WorkoutManager()
     let locationManager = LocationManager.shared
     let windDetector = WindDetector.shared
@@ -90,7 +87,7 @@ class WorkoutManager:  ObservableObject
                                                                  workoutConfiguration: workoutConfiguration)
         print("workoutSession: \(String(describing: workoutSession)) liveworkoutBuilder: \(liveWorkoutBuilder.debugDescription) created succesfully")
         
-
+        
         
         workoutRouteBuilder =  HKWorkoutRouteBuilder(healthStore: healthStore, device: .local())
         
@@ -120,13 +117,16 @@ class WorkoutManager:  ObservableObject
             print("liveWorkoutBuilder, workoutSession maybe nil ")
             return
         }
+        
+        
         // workoutSession.end()가  finishWorkout보다 먼저 실행되어야 하는데  finishWorkout()안에서 같이 처리하기로함.
         // Apple  공식문서에  session.end()를 build.endCollection보다 먼저 실행함
         //https://developer.apple.com/documentation/healthkit/workouts_and_activity_rings/running_workout_sessions
         
         if let metadataForWorkout = metadataForWorkout {
-            print("metadata in the collectData\(metadataForWorkout)")
             
+            print("metadata in the collectData\(metadataForWorkout)")
+            // metadata에 TotalDistance 거리데이타를 넣었음
             liveWorkoutBuilder.addMetadata(metadataForWorkout) { (success, error) in
                 guard success else {
                     print("==========Error adding metadata:\(error?.localizedDescription ?? "Unknown error")")
@@ -234,7 +234,7 @@ class WorkoutManager:  ObservableObject
     // 3.liveWorkoutBuilder?.finishWorkout
     // 4.workoutRouteBuilder.finishRoute
     // Apple  공식문서에  session.end()를 build.endCollection보다 먼저 실행함
-  
+    
     func finishWorkoutAsync(endDate: Date, metadataForWorkout: [String: Any]?) async {
         if !isWorkoutActive {
             print("Workout is not active \(isWorkoutActive)")
@@ -277,7 +277,7 @@ class WorkoutManager:  ObservableObject
                     } else if let workout = workout {
                         print("Preparing to finish route with workout: \(workout) and metadata: \(String(describing: self.metadataForRoute))")
                         self.updateWorkoutDistance(self.totalDistance )
-                       
+                        
                         continuation.resume(returning: workout)  // Resume continuation after workout is finalized
                     } else {
                         print("finishWorkout Error: No workout returned from finishWorkout")
@@ -307,25 +307,25 @@ class WorkoutManager:  ObservableObject
     }
     
     func updateWorkoutDistance(_ distanceInMeters: Double) {
-            guard let builder = liveWorkoutBuilder else { return }
-
-            let distanceQuantity = HKQuantity(unit: .meter(), doubleValue: distanceInMeters)
-            let distanceSample = HKQuantitySample(
-                type: HKQuantityType.quantityType(forIdentifier: .distanceWalkingRunning)!,
-                quantity: distanceQuantity,
-                start: self.startDate ?? Date() ,
-                end: self.endDate ?? Date()
-            )
-
-            builder.add([distanceSample]) { (success, error) in
-                if success {
-                    print("Distance updated successfully.")
-                } else if let error = error {
-                    print("Error updating distance: \(error)")
-                }
+        guard let builder = liveWorkoutBuilder else { return }
+        
+        let distanceQuantity = HKQuantity(unit: .meter(), doubleValue: distanceInMeters)
+        let distanceSample = HKQuantitySample(
+            type: HKQuantityType.quantityType(forIdentifier: .distanceWalkingRunning)!,
+            quantity: distanceQuantity,
+            start: self.startDate ?? Date() ,
+            end: self.endDate ?? Date()
+        )
+        
+        builder.add([distanceSample]) { (success, error) in
+            if success {
+                print("Distance updated successfully.")
+            } else if let error = error {
+                print("Error updating distance: \(error)")
             }
         }
-
+    }
+    
     func printWorkoutActivityType(workout: HKWorkout) {
         let activityType = workout.workoutActivityType
         print("Activity Type: \(activityType.rawValue)")
@@ -555,7 +555,7 @@ class WorkoutManager:  ObservableObject
         
         return metadataForRoute
     }
-
+    
     func makeMetadataForWorkout(appIdentifier: String) -> [String: Any] {
         var metadataForWorkout: [String: Any] = [:]
         metadataForWorkout["AppIdentifier"] = appIdentifier
@@ -575,6 +575,54 @@ class WorkoutManager:  ObservableObject
             return "Data"
         }
     }
+    
+    
+    
+    func fetchTotalEnergyBurned(for workout: HKWorkout, completion: @escaping (HKQuantity?) -> Void) {
+        // Get the total energy burned directly from the HKWorkout object
+        let totalEnergyBurned = workout.totalEnergyBurned
+        
+        // Return the total energy burned value
+        completion(totalEnergyBurned)
+    }
+    
+    
+    func fetchActiveEnergyBurned(startDate: Date, endDate: Date, completion: @escaping (HKQuantity?) -> Void) {
+        let healthStore = HKHealthStore()
+        
+        // Create the quantity type for active energy burned
+        let activeEnergyBurnedType = HKObjectType.quantityType(forIdentifier: .activeEnergyBurned)!
+        
+        // Create a predicate to filter data between the start and end date
+        let predicate = HKQuery.predicateForSamples(withStart: startDate, end: endDate, options: .strictEndDate)
+        
+        // Create the sort descriptor to get the most recent data
+        let sortDescriptor = NSSortDescriptor(key: HKSampleSortIdentifierEndDate, ascending: false)
+        
+        // Create the sample query to fetch the data
+        let query = HKSampleQuery(sampleType: activeEnergyBurnedType,
+                                  predicate: predicate,
+                                  limit: 1,
+                                  sortDescriptors: [sortDescriptor]) { (query, results, error) in
+            guard let results = results, let sample = results.first as? HKQuantitySample else {
+                completion(nil)
+                return
+            }
+            
+            // Get the active energy burned value
+            let energyQuantity = sample.quantity
+            
+            // Return the quantity
+            completion(energyQuantity)
+        }
+        
+        // Execute the query
+        healthStore.execute(query)
+    }
+}
+
+
+
     //
     //        func workoutSession(_ workoutSession: HKWorkoutSession, didChangeTo toState: HKWorkoutSessionState, from fromState: HKWorkoutSessionState, date: Date) {
     //
@@ -612,6 +660,6 @@ class WorkoutManager:  ObservableObject
     //            }
     //        }
     //
-}
+
 
 
