@@ -9,23 +9,23 @@ import HealthKit
 import SwiftUI
 import Foundation
 
-struct WorkoutData: Identifiable, Sendable {
-    let id : UUID
-    let workout: HKWorkout
-    let startDate: Date
-    let endDate: Date
-    let duration: TimeInterval
-    let totalEnergyBurned: Double
-    let totalDistance: Double
-}
+//struct WorkoutData: Identifiable, Sendable {
+//    let id : UUID
+//    let workout: HKWorkout
+//    let startDate: Date
+//    let endDate: Date
+//    let duration: TimeInterval
+//    let totalEnergyBurned: Double
+//    let totalDistance: Double
+//}
 
 
 @MainActor
 class WorkoutViewModel: NSObject, ObservableObject {
     static let shared = WorkoutViewModel()
     
-    @Published var workouts: [WorkoutData] = []
-    
+//    @Published var workouts: [WorkoutData] = []
+    @Published var workouts: [HKWorkout] = []
     let healthStore = HealthService.shared.healthStore
     var appIdentifier: String?
     
@@ -53,22 +53,22 @@ class WorkoutViewModel: NSObject, ObservableObject {
                 }
                 
                 print("Found workouts : \(results.count) \(results.debugDescription).")
-                let convertedWorkouts = results.map { workout in
-                    WorkoutData(
-                        id : workout.uuid,
-                        workout: workout,
-                        startDate: workout.startDate,
-                        endDate: workout.endDate,
-                        duration: workout.duration,
-                        totalEnergyBurned: workout.totalEnergyBurned?.doubleValue(for: .kilocalorie()) ?? 0.0,
-                        totalDistance: workout.totalDistance?.doubleValue(for: .meter()) ?? 0.0
-                    )
-                }
+//                let convertedWorkouts = results.map { workout in
+//                    WorkoutData(
+//                        id : workout.uuid,
+//                        workout: workout,
+//                        startDate: workout.startDate,
+//                        endDate: workout.endDate,
+//                        duration: workout.duration,
+//                        totalEnergyBurned: workout.totalEnergyBurned?.doubleValue(for: .kilocalorie()) ?? 0.0,
+//                        totalDistance: workout.totalDistance?.doubleValue(for: .meter()) ?? 0.0
+//                    )
+//                }
                 
                 
                 DispatchQueue.main.async { [weak self] in
                     guard let self = self else { return }
-                    self.workouts = convertedWorkouts
+                    self.workouts = results
                     print("fetchWorkout workouts: \(self.workouts)")
                 }
                 
