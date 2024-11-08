@@ -178,44 +178,7 @@ class WorkoutViewModel: NSObject, ObservableObject {
         }
     }
 
-//    아래 함수는 잘 안됨..아래에서 위로 검색자체가 안되는듯함. route가지고 workout을 찾을수없음 대신에 findWorkoutForRoute로 대체함
-//    func fetchWorkoutRouteAndDetails(for route: HKWorkoutRoute, healthStore: HKHealthStore)  async ->HKWorkout?  {
-//     
-//         let workoutRouteID = route.uuid
-//         
-//         return await withCheckedContinuation { continuation in
-//            // Fetch the workout that corresponds to the workout route
-//             print("Fetching workoutRoute: \(workoutRouteID)")
-//             let predicate = HKQuery.predicateForObject(with: workoutRouteID)
-//             let workoutQuery = HKSampleQuery(sampleType: HKWorkoutType.workoutType(),
-//                                              predicate: predicate,
-//                                              limit: 1,
-//                                              sortDescriptors: nil) { query, results, error in
-//                 guard error == nil else {
-//                    print("Error fetching workout: \(error!.localizedDescription)")
-//                    return continuation.resume(returning: nil)
-//                }
-//                 print("fectched results: \(results) \(results?.count)")
-//                 
-//                if let workouts = results as? [HKWorkout], let workout = workouts.first {
-//                    // Print workout details
-//                    print("Workout Type: \(workout.workoutActivityType)")
-//                    print("Duration: \(workout.duration) seconds")
-//                    print("Start Date: \(workout.startDate)")
-//                    print("End Date: \(workout.endDate)")
-//                    print("Total Energy Burned: \(String(describing: workout.totalEnergyBurned?.doubleValue(for: .kilocalorie()))) kcal")
-//                    print("Total Distance: \(String(describing: workout.totalDistance?.doubleValue(for: .meter()))) meters")
-//                    
-//                    continuation.resume(returning: workout)
-//                } else {
-//                    print("No workout found for this route.")
-//                    continuation.resume(returning: nil)
-//                }
-//                
-//            }
-//            
-//            healthStore.execute(workoutQuery)
-//        }
+
     
     func fetchRouteLocations(for route: HKWorkoutRoute) async throws {
         try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, Error>) in
@@ -254,6 +217,71 @@ class WorkoutViewModel: NSObject, ObservableObject {
             healthStore.execute(locationQuery) // Execute the query
         }
     }
+    
+    
+    
+    
+    // 나중에 개인별로 Total calorie 계산할때 사용할것 지금 버전은 필요가 없음
+    /*
+    
+    func calculateTotalEnergyBurned(startDate: Date, endDate: Date, completion: @escaping (HKQuantity?) -> Void) {
+        let healthStore = HKHealthStore()
+        let activeEnergyBurnedType = HKQuantityType.quantityType(forIdentifier: .activeEnergyBurned)!
+        
+        // 운동 중 누적 activeEnergyBurned 값을 쿼리합니다.
+        let predicate = HKQuery.predicateForSamples(withStart: startDate, end: endDate, options: .strictEndDate)
+        let statisticsQuery = HKStatisticsQuery(quantityType: activeEnergyBurnedType, quantitySamplePredicate: predicate, options: .cumulativeSum) { _, result, _ in
+            guard let activeEnergyBurned = result?.sumQuantity() else {
+                completion(nil)
+                return
+            }
+            
+            // 사용자의 BMR을 가져와서 기초 대사 에너지를 계산합니다.
+            DispatchQueue.main.async {
+                let bmrPerDay = self.fetchBMR() // BMR을 가져오는 사용자 정의 함수 (하루 단위)
+                let workoutDuration = endDate.timeIntervalSince(startDate) / 86400 // 운동 기간을 하루로 변환
+                let basalEnergyBurned = bmrPerDay * workoutDuration // BMR에 운동 시간 비율을 곱합니다.
+                
+                let totalEnergyBurned = activeEnergyBurned.doubleValue(for: .kilocalorie()) + basalEnergyBurned
+                let totalEnergyQuantity = HKQuantity(unit: .kilocalorie(), doubleValue: totalEnergyBurned)
+                
+                completion(totalEnergyQuantity)
+            }
+        }
+        
+        healthStore.execute(statisticsQuery)
+    }
+
+    // 사용자의 BMR을 계산하거나 가져오는 예시 (사용자의 몸무게, 나이 등을 고려)
+    //  추후 수정
+    
+    func fetchBMR() -> Double {
+        // 기초 대사율(BMR) 계산 (단위: kcal/day)
+        // 예: 몸무게, 나이, 성별 등의 변수에 따라 조정
+        return 1500.0 // 예시 값
+    }
+    
+    func calculateBMR(weightInKg: Double, heightInCm: Double, ageInYears: Int, gender: String) -> Double {
+        // Harris-Benedict 공식
+        if gender.lowercased() == "male" {
+            // 남성용 BMR 공식
+            return 88.362 + (13.397 * weightInKg) + (4.799 * heightInCm) - (5.677 * Double(ageInYears))
+        } else {
+            // 여성용 BMR 공식
+            return 447.593 + (9.247 * weightInKg) + (3.098 * heightInCm) - (4.330 * Double(ageInYears))
+        }
+    }
+
+//    // 예제 사용
+//    let weight = 70.0   // 체중(kg)
+//    let height = 175.0  // 키(cm)
+//    let age = 25        // 나이(년)
+//    let gender = "male" // 성별
+//
+//    let bmr = calculateBMR(weightInKg: weight, heightInCm: height, ageInYears: age, gender: gender)
+//    print("기초 대사율(BMR): \(bmr) kcal/day")
+    */
+
 }
 
 
