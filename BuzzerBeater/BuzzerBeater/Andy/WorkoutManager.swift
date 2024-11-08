@@ -32,7 +32,7 @@ class WorkoutManager:  ObservableObject
     
     
     let timeIntervalForRoute = TimeInterval(3)
-    let timeIntervalForWind = TimeInterval(60*1)
+    let timeIntervalForWind = TimeInterval(60*30)
     
     var workout: HKWorkout?
     //   var workoutBuilder: HKWorkoutBuilder?
@@ -58,6 +58,8 @@ class WorkoutManager:  ObservableObject
     var endDate : Date?  = Date()
     var previousLocation: CLLocation?
     var totalDistance: Double = 0
+    var totalEnergyBurned : Double = 0
+    var activeEnergyBurned : Double = 0
     
     func startWorkout(startDate: Date)  {
         // 운동을 시작하기 전에 HKWorkoutBuilder를 초기화
@@ -80,6 +82,7 @@ class WorkoutManager:  ObservableObject
         
         liveWorkoutBuilder = workoutSession.associatedWorkoutBuilder()
         
+      
         guard let liveWorkoutBuilder = liveWorkoutBuilder else {
             print("liveWorkoutBuilder may be nil ")
             return }
@@ -597,69 +600,21 @@ class WorkoutManager:  ObservableObject
         let predicate = HKQuery.predicateForSamples(withStart: startDate, end: endDate, options: .strictEndDate)
         
         // Create the sort descriptor to get the most recent data
-        let sortDescriptor = NSSortDescriptor(key: HKSampleSortIdentifierEndDate, ascending: false)
-        
-        // Create the sample query to fetch the data
-        let query = HKSampleQuery(sampleType: activeEnergyBurnedType,
-                                  predicate: predicate,
-                                  limit: 1,
-                                  sortDescriptors: [sortDescriptor]) { (query, results, error) in
-            guard let results = results, let sample = results.first as? HKQuantitySample else {
-                completion(nil)
+   //     let sortDescriptor = NSSortDescriptor(key: HKSampleSortIdentifierEndDate, ascending: false)
+      
+        let statisticsQuery = HKStatisticsQuery(quantityType: activeEnergyBurnedType, quantitySamplePredicate:  predicate , options: .cumulativeSum) { _, result, _ in
+            guard let result = result, let totalActiveEnergyBurned = result.sumQuantity() else {
+                print("No data available in the fetchActiveEnergyBurned")
                 return
             }
-            
-            // Get the active energy burned value
-            let energyQuantity = sample.quantity
-            
-            // Return the quantity
-            completion(energyQuantity)
+            print("totalActiveEnergyBurned: \(totalActiveEnergyBurned.doubleValue(for:.kilocalorie()))")
+            completion(totalActiveEnergyBurned)
         }
-        
-        // Execute the query
-        healthStore.execute(query)
+        healthStore.execute(statisticsQuery)
     }
 }
 
 
-
-    //
-    //        func workoutSession(_ workoutSession: HKWorkoutSession, didChangeTo toState: HKWorkoutSessionState, from fromState: HKWorkoutSessionState, date: Date) {
-    //
-    //        }
-    //
-    //        func workoutSession(_ workoutSession: HKWorkoutSession, didFailWithError error: any Error) {
-    //
-    //        }
-    //
-    //        func workoutBuilderDidCollectEvent(_ workoutBuilder: HKLiveWorkoutBuilder) {
-    //
-    //        }
-    //        func workoutBuilder(_ workoutBuilder: HKLiveWorkoutBuilder, didCollectDataOf collectedTypes: Set<HKSampleType>) {
-    //            for type in collectedTypes {
-    //                guard let quantityType = type as? HKQuantityType else {
-    //                    return
-    //                }
-    //
-    //                // Calculate statistics for the type.
-    //                let statistics = workoutBuilder.statistics(for: quantityType)
-    //                let label = labelForQuantityType(quantityType)
-    //
-    //                DispatchQueue.main.async() {
-    //                    if let recentQuantity = statistics?.mostRecentQuantity() {
-    //                        // Convert the quantity to a user-friendly string with units
-    //                        let quantityString = recentQuantity.doubleValue(for: HKUnit.meter()) // 예를 들어, 미터 단위로 변환
-    //                        let formattedQuantity = String(format: "%.2f", quantityString) + " " + label
-    //
-    //                        // Assume `quantityLabel` is a UILabel for displaying this data
-    //                        print("Latest \(label): \(formattedQuantity)")
-    //                    } else {
-    //                        print( "No data for \(label)")
-    //                    }
-    //                }
-    //            }
-    //        }
-    //
 
 
 

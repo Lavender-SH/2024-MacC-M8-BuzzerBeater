@@ -12,12 +12,9 @@ import HealthKit
 struct MapPathView: View {
     var workout: HKWorkout // or the appropriate type for your workout data
     let healthStore =  HealthService.shared.healthStore
-    let minDegree = 0.0025
-    
-    @State private var region: MKCoordinateRegion? = MKCoordinateRegion(
-        center: CLLocationCoordinate2D(latitude: 0, longitude: 0), // Default center
-        span: MKCoordinateSpan(latitudeDelta: 0.0025, longitudeDelta: 0.0025) // Default span
-    )
+    let minDegree = 0.000025
+    let mapDisplayAreaPadding = 2.0
+    @State private var region: MKCoordinateRegion?
 
     @State var routePoints: [CLLocation] = []
     @State var coordinates: [CLLocationCoordinate2D] = []
@@ -27,95 +24,96 @@ struct MapPathView: View {
     @State var totalDistance: Double = 0
     @State var activeEnergyBurned: Double = 0
     @State var duration : TimeInterval = 0
+    @State var isDataLoaded : Bool = false
     
     let workoutManager = WorkoutManager.shared
     
     init(workout: HKWorkout) {
         self.workout = workout
-        self.region = MKCoordinateRegion(
-                center: CLLocationCoordinate2D(latitude: 36.017470189362115, longitude: 129.32224097538742),
-                span: MKCoordinateSpan(latitudeDelta: minDegree, longitudeDelta: minDegree)
-            )
-       
+        
     }
     
     var body: some View {
         
         VStack{
-            Text("\(formattedDuration(duration))").font(.caption2)
-            Text("Total Distance: \(formattedDistance(totalDistance))")
-                .font(.caption2)
-            Text("Total Energy Burned: \(formattedEnergyBurned(totalEnergyBurned))")
-                .font(.caption2)
-            Text("Active Energy Burned: \(formattedEnergyBurned(activeEnergyBurned))")
-                .font(.caption2)
-            
-            Map(position: $position, interactionModes: [.all] ){
-                if coordinates.count >= 2 {
-                    ForEach(0..<coordinates.count - 1, id: \.self) { index in
-                        let start = coordinates[index]
-                        let end = coordinates[index + 1]
+            if isDataLoaded {
+                
+                Text("\(formattedDuration(duration))").font(.caption2)
+                Text("Total Distance: \(formattedDistance(totalDistance))")
+                    .font(.caption2)
+                Text("Total Energy Burned: \(formattedEnergyBurned(totalEnergyBurned))")
+                    .font(.caption2)
+                Text("Active Energy Burned: \(formattedEnergyBurned(activeEnergyBurned))")
+                    .font(.caption2)
+                
+                Map(position: $position, interactionModes: [.all] ){
+                    if coordinates.count >= 2 {
+                        ForEach(0..<coordinates.count - 1, id: \.self) { index in
+                            let start = coordinates[index]
+                            let end = coordinates[index + 1]
+                            
+                            let velocity = velocities[index]
+                            let maxVelocity = velocities.max() ?? 10.0
+                            let minVelocity = velocities.min() ?? 0.0
+                            let color = calculateColor(for: velocity, minVelocity: minVelocity, maxVelocity: maxVelocity)
+                            
+                            MapPolyline(coordinates: [start, end])
+                                .stroke(color, lineWidth: 5)
+                        }
+                    }
                     
-                        let velocity = velocities[index]
-                        let maxVelocity = velocities.max() ?? 10.0
-                        let minVelocity = velocities.min() ?? 0.0
-                        let color = calculateColor(for: velocity, minVelocity: minVelocity, maxVelocity: maxVelocity)
+                    MapPolyline(coordinates: coordinates)
+                        .stroke(Color.cyan, lineWidth: 1)
+                    
+                }
+                .mapControls{
+                    MapUserLocationButton()
+                    MapCompass()
+#if !os(watchOS)
+                    MapScaleView()
+#endif
+                }
+                
+            }
+            else {
+                Text("Sky is Blue and Water is Clear!!!")
+                ProgressView()
+            }
+            
+        }
+        .onAppear{
+            // 실해은 순서되로 되나 뒤에 붙어있는 각각의 @esacping closure 들은 각기 다른 시점에 종료된다
+            // swift thinking 이 필요함 비동기적 사고방식을 항상 염두에 둘것.시작은 같으나 각각 다른 시점에 종료되고 혹시 종료되는 시점이
+            // 다음 시점의 프라세스에 영향을 줄것인가에 대한 고민.
+            DispatchQueue.main.async{
+                loadWorkoutData()
+                
+                let totaldistance = workout.metadata?["TotalDistance"]  as? Double ?? 0.0
+                self.totalDistance = totaldistance
+                self.workoutManager.fetchActiveEnergyBurned(startDate: workout.startDate, endDate: workout.endDate) { activeEnergyBurned in
+                    if let activeEnergyBurned  = activeEnergyBurned{
+                        self.activeEnergyBurned = activeEnergyBurned.doubleValue(for: .kilocalorie())
+                        print("activeEnergyBurned fetched successfully \(activeEnergyBurned)")
                         
-                        MapPolyline(coordinates: [start, end])
-                            .stroke(color, lineWidth: 5)
+                    } else {
+                        print("activeEnergyBurned is nil")
                     }
                 }
                 
-                 MapPolyline(coordinates: coordinates)
-                     .stroke(Color.cyan, lineWidth: 1)
-                
-            }
-            .mapControls{
-                MapUserLocationButton()
-                MapCompass()
-#if !os(watchOS)
-                MapScaleView()
-#endif
-            }
-        }
-        .onAppear{
-            DispatchQueue.main.async {
-                loadWorkoutData()
-            }
-            let totaldistance = workout.metadata?["TotalDistance"]  as? Double ?? 0.0
-            self.totalDistance = totaldistance
-            self.workoutManager.fetchTotalEnergyBurned(for: workout) { totalEnergyBurned in
-                if let totalEnergyBurned  = totalEnergyBurned{
-                    self.totalEnergyBurned = totalEnergyBurned.doubleValue(for: .kilocalorie())
-                    print("totalEnergyBurned fetched successfully \(totalEnergyBurned)")
-                } else {
-                    print("totalEnergyBurned is nil")
+                self.workoutManager.fetchTotalEnergyBurned(for: workout) { totalEnergyBurned in
+                    if let totalEnergyBurned  = totalEnergyBurned{
+                        self.totalEnergyBurned = totalEnergyBurned.doubleValue(for: .kilocalorie())
+                        print("totalEnergyBurned fetched successfully \(totalEnergyBurned)")
+                    } else {
+                        print("totalEnergyBurned is nil")
+                    }
                 }
+                self.duration = workout.endDate.timeIntervalSince(workout.startDate)
+             
             }
             
-            self.workoutManager.fetchActiveEnergyBurned(startDate: workout.startDate, endDate: workout.endDate) { activeEnergyBurned in
-                if let activeEnergyBurned  = activeEnergyBurned{
-                    self.activeEnergyBurned = activeEnergyBurned.doubleValue(for: .kilocalorie())
-                    print("activeEnergyBurned fetched successfully \(activeEnergyBurned)")
-                } else {
-                    print("activeEnergyBurned is nil")
-                }
-            }
-            self.duration = workout.endDate.timeIntervalSince(workout.startDate)
-         
-            print("velocities \(velocities.count), coordinates \(coordinates.count) routePoints\(routePoints.count)" )
-         
         }
-//
-//        .onChange(of: routePoints) { _ , _ in
-//            DispatchQueue.main.async {
-//                loadWorkoutData()
-//                if let region = self.region {
-//                    position = .region(region)
-//                }
-//            }
- //        }
-        
+  
     }
     
     func calculateColor(for velocity: Double, minVelocity: Double, maxVelocity: Double) -> Color {
@@ -140,8 +138,6 @@ struct MapPathView: View {
     }
     
     public func getRouteFrom(workout: HKWorkout , completion: @escaping () -> Void) {
-        let mapDisplayAreaPadding = 1.3
-        
         // Create a predicate for objects associated with the workout
         let runningObjectQuery = HKQuery.predicateForObjects(from: workout)
         
@@ -172,41 +168,21 @@ struct MapPathView: View {
                 guard let locations = locations else {
                     fatalError("*** NIL found in locations ***")
                 }
+                print("locations Count \(locations.count)")
+                
                 DispatchQueue.main.async {
                     self.routePoints.append(contentsOf: locations)
+                    getMetric()
                 }
-                // Extract latitude and longitude values from the locations
-                let latitudes = locations.map { $0.coordinate.latitude }
-                let longitudes = locations.map { $0.coordinate.longitude }
                 
-                // Calculate the map region's boundaries
-                guard let maxLat = latitudes.max(), let minLat = latitudes.min(),
-                      let maxLong = longitudes.max(), let minLong = longitudes.min() else {
-                    return
-                }
                 if done {
-                    // Calculate the center and span for the map region
-                    let mapCenter = CLLocationCoordinate2D(latitude: (minLat + maxLat) / 2, longitude: (minLong + maxLong) / 2)
-                    let mapSpan = MKCoordinateSpan(latitudeDelta: max((maxLat - minLat) * mapDisplayAreaPadding , self.minDegree), longitudeDelta: max((maxLong - minLong) * mapDisplayAreaPadding , self.minDegree))
-                    self.healthStore.stop(routeLocationsQuery)
-                    print("mapspan in MapPathView: \(mapSpan)")
-                    // Update the map region and plot the route on the main thread
                     DispatchQueue.main.async {
-                        self.region = MKCoordinateRegion(center: mapCenter, span: mapSpan)
-                        // Stop the route locations query now that we're done
+                        self.healthStore.stop(routeLocationsQuery)
                         completion()
-                     
-                        if let region = self.region {
-                            position = .region(region)
-                        }
-                        
-                        
-                        print("velocities \(velocities.count), coordinates \(coordinates.count) routePoints\(routePoints.count) in the getRouteFrom" )
                     }
-                   
                 }
+                
             }
-            // Execute the `routeLocationsQuery` to get location points within the route
             healthStore.execute(routeLocationsQuery)
         }
         routeQuery.updateHandler = { (routeQuery: HKAnchoredObjectQuery, samples: [HKSample]?, deleted: [HKDeletedObject]?, anchor: HKQueryAnchor?, error: Error?) in
@@ -214,17 +190,48 @@ struct MapPathView: View {
                 print("The update failed.")
                 return
             }
-            // Process updates or additions here if needed
         }
+        // Process updates or additions here if needed
+        
         // Execute the `routeQuery` to fetch workout route samples
         healthStore.execute(routeQuery)
+        
     }
+    
+    func getMetric(){
+        let latitudes = routePoints.map { $0.coordinate.latitude }
+        let longitudes = routePoints.map { $0.coordinate.longitude }
+        
+        // Calculate the map region's boundaries
+        guard let maxLat = latitudes.max(), let minLat = latitudes.min(),
+              let maxLong = longitudes.max(), let minLong = longitudes.min() else {
+            print("mapSpan error will happen!!!")
+            return
+        }
+        let mapCenter = CLLocationCoordinate2D(latitude: (minLat + maxLat) / 2, longitude: (minLong + maxLong) / 2)
+        let mapSpan = MKCoordinateSpan(latitudeDelta: max((maxLat - minLat) * mapDisplayAreaPadding , self.minDegree), longitudeDelta: max((maxLong - minLong) * mapDisplayAreaPadding , self.minDegree))
+        
+        print("mapspan in MapPathView: \(mapSpan)")
+        // Update the map region and plot the route on the main thread
+        DispatchQueue.main.async {
+            self.region = MKCoordinateRegion(center: mapCenter, span: mapSpan)
+            // Stop the route locations query now that we're done
+            if let region = self.region {
+                self.position = .region(region)
+            }
+        }
+    }
+    
     
     func loadWorkoutData() {
         getRouteFrom(workout: workout) {
-            coordinates = routePoints.map { $0.coordinate}
-            velocities = routePoints.map { $0.speed }
+            self.coordinates = self.routePoints.map { $0.coordinate}
+            self.velocities = self.routePoints.map { $0.speed }
+            print("velocities:\(velocities.count), coordinates \(coordinates.count),  routePoints \(routePoints.count) in the getRouteFrom" )
+            self.isDataLoaded = true
         }
+        
+        
     }
     func formattedDuration(_ duration: TimeInterval) -> String {
         let hours = Int(duration) / 3600

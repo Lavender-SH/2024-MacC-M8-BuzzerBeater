@@ -33,7 +33,7 @@ class WorkoutManager: ObservableObject
     
     
     let timeIntervalForRoute = TimeInterval(3)
-    let timeIntervalForWind = TimeInterval(60*1)
+    let timeIntervalForWind = TimeInterval(60*30)
     
     var workout: HKWorkout?
     var workoutBuilder: HKWorkoutBuilder?
@@ -61,7 +61,8 @@ class WorkoutManager: ObservableObject
     var endDate : Date?  = Date()
     var previousLocation: CLLocation?
     var totalDistance: Double = 0
-    
+    var totalEnergyBurned : Double = 0
+    var activeEnergyBurned : Double = 0
     
     func startWorkout(startDate: Date) {
         // 운동을 시작하기 전에 HKWorkoutBuilder를 초기화
@@ -79,6 +80,7 @@ class WorkoutManager: ObservableObject
             return
         }
         self.workoutRouteBuilder = HKWorkoutRouteBuilder(healthStore: self.healthStore, device: .local())
+      
         
         workoutBuilder.beginCollection(withStart: startDate, completion: { (success, error) in
             if success {
@@ -86,7 +88,6 @@ class WorkoutManager: ObservableObject
                 DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
                     self.startTimer()
                 }
-                
             } else {
                 print("Error starting workout collection: \(error?.localizedDescription ?? "Unknown error")")
             }
@@ -102,9 +103,29 @@ class WorkoutManager: ObservableObject
             print("workoutBuilder is nil")
             return
         }
+        // IOS에서 우선 startDate과  endDate사이에 activeEnergyBurned SampleQuantity가 있으면 그것들의 합계를 다시 나의 workout을 통해서
+        // 저장한다.
+        // SampleQuantity가 저장되어있어야  StatisticsQuery로 합계를 가져올수가 았다.
+        // 어째든 workoutBuilder를 통해서 workout을 생성하고 HealthKit에 샘플을 저장하고  HealthKit이 workout 객체에 값을 넣는지 관찰한다.
+        //
+        fetchActiveEnergyBurned(startDate: startDate, endDate: endDate){ activeEnergyBurnedQuantity in
+        
+            if  let activeEnergyBurnedQuantity = activeEnergyBurnedQuantity{
+                let activeEnergyBurned = activeEnergyBurnedQuantity.doubleValue(for: .kilocalorie())
+                    print("activeEnergyBurned in the collectData\(activeEnergyBurnedQuantity)")
+                self.updateActiveEnergyBurned(startDate: startDate, endDate: endDate, activeEnergyBurned)
+            } else {
+                print("activeEnergyBurned in the collectData is nil")
+                self.updateActiveEnergyBurned(startDate: startDate, endDate: endDate, 0)
+            }
+       
+        }
+       
         
         if let metadataForWorkout = metadataForWorkout {
             print("metadata in the collectData\(metadataForWorkout)")
+            
+            
             
             workoutBuilder.addMetadata(metadataForWorkout) { (success, error) in
                 guard success else {
@@ -143,7 +164,7 @@ class WorkoutManager: ObservableObject
         // Apple  공식문서에  session.end()를 build.endCollection보다 먼저 실행함
         //https://developer.apple.com/documentation/healthkit/workouts_and_activity_rings/running_workout_sessions
         //     workoutSession.end() 는 IOS버전에는 있으면 안됨
-  
+        
         guard let workoutBuilder = self.workoutBuilder else {
             print("workoutBuilder is nil ")
             return
@@ -203,7 +224,7 @@ class WorkoutManager: ObservableObject
         }
         // workoutSession이 먼저 종료되어야 한다고 공식문서에 되어있으나 IOS에서 사용하지 않으
         // HKQauantitySample에 추가해봤으나 작동 안함.
-      //  self.updateWorkoutDistance(self.totalDistance )
+        //  self.updateWorkoutDistance(self.totalDistance )
         
         do {
             try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, Error>) in
@@ -273,12 +294,12 @@ class WorkoutManager: ObservableObject
             start: self.startDate ?? Date() ,
             end: self.endDate ?? Date()
         )
-      
+        
         Task{
             do {
-               //   아래코드는 작동 안함.
-                  try await builder.addSamples([distanceSample])
-
+                //   아래코드는 작동 안함.
+                try await builder.addSamples([distanceSample])
+                
             }
             catch
             { print("Error adding distance sample: \(error)")
@@ -293,7 +314,7 @@ class WorkoutManager: ObservableObject
             let totalDistanceInt = Int(totalDistance)
             print("Total Distance: \(totalDistanceInt) m ")
         }
-       
+        
         switch activityType {
         case .sailing:
             print("This workout is sailing.")
@@ -518,50 +539,110 @@ class WorkoutManager: ObservableObject
             return "Data"
         }
     }
- 
+    
     func fetchTotalEnergyBurned(for workout: HKWorkout, completion: @escaping (HKQuantity?) -> Void) {
         // Get the total energy burned directly from the HKWorkout object
-        let totalEnergyBurned = workout.totalEnergyBurned
-        
-        // Return the total energy burned value
-        completion(totalEnergyBurned)
+        if let totalEnergyBurned = workout.totalEnergyBurned {
+            
+            // Return the total energy burned value
+            completion(totalEnergyBurned)
+        } else {
+            fetchActiveEnergyBurned(startDate: workout.startDate, endDate: workout.endDate) {
+                activeEnergyBurned in
+                if let activeEnergyBurned  = activeEnergyBurned{
+                    
+                    completion(activeEnergyBurned)
+                    print("activeEnergyBurned fetched successfully \(activeEnergyBurned)")
+                    
+                } else {
+                    completion(nil)
+                    print("activeEnergyBurned is nil")
+                }
+            }
+        }
     }
-
     func fetchActiveEnergyBurned(startDate: Date, endDate: Date, completion: @escaping (HKQuantity?) -> Void) {
         let healthStore = HKHealthStore()
         
         // Create the quantity type for active energy burned
         let activeEnergyBurnedType = HKObjectType.quantityType(forIdentifier: .activeEnergyBurned)!
+        let datePredicate = HKQuery.predicateForSamples(withStart: startDate, end: endDate, options: [.strictStartDate, .strictEndDate])
         
-        // Create a predicate to filter data between the start and end date
-        let predicate = HKQuery.predicateForSamples(withStart: startDate, end: endDate, options: .strictEndDate)
-        
+        // Get the source for this device (e.g., only include samples from the iPhone)
+        // 현재는 devidePredicate sourcePredicate모두 Query결과가 Null 임
+        // 일단 .or로 값을 보여주고 나중에 미세조정
+        let devicePredicate = HKQuery.predicateForObjects(from: [HKDevice.local()])
+        let sourcePredicate = HKQuery.predicateForObjects(from: [HKSource.`default`()])
         // Create the sort descriptor to get the most recent data
-        let sortDescriptor = NSSortDescriptor(key: HKSampleSortIdentifierEndDate, ascending: false)
+        let predicate1 = NSCompoundPredicate(andPredicateWithSubpredicates: [datePredicate, sourcePredicate])
+        let predicate2 = NSCompoundPredicate(andPredicateWithSubpredicates: [datePredicate, devicePredicate])
+        let orPredicate = NSCompoundPredicate(type:.or, subpredicates: [datePredicate, predicate2, predicate1])
         
-        // Create the sample query to fetch the data
-        let query = HKSampleQuery(sampleType: activeEnergyBurnedType,
-                                  predicate: predicate,
-                                  limit: 1,
-                                  sortDescriptors: [sortDescriptor]) { (query, results, error) in
-            guard let results = results, let sample = results.first as? HKQuantitySample else {
+        let statisticsQuery = HKStatisticsQuery(quantityType: activeEnergyBurnedType, quantitySamplePredicate: orPredicate, options: .cumulativeSum) { _, result, _ in
+            guard let result = result, let totalActiveEnergyBurned = result.sumQuantity() else {
+                print("No data available in the statisticsQuery")
                 completion(nil)
                 return
             }
-            
-            // Get the active energy burned value
-            let energyQuantity = sample.quantity
-            
-            // Return the quantity
-            completion(energyQuantity)
+            let totalActiveEngeryBurned  = totalActiveEnergyBurned.doubleValue(for:.kilocalorie())
+         print("totalActiveEnergyBurned: \(totalActiveEnergyBurned.doubleValue(for:.kilocalorie()))")
+            completion(totalActiveEnergyBurned)
         }
+        healthStore.execute(statisticsQuery)
         
-        // Execute the query
-        healthStore.execute(query)
+        // 임시방편으로 IOS에서만 직접 activeEnergyBurned를 저장한다.
+        
+       
+        
+    }
+    
+    func updateActiveEnergyBurned(startDate : Date, endDate:Date , _ energyBurned: Double) {
+        let energyQuantity = HKQuantity(unit: .kilocalorie(), doubleValue: energyBurned)
+        let activeEnergyBurnedType = HKObjectType.quantityType(forIdentifier: .activeEnergyBurned)!
+        workoutBuilder?.add([HKQuantitySample( type: activeEnergyBurnedType, quantity: energyQuantity, start:startDate, end: endDate)]) { success, error in
+            if !success {
+                print("Error adding energy burned sample: \(error?.localizedDescription ?? "unknown error")")
+            }
+        }
     }
 
 }
+/*    HKSampleQuery 는 하나의 샘플만 가져옴 하나의 workout에 여러 Sample이 존재하고 이것에 대한 합계는 StatisticsQuery를 사용함
+//    func fetchActiveEnergyBurned(startDate: Date, endDate: Date, completion: @escaping (HKQuantity?) -> Void) {
+//        let healthStore = HKHealthStore()
+//        
+//        // Create the quantity type for active energy burned
+//        let activeEnergyBurnedType = HKObjectType.quantityType(forIdentifier: .activeEnergyBurned)!
+//        
+//        // Create a predicate to filter data between the start and end date
+//        let predicate = HKQuery.predicateForSamples(withStart: startDate, end: endDate, options: .strictEndDate)
+//        
+//        // Create the sort descriptor to get the most recent data
+//        let sortDescriptor = NSSortDescriptor(key: HKSampleSortIdentifierEndDate, ascending: false)
+//        
+//        // Create the sample query to fetch the data
+//        let query = HKSampleQuery(sampleType: activeEnergyBurnedType,
+//                                  predicate: predicate,
+//                                  limit: 1,
+//                                  sortDescriptors: [sortDescriptor]) { (query, results, error) in
+//            guard let results = results, let sample = results.first as? HKQuantitySample else {
+//                completion(nil)
+//                return
+//            }
+//            
+//            // Get the active energy burned value
+//            let energyQuantity = sample.quantity
+//            
+//            // Return the quantity
+//            completion(energyQuantity)
+//        }
+//        
+//        // Execute the query
+//        healthStore.execute(query)
+//    }
 
+
+*/
 /*
  
  1. **`HKWorkout` 생성 및 저장**:
