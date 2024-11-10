@@ -507,7 +507,10 @@ class WorkoutManager: ObservableObject
         guard status == .sharingAuthorized else {
             throw HealthKitError.authorizationFailed
         }
-        
+        guard let workoutRouteBuilder = workoutRouteBuilder else {
+            print("workoutRouteBuilder is nil. Cannot insert route data.")
+            throw HealthKitError.selfNilError
+        }
         // 비동기 작업으로 변환
         try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, Error>) in
             routeDataQueue.async { [weak self] in
@@ -516,7 +519,7 @@ class WorkoutManager: ObservableObject
                     return
                 }
                 
-                self.workoutRouteBuilder?.insertRouteData(locations) { success, error in
+                workoutRouteBuilder.insertRouteData(locations) { success, error in
                     if let error = error {
                         print("Error inserting route data: \(error.localizedDescription)")
                         return  continuation.resume(throwing: HealthKitError.routeInsertionFailed(error.localizedDescription))
