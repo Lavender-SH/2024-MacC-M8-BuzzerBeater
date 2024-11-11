@@ -137,66 +137,79 @@ struct MapPathView: View {
         }
     }
     
-    public func getRouteFrom(workout: HKWorkout , completion: @escaping () -> Void) {
+    
+    public func getRouteFrom(workout: HKWorkout, completion: @escaping (_ success: Bool, _ error: Error?) -> Void) {
         // Create a predicate for objects associated with the workout
         let runningObjectQuery = HKQuery.predicateForObjects(from: workout)
         
         // 1. `routeQuery`: Retrieve all workout route samples associated with the workout.
         let routeQuery = HKAnchoredObjectQuery(type: HKSeriesType.workoutRoute(), predicate: runningObjectQuery, anchor: nil, limit: HKObjectQueryNoLimit) { (routeQuery, samples, deletedObjects, anchor, error) in
             
-            guard error == nil else {
-                fatalError("The initial query failed.")
-            }
-            
-            // Ensure we have some route samples to work with
-            guard samples?.count ?? 0 > 0 else {
-                print("samples(route) is empty")
+            // 오류가 발생하면 completion에 전달하고 함수 종료
+            if let error = error {
+                print("The initial query failed with error: \(error.localizedDescription)")
+                completion(false, error)
                 return
             }
             
-            // Assuming the first sample is the route we want to use
-            let route = samples?.first as! HKWorkoutRoute
+            // Route가 없으면 completion에 false 전달하고 함수 종료
+            guard let route = samples?.first as? HKWorkoutRoute else {
+                print("No route samples found.")
+                completion(false, nil)
+                return
+            }
             
             // 2. `routeLocationsQuery`: Retrieve locations from the specific workout route.
             let routeLocationsQuery = HKWorkoutRouteQuery(route: route) { (routeLocationsQuery, locations, done, error) in
-                // This block may be called multiple times as location data arrives in chunks.
+                
+                // 오류 발생 시 completion에 전달하고 함수 종료
                 if let error = error {
-                    print("Error \(error.localizedDescription)")
+                    print("Error retrieving locations: \(error.localizedDescription)")
+                    completion(false, error)
                     return
                 }
                 
+                // 위치 데이터가 비어 있는 경우 completion 호출 후 종료
                 guard let locations = locations else {
-                    fatalError("*** NIL found in locations ***")
+                    print("No locations found in route.")
+                    completion(false, nil)
+                    return
                 }
-                print("locations Count \(locations.count)")
                 
+                print("Locations count: \(locations.count)")
+                
+                // 위치 데이터를 저장하고 후속 작업을 수행
                 DispatchQueue.main.async {
                     self.routePoints.append(contentsOf: locations)
-                    getMetric()
+                    self.getMetric()  // 필요에 따라 정의된 메트릭 계산 함수 호출
                 }
                 
+                // 위치 데이터의 마지막 청크가 도착했을 때, 쿼리 정지 및 성공 콜백
                 if done {
                     DispatchQueue.main.async {
                         self.healthStore.stop(routeLocationsQuery)
-                        completion()
+                        completion(true, nil)
                     }
                 }
-                
             }
-            healthStore.execute(routeLocationsQuery)
+            
+            // routeLocationsQuery 실행
+            self.healthStore.execute(routeLocationsQuery)
         }
-        routeQuery.updateHandler = { (routeQuery: HKAnchoredObjectQuery, samples: [HKSample]?, deleted: [HKDeletedObject]?, anchor: HKQueryAnchor?, error: Error?) in
-            guard error == nil else {
-                print("The update failed.")
+        
+        // `routeQuery`가 업데이트되었을 때 처리
+        routeQuery.updateHandler = { (routeQuery, samples, deleted, anchor, error) in
+            if let error = error {
+                print("Update query failed with error: \(error.localizedDescription)")
                 return
             }
+            // 필요 시 업데이트를 처리할 수 있습니다.
         }
-        // Process updates or additions here if needed
         
-        // Execute the `routeQuery` to fetch workout route samples
+        // routeQuery 실행
         healthStore.execute(routeQuery)
-        
     }
+
     
     func getMetric(){
         let latitudes = routePoints.map { $0.coordinate.latitude }
@@ -224,15 +237,20 @@ struct MapPathView: View {
     
     
     func loadWorkoutData() {
-        getRouteFrom(workout: workout) {
-            self.coordinates = self.routePoints.map { $0.coordinate}
-            self.velocities = self.routePoints.map { $0.speed }
-            print("velocities:\(velocities.count), coordinates \(coordinates.count),  routePoints \(routePoints.count) in the getRouteFrom" )
-            self.isDataLoaded = true
+        getRouteFrom(workout: workout) { success, error in
+            if success {
+                self.coordinates = self.routePoints.map { $0.coordinate}
+                self.velocities = self.routePoints.map { $0.speed }
+                print("velocities:\(velocities.count), coordinates \(coordinates.count),  routePoints \(routePoints.count) in the getRouteFrom" )
+                self.isDataLoaded = true
+            } else {
+                self.isDataLoaded = true
+                print("loadWorkoutData error \(error?.localizedDescription ?? "unknown error")")
+            }
         }
-        
-        
     }
+    
+    
     func formattedDuration(_ duration: TimeInterval) -> String {
         let hours = Int(duration) / 3600
         let minutes = (Int(duration) % 3600) / 60
