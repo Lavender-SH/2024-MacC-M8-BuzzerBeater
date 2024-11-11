@@ -8,6 +8,7 @@ import CoreLocation
 import HealthKit
 import Foundation
 import SwiftUI
+import Combine
 
 
 struct metadataForRouteDataPoint: Equatable, Identifiable, Codable{
@@ -16,9 +17,9 @@ struct metadataForRouteDataPoint: Equatable, Identifiable, Codable{
     var boatHeading : Double?
     var windSpeed: Double  // m/s
     var windDirection: Double?  //deg
-    var windCorrectionDetent : Double
-    
+    var windAdjustedDirection : Double?
 }
+
 
 
 
@@ -60,6 +61,10 @@ class WorkoutManager:  ObservableObject
     var totalDistance: Double = 0
     var totalEnergyBurned : Double = 0
     var activeEnergyBurned : Double = 0
+    var cancellables: Set<AnyCancellable> = []
+    private let locationChangeThreshold: CLLocationDistance = 10.0 // 10 meters
+    private let headingChangeThreshold: CLLocationDegrees = 15.0   // 15 degrees
+    
     
     func startWorkout(startDate: Date)  {
         // 운동을 시작하기 전에 HKWorkoutBuilder를 초기화
@@ -357,64 +362,127 @@ class WorkoutManager:  ObservableObject
     }
     
     
+//    func startTimer() {
+//        print("startTimer started")
+//        timerForLocation = Timer.scheduledTimer(withTimeInterval: timeIntervalForRoute, repeats: true) { [weak self] _ in
+//            print("timerForLocation started ")
+//            guard let self = self else {
+//                print("weak self is nil")
+//                return }
+//            if let location = self.locationManager.lastLocation  {
+//                print("location.horizontalAccuracy: \(location.horizontalAccuracy) location.verticalAccuracy: \(location.verticalAccuracy) ")
+//                if location.horizontalAccuracy < 30 && location.horizontalAccuracy > 0 {
+//                    Task{
+//                        do {
+//                            let distance = location.distance(from: self.previousLocation ?? location)
+//                            print("insterting RouteData \(location) distance: \(distance)")
+//                            try await self.insertRouteData([location])
+//                            //  현재의  location값을 과거 location 값으로 정함
+//                            self.previousLocation = location
+//                            self.totalDistance += distance
+//                            
+//                            print("totalDistance: \(self.totalDistance ) ")
+//                            
+//                        } catch {
+//                            print("insertRouteData error: \(error)")
+//                        }
+//                    }
+//                } else {
+//                    print("location accuracy is too low")
+//                }
+//            } else {
+//                print("location is nil")
+//            }
+//            
+//        }
+//        
+//        timerForWind = Timer.scheduledTimer(withTimeInterval: timeIntervalForWind ,  repeats: true) { [weak self] _ in
+//            // locationManager에값이 있지만 직접 다시 불러오는걸로 테스트를 해보기로함.
+//            // 이건 태스트목적뿐이고 실제는 그럴 필요가 전혀 없음.
+//            guard let self = self else { return }
+//            self.locationManager.locationManager.requestLocation()
+//            if let location = self.locationManager.locationManager.location {
+//                // wind 정보 추가  WindDetector에서 direction, speed 정보를 가져와서 metadata 에 저장
+//                Task{
+//                    await self.windDetector.fetchCurrentWind(for: location)
+//                    let metadataForRouteDataPoint = metadataForRouteDataPoint(id: UUID(),
+//                                                                              timeStamp: Date(),
+//                                                                              boatHeading: self.locationManager.heading?.trueHeading,
+//                                                                              windSpeed: self.windDetector.speed ?? 0,
+//                                                                              windDirection: self.windDetector.direction,
+//                                                                              windCorrectionDetent: self.windDetector.windCorrectionDetent
+//                    )
+//                    
+//                    self.metadataForRouteDataPointArray.append(metadataForRouteDataPoint)
+//                    print("metadataForRouteDataPointArray appended...")
+//                }
+//            }
+//        }
+//        
+//    }
+//
+    
     func startTimer() {
         print("startTimer started")
-        timerForLocation = Timer.scheduledTimer(withTimeInterval: timeIntervalForRoute, repeats: true) { [weak self] _ in
-            print("timerForLocation started ")
-            guard let self = self else {
-                print("weak self is nil")
-                return }
-            if let location = self.locationManager.lastLocation  {
-                print("location.horizontalAccuracy: \(location.horizontalAccuracy) location.verticalAccuracy: \(location.verticalAccuracy) ")
-                if location.horizontalAccuracy < 30 && location.horizontalAccuracy > 0 {
-                    Task{
-                        do {
-                            let distance = location.distance(from: self.previousLocation ?? location)
-                            print("insterting RouteData \(location) distance: \(distance)")
-                            try await self.insertRouteData([location])
-                            //  현재의  location값을 과거 location 값으로 정함
-                            self.previousLocation = location
-                            self.totalDistance += distance
-                            
-                            print("totalDistance: \(self.totalDistance ) ")
-                            
-                        } catch {
-                            print("insertRouteData error: \(error)")
-                        }
-                    }
-                } else {
-                    print("location accuracy is too low")
+        Publishers.CombineLatest(LocationManager.shared.locationPublisher, LocationManager.shared.headingPublisher)
+            .filter { [weak self] newLocation, newHeading in
+                guard self != nil else {
+                    print("weak self is nil")
+                    return false
                 }
-            } else {
-                print("location is nil")
+                
+                // 위치 정확도가 50 미터 이하일 때만 처리
+                return newLocation.horizontalAccuracy < 50
             }
-            
-        }
-        
-        timerForWind = Timer.scheduledTimer(withTimeInterval: timeIntervalForWind ,  repeats: true) { [weak self] _ in
-            // locationManager에값이 있지만 직접 다시 불러오는걸로 테스트를 해보기로함.
-            // 이건 태스트목적뿐이고 실제는 그럴 필요가 전혀 없음.
-            guard let self = self else { return }
-            self.locationManager.locationManager.requestLocation()
-            if let location = self.locationManager.locationManager.location {
-                // wind 정보 추가  WindDetector에서 direction, speed 정보를 가져와서 metadata 에 저장
+            .sink { [weak self] newLocation, newHeading in
+                guard let self = self else {
+                    print("Weak self is nil")
+                    return
+                }
+                
                 Task{
-                    await self.windDetector.fetchCurrentWind(for: location)
-                    let metadataForRouteDataPoint = metadataForRouteDataPoint(id: UUID(),
-                                                                              timeStamp: Date(),
-                                                                              boatHeading: self.locationManager.heading?.trueHeading,
-                                                                              windSpeed: self.windDetector.speed ?? 0,
-                                                                              windDirection: self.windDetector.direction,
-                                                                              windCorrectionDetent: self.windDetector.windCorrectionDetent
-                    )
-                    
-                    self.metadataForRouteDataPointArray.append(metadataForRouteDataPoint)
-                    print("metadataForRouteDataPointArray appended...")
+                    do {
+                        let distance = newLocation.distance(from: self.previousLocation ?? newLocation)
+                        print("insterting RouteData \(newLocation) distance: \(distance)")
+                        
+                        if self.previousLocation == nil || distance > self.locationChangeThreshold || abs(self.previousLocation?.course ?? 0 - newLocation.course) > self.headingChangeThreshold {
+                            // insertRouteData 호출을 조건에 맞게 처리
+                            try await self.insertRouteData([newLocation])
+                        }
+                        //  현재의  location값을 과거 location 값으로 정함
+                        self.previousLocation = newLocation
+                        self.totalDistance += distance
+                        
+                        print("totalDistance: \(String(describing: self.totalDistance) ) ")
+                        
+                    } catch {
+                        print("insertRouteData error: \(error)")
+                    }
                 }
             }
-        }
+            .store(in: &cancellables)
+        
+        
+        windDetector.windPublisher
+            .sink{  [weak self] windData in
+                guard let self = self else {
+                    print("weak self is nil")
+                    return }
+                let metadataForRouteDataPoint = metadataForRouteDataPoint(
+                    id: UUID(),
+                    timeStamp: windData.timestamp,
+                    boatHeading: self.locationManager.heading?.trueHeading,
+                    windSpeed: windData.speed,
+                    windDirection: windData.direction,
+                    windAdjustedDirection: windData.adjustedDirection
+                )
+                
+                self.metadataForRouteDataPointArray.append(metadataForRouteDataPoint)
+                print("metadataForRouteDataPointArray appended...")
+            }.store(in: &cancellables   )
         
     }
+    
     
     
     func insertRouteData(_ locations: [CLLocation]) {

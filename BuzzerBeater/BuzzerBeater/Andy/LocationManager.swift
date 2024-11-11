@@ -15,8 +15,10 @@
 //
 // 현재는 locationManager가 정보가 업데이트만 되면 계속 호출되는데 이것은 리소스 낭비가 됨
 // 추후에는 필요할때만 locationManager => True Wind update => ApparentWindUpdate => SailingAngleUpdate => SailingDataCollector
-// 이순서대로 한번씩만 실행되게 하면 좀더 효율적으로 작동할것임.
+// 이순서대로 한번씩만 실행되게 하면 좀더 효율적으로 작동할것임
 
+// DELEGATE method모두 없애고 Combine/Publisher로하기로 함
+import SwiftUI
 import CoreLocation
 import Combine
 
@@ -63,9 +65,11 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
     @Published var previousBoatCourse: CLLocationDirection = 0.0
     @Published var previousBoatSpeed :  CLLocationSpeed = 0.0 // 속도 (m/s)
     
+    private var lastHeading : CLHeading?
+    
     let distanceFilter = 1.0
     let headingFilter  = 1.0
-    let locationUpdateTimeInterval = 1.0
+    let locationUpdateTimeInterval = 3
     let boatSpeedBuffer = 0.3
     
     override init() {
@@ -78,26 +82,28 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
         checkAuthorizationStatus()
         
         authorizationStatusSubject
-                  .sink { [weak self] status in
+            .sink { [weak self] status in
                       self?.handleAuthorizationStatus(status)
                   }
                   .store(in: &cancellables)
         
     }
+    
     deinit {
         
         stopUpdatingLocationAndHeading()
     }
+    
     func handleAuthorizationStatus(_ status: CLAuthorizationStatus ) {
         switch status {
         case .authorizedWhenInUse, .authorizedAlways:
             
             print("authorizedWhenInUse or authorizedAlways")
-            locationManager.startUpdatingLocation()
-            locationManager.startUpdatingHeading()
-            startLocationUpdateTimer()
-            // 나중에 콤바인으로 전환
-            //     startUpdatingLocationAndHeading()
+//            locationManager.startUpdatingLocation()
+//            locationManager.startUpdatingHeading()
+//            startLocationUpdateTimer()
+          //Combine Publiser방식으로 전환
+            startUpdatingLocationAndHeading()
             showAlert = false
             
         case .denied, .restricted:
@@ -110,12 +116,14 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
             showAlert = false
             
         @unknown default:
-            return
+            showAlert = true
+            
         }
     }
     
     func checkAuthorizationStatus() {
         let status = locationManager.authorizationStatus
+        print("locationManagerStatus \(status)")
         if status == .notDetermined {
             locationManager.requestWhenInUseAuthorization()
         } else {
@@ -123,15 +131,28 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
         }
     }
     // GPS Info
+//    private func startLocationUpdateTimer() {
+//        updateTimer = Timer.scheduledTimer(withTimeInterval: locationUpdateTimeInterval, repeats: true) { [weak self] _ in
+//            guard let self = self else { return }
+//            self.locationManager.requestLocation()
+//            if let location = self.locationManager.location {
+//                self.updateLocation(location)
+//                self.locationPublisher.send(location)
+//            }
+//        }
+//    }
+//
     private func startLocationUpdateTimer() {
-        updateTimer = Timer.scheduledTimer(withTimeInterval: locationUpdateTimeInterval, repeats: true) { [weak self] _ in
-            guard let self = self else { return }
-            self.locationManager.requestLocation()
-            if let location = self.locationManager.location {
-                self.updateLocation(location)
-                self.locationPublisher.send(location)
-            }
-        }
+      Timer.publish(every: TimeInterval(locationUpdateTimeInterval), on: .main, in: .common)
+            .autoconnect() // Timer가 자동으로 시작하도록 설정
+            .sink { [weak self] _ in
+                guard let self = self else { return }
+                self.locationManager.requestLocation()
+                if let location = self.locationManager.location {
+                    self.updateLocation(location)
+                    self.locationPublisher.send(location)
+                }
+            } .store(in: &cancellables)
     }
     private func updateLocation(_ location: CLLocation) {
         
@@ -141,7 +162,6 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
             self.speed = max(location.speed, 0)
             self.course = max(location.course, 0)
             self.lastLocation = location
-            
             self.previousBoatCourse  = self.boatCourse
             self.previousBoatSpeed = self.boatSpeed
             
@@ -156,7 +176,9 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
     private func updateHeading(_ heading: CLHeading) {
         DispatchQueue.main.async {
             self.heading = heading
+            self.lastHeading = heading
             self.boatCourse = self.boatSpeed > self.boatSpeedBuffer ? self.course : heading.trueHeading
+            
             print("didUpdateHeading: speed: \(self.boatSpeed)m/s course: \(String(format: "%.f", self.boatCourse))º")
         }
     }
@@ -167,16 +189,18 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
     
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
         if let newLocation = locations.last {
-            updateLocation(newLocation)
+            self.lastLocation = newLocation
             locationPublisher.send(newLocation)
         }
+        return
     }
     // Magnetic Info : 그래서 분리했음.
     func locationManager(_ manager: CLLocationManager, didUpdateHeading newHeading: CLHeading) {
-        //주의 :  sef.course 가 유효한 값인지 꼭 체크해볼 필요가있음
-        updateHeading(newHeading)
+      //  주의 :  sef.course 가 유효한 값인지 꼭 체크해볼 필요가있음
+       
         headingPublisher.send(newHeading)
-        
+
+        return
     }
     
     func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
@@ -199,7 +223,7 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
     }
     private func showAlert(message: String) {
             // 사용자에게 경고 메시지 표시
-            // 예: UIAlertController 사용하여 메시지 표시
+          
             print(message) // 대체로는 사용자에게 알림을 띄우는 방법을 사용
         }
     
@@ -209,27 +233,61 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
         authorizationStatusSubject.send(status)
         
     }
-    
+   
     // 나중 콤바인은 정리 !!!
     func startUpdatingLocationAndHeading() {
         locationManager.startUpdatingLocation()
         locationManager.startUpdatingHeading()
+        
         startLocationUpdateTimer()
-        locationManager.publisher(for: \.location)
+        
+        locationPublisher
             .compactMap { $0 }
+            .filter { [weak self] newLocation in
+                print("filtered location\(newLocation)")
+                guard let lastLocation = self?.lastLocation else {
+                    self?.lastLocation = newLocation
+                    return true // 첫 번째 위치는 항상 퍼블리시
+                }
+                print("filtered location\(newLocation)")
+                let distance = newLocation.distance(from: lastLocation)
+                if distance >= self?.distanceFilter  ?? 3 {
+                    // 10m 이상 차이날 때만 업데이트
+                    return true
+                } else {
+                    return false
+                }
+            }
             .sink { [weak self] location in
                 self?.updateLocation(location)
-                self?.locationPublisher.send(location)
             }
             .store(in: &cancellables)
         
-        locationManager.publisher(for: \.heading)
+        headingPublisher
             .compactMap { $0 }
+            .filter { [weak self] newHeading in
+                guard let lastHeading = self?.lastHeading else {
+                    self?.lastHeading = newHeading
+                    return true // 첫 번째 값은 항상 퍼블리시
+                }
+                let angleDifference = abs(newHeading.trueHeading - lastHeading.trueHeading)
+                if angleDifference >= self?.headingFilter ?? 1 {
+                    self?.lastHeading = newHeading // 차이가 15도 이상일 때만 업데이트
+                    return true
+                } else {
+                    return false
+                }
+            }
             .sink { [weak self] heading in
                 self?.updateHeading(heading)
-                self?.headingPublisher.send(heading)
+                if let lastLocation = self?.lastLocation {
+                    self?.updateLocation(lastLocation)
+                }
             }
             .store(in: &cancellables)
+        
+       
+        
     }
     
     func stopUpdatingLocationAndHeading() {

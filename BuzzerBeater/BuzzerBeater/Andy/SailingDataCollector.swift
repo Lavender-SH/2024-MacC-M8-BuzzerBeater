@@ -15,130 +15,118 @@ import HealthKit
 struct SailingDataPoint: Equatable, Identifiable, Codable{
     var id: UUID = UUID()
     var timeStamp: Date
-
+    
     var latitude: Double //deg
     var longitude: Double //deg
-  
+    
     var boatSpeed: Double  // m/s
     var boatCourse: Double // deg
     var boatHeading : Double?
     
-    var windSpeed: Double?  // m/s
+    var windSpeed: Double  // m/s
     var windDirection: Double?  //deg
-    var windCorrectionDetent : Double
-       
+    var windAdjustedDirecton: Double?
+    
 }
 
 class SailingDataCollector : ObservableObject {
     static let shared = SailingDataCollector()
-
+    
     @Published var sailingDataPointsArray: [SailingDataPoint] = []
-
+    
     let locationManager = LocationManager.shared
     let windDetector = WindDetector.shared
     
-    var startDate :Date = Date()
-    var endDate  : Date = Date()
+    var startDate :Date?
+    var endDate  : Date?
     
     // EnvironmentObject를 사용하는것과 어떻게 다르지?? 항상 햇갈림
     // 모델 vs모델 인경우  파라메터로 주입시키고 값을 가져다쓰는 방식을 써봄
     //보통 뷰모델일때 @ObservedObject나 @EnvironmentObject를 사용하니까 일단 피함
     var cancellables: Set<AnyCancellable> = []
     
+    private var lastLocation: CLLocation?
+    private var lastHeading: CLHeading?
+    
+    private let locationChangeThreshold: CLLocationDistance = 10.0 // 10 meters
+    private let headingChangeThreshold: CLLocationDegrees = 15.0   // 15 degrees
+    
+    
     init() {
-        if CLLocationManager().authorizationStatus == .authorizedAlways || CLLocationManager().authorizationStatus == .authorizedWhenInUse  {
-                    print("start collect data")
-                    self.startCollectingData()
-                } else {
-                    print("not authorized to collect data")
-                    locationManager.checkAuthorizationStatus()
-                }
+        if locationManager.locationManager.authorizationStatus == .authorizedAlways || locationManager.locationManager.authorizationStatus == .authorizedWhenInUse  {
+            print("start collect data")
+            self.startCollectingData()
+        } else {
+            print("not authorized to collect data")
+            locationManager.checkAuthorizationStatus()
+        }
+        
+        
     }
     
-   
+    
     deinit {
-          stopTimers() // 클래스가 소멸될 때 모든 타이머 종료
-      }
+        stopTimers() // 클래스가 소멸될 때 모든 타이머 종료
+    }
     // heading이 15도 이상 바뀌었을때도 고려해서 넣어주자.
     func stopTimers() {
-          cancellables.removeAll() // 구독을 모두 취소하여 타이머 중지
-      }
+        cancellables.removeAll() // 구독을 모두 취소하여 타이머 중지
+    }
     
     func startCollectingData() {
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-                  self.collectSailingData()
-            
-              }
-        
-        let timerPublisher60 = Timer.publish(every: 60, on: .main,  in: .common)
-        let timerPublisher01 = Timer.publish(every: 3, on:  .main, in :.common)
-        
-        timerPublisher60
-            .autoconnect()
-            .sink { [weak self] _ in
-                self?.collectSailingData()
-            }
-            .store(in: &cancellables)
-        
-    // 15이상 값이 바뀌면 저장함.
-        
-       timerPublisher01
-            .autoconnect()
-            .sink  { [weak self] _ in
-                
-                if self?.isHeadingChange(by: 15) == true {
-                    print("isHeadingChange == true")
-                    self?.collectSailingData()
-                }
+    
+        Publishers.CombineLatest3(LocationManager.shared.locationPublisher, LocationManager.shared.headingPublisher, WindDetector.shared.windPublisher)
+            .sink { [weak self] newLocation, newHeading, newWind in
+                self?.handleLocationAndHeadingUpdate(newLocation: newLocation, newHeading: newHeading, newWind: newWind)
             }
             .store(in: &cancellables)
         
     }
-    
-    func isHeadingChange(by: Double) -> Bool {
-        
-        if locationManager.boatSpeed > 0.3 {
-          
-            let currentAngle = Int(locationManager.boatCourse)
-            let previousAngle = Int(locationManager.previousBoatCourse)
-            let difference =  locationManager.boatCourse  - locationManager.previousBoatCourse
-            print("difference Angle current: \(currentAngle) prev: \(previousAngle)")
-
-            if  difference > by {
-                return true
+    private func handleLocationAndHeadingUpdate(newLocation: CLLocation, newHeading: CLHeading, newWind: WindData) {
+        // 위치 변화량 검사
+        if let lastLocation = lastLocation {
+            let distance = newLocation.distance(from: lastLocation)
+            if distance < locationChangeThreshold {
+                return // 위치 변화가 충분하지 않으면 업데이트하지 않음
             }
-        } else {
-            print("boat Speed is 0")
-            return false
         }
-    
-            
-        return false
-     
+        
+        // 헤딩 변화량 검사
+        if let lastHeading = lastHeading {
+            let angleDifference = abs(newHeading.trueHeading - lastHeading.trueHeading)
+            if angleDifference < headingChangeThreshold {
+                return // 헤딩 변화가 충분하지 않으면 업데이트하지 않음
+            }
+        }
+        
+        // 조건에 만족하는 경우에만 updateData 호출
+        updateData(location: newLocation, heading: newHeading, wind: newWind)
+        
+        // 마지막 위치와 헤딩 업데이트
+        lastLocation = newLocation
+        lastHeading = newHeading
     }
     
-    
-    func collectSailingData() {
-        if locationManager.lastLocation == nil {
-            print("lastLocation is nil")
-            return
-        }
+    func updateData(location: CLLocation, heading: CLHeading, wind: WindData) {
+        //  클라스에 제대로 데이타가 들어가있다고 가정
+        
+        print("Received updated location and heading in SailingDataCollector")
         let currentTime = Date()
-        let latitude = locationManager.latitude
-        let longitude = locationManager.longitude
-  
-        let boatSpeed =  locationManager.boatSpeed
+        let latitude = location.coordinate.latitude
+        let longitude = location.coordinate.longitude
+        
+        let boatSpeed =  location.speed
         
         //boatSpeed == 0 이면 locationManager에서  boatCourse = locationManager.heading?.trueHeading
         //boatSpeed > 0 이면  boatCourse = locationManager.course
         
-        let boatCourse = locationManager.boatCourse
-        let boatHeading = locationManager.heading?.trueHeading   // 값이 존재하지 않으면  nil
+        let boatCourse = location.course
+        let boatHeading = heading.trueHeading  // 값이 존재하지 않으면  nil
         
-        let windSpeed = windDetector.speed
-        let windDirection = windDetector.direction
-        let windCorrectionDetent = windDetector.windCorrectionDetent
-      
+        let windSpeed = wind.speed
+        let windDirection = wind.direction
+        let windAdjustedDirection = wind.adjustedDirection
+        
         let sailingDataPoint = SailingDataPoint(id: UUID(),
                                                 timeStamp: currentTime,
                                                 latitude: latitude,
@@ -148,15 +136,35 @@ class SailingDataCollector : ObservableObject {
                                                 boatHeading: boatHeading,
                                                 windSpeed: windSpeed,
                                                 windDirection: windDirection,
-                                                windCorrectionDetent: windCorrectionDetent
-         )
+                                                windAdjustedDirecton: windAdjustedDirection
+        )
         
         self.sailingDataPointsArray.append(sailingDataPoint)
         print("SailingDataPointsArray count:\(self.sailingDataPointsArray.count) data: \(String(describing: self.sailingDataPointsArray.last))")
         
-        
     }
     
+    
+    func isHeadingChange(by: Double) -> Bool {
+        
+        if locationManager.boatSpeed > 0.3 {
+            let currentAngle = Int(locationManager.boatCourse)
+            let previousAngle = Int(locationManager.previousBoatCourse)
+            let difference =  locationManager.boatCourse  - locationManager.previousBoatCourse
+            print("difference Angle current: \(currentAngle) prev: \(previousAngle)")
+            
+            if  difference > by {
+                return true
+            }
+        } else {
+            print("boat Speed is 0")
+            return false
+        }
+        
+        
+        return false
+        
+    }
     
 }
 

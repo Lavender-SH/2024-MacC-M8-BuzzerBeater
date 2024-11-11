@@ -31,7 +31,7 @@ class ApparentWind: ObservableObject {
 
         
         Publishers.CombineLatest4(windDetector.$speed, windDetector.$adjustedDirection, locationManager.$heading, locationManager.$lastLocation)
-            .throttle(for: .milliseconds(500), scheduler: RunLoop.main, latest: true)
+            .throttle(for: .milliseconds(2000), scheduler: RunLoop.main, latest: true)
             .sink { [weak self] _ , _ , _ ,_ in
                 self?.calcApparentWind()
                        }
