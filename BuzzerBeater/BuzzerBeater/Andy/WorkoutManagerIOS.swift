@@ -95,6 +95,7 @@ class WorkoutManager: ObservableObject
                     self.startTimer()
                     //for test to writable.
                     self.updateActiveEnergyBurned(startDate: startDate, endDate: Date(), 1.0)
+                    self.addHeartRateSample(heartRate: 77, date: Date())
                     
                 }
 //                workoutBuilder.addWorkoutActivity(workoutActivity){ (success, error) in
@@ -167,6 +168,7 @@ class WorkoutManager: ObservableObject
             }
             
         }
+        
         if let metadataForWorkout = metadataForWorkout {
             print("metadata in the collectData\(metadataForWorkout)")
             workoutBuilder.addMetadata(metadataForWorkout) { (success, error) in
@@ -337,8 +339,27 @@ class WorkoutManager: ObservableObject
         }
     }
     
-    // 이 함수 작동안함 에러도 없고 작동도 안하고  왜  try await builder.addSamples([distanceSample]) 들어가면 답이없음.
-    // 위의원인은 finishworkout 전에 실행되야함.
+    
+    func addHeartRateSample(heartRate: Double, date: Date) {
+        // 심박수의 단위를 분당 박동수(bpm)로 설정
+        guard let heartRateType = HKQuantityType.quantityType(forIdentifier: .heartRate) else { return }
+        let heartRateUnit = HKUnit.count().unitDivided(by: HKUnit.minute())
+        let heartRateQuantity = HKQuantity(unit: heartRateUnit, doubleValue: heartRate)
+        
+        // 심박수 샘플 생성
+        let heartRateSample = HKQuantitySample(type: heartRateType, quantity: heartRateQuantity, start: date, end: date)
+        
+        // 샘플 저장
+        healthStore.save(heartRateSample) { success, error in
+            if success {
+                print("Heart rate sample saved successfully.")
+            } else if let error = error {
+                print("Error saving heart rate sample: \(error)")
+            }
+        }
+    }
+
+    
     func updateWorkoutDistance(startDate : Date, endDate: Date, _ distanceInMeters: Double ,  completion: @escaping (Bool, Error?) -> Void ) {
         guard let builder = self.workoutBuilder else {
             print("workoutBuilder is nil")
@@ -455,7 +476,7 @@ class WorkoutManager: ObservableObject
             
         }
         
-        timerForWind = Timer.scheduledTimer(withTimeInterval: timeIntervalForRoute ,  repeats: true) { [weak self] _ in
+        timerForWind = Timer.scheduledTimer(withTimeInterval: timeIntervalForWind ,  repeats: true) { [weak self] _ in
             // locationManager에값이 있지만 직접 다시 불러오는걸로 테스트를 해보기로함.
             // 이건 태스트목적뿐이고 실제는 그럴 필요가 전혀 없음.
             guard let self = self else { return }

@@ -31,7 +31,7 @@ class WorkoutManager:  ObservableObject
     let healthStore = HealthService.shared.healthStore
     
     
-    let timeIntervalForRoute = TimeInterval(3)
+    let timeIntervalForRoute = TimeInterval(10)
     let timeIntervalForWind = TimeInterval(60*30)
     
     var workout: HKWorkout?
@@ -164,6 +164,7 @@ class WorkoutManager:  ObservableObject
                     return
                 }
                 //    self.finishWorkout(endDate: endDate, metadataForWorkout: metadataForWorkout)
+                print("metadataForWorkout ::: \(liveWorkoutBuilder.metadata)")
                 Task {
                     await self.finishWorkoutAsync(endDate: endDate, metadataForWorkout: self.metadataForWorkout)
                 }
@@ -390,7 +391,7 @@ class WorkoutManager:  ObservableObject
             
         }
         
-        timerForWind = Timer.scheduledTimer(withTimeInterval: timeIntervalForRoute ,  repeats: true) { [weak self] _ in
+        timerForWind = Timer.scheduledTimer(withTimeInterval: timeIntervalForWind ,  repeats: true) { [weak self] _ in
             // locationManager에값이 있지만 직접 다시 불러오는걸로 테스트를 해보기로함.
             // 이건 태스트목적뿐이고 실제는 그럴 필요가 전혀 없음.
             guard let self = self else { return }
@@ -445,6 +446,10 @@ class WorkoutManager:  ObservableObject
             throw HealthKitError.authorizationFailed
         }
         
+        guard let workoutRouteBuilder = workoutRouteBuilder else {
+            print("workoutRouteBuilder is nil. Cannot insert route data.")
+            throw HealthKitError.selfNilError
+        }
         // 비동기 작업으로 변환
         try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, Error>) in
             routeDataQueue.async { [weak self] in
@@ -452,8 +457,7 @@ class WorkoutManager:  ObservableObject
                     continuation.resume(throwing: HealthKitError.selfNilError)
                     return
                 }
-                
-                self.workoutRouteBuilder?.insertRouteData(locations) { success, error in
+                workoutRouteBuilder.insertRouteData(locations) { success, error in
                     
                     if let error = error {
                         print("Error inserting route data: \(error.localizedDescription)")
