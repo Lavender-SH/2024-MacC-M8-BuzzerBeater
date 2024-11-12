@@ -9,7 +9,7 @@
 import Combine
 import Foundation
 import SwiftUI
-
+import CoreLocation
 
 class ApparentWind: ObservableObject {
     static let shared =  ApparentWind()
@@ -27,30 +27,41 @@ class ApparentWind: ObservableObject {
         startCollectingData()
         
     }
+    
+    
     func startCollectingData() {
-
-        
         Publishers.CombineLatest4(windDetector.$speed, windDetector.$adjustedDirection, locationManager.$heading, locationManager.$lastLocation)
-            .throttle(for: .milliseconds(500), scheduler: RunLoop.main, latest: true)
-            .sink { [weak self] _ , _ , _ ,_ in
-                self?.calcApparentWind()
-                       }
-                       .store(in: &cancellables)
-        
+            .compactMap { (speed: Double?, adjustedDirection: Double?, heading: CLHeading?, lastLocation: CLLocation?) in
+                // 모든 값이 nil이 아닌지 확인
+                guard let speed = speed,
+                      let adjustedDirection = adjustedDirection,
+                      let heading = heading,
+                      let lastLocation = lastLocation else {
+                    return nil // 하나라도 nil이면 compactMap에서 제외
+                }
+                return (speed, adjustedDirection, heading, lastLocation)
+            }
+            .throttle(for: .milliseconds(2000), scheduler: RunLoop.main, latest: true)
+            .sink { [weak self] (speed: Double?, adjustedDirection: Double?, heading: CLHeading?, lastLocation: CLLocation?)  in
+                DispatchQueue.main.async {
+                    self?.calcApparentWind()
+                }
+            }
+            .store(in: &cancellables)
         
     }
     
     func calcApparentWind(){
         
-        guard let windSpeed = windDetector.speed,
-              let windDirection  = windDetector.adjustedDirection  else {
+        guard let windDirection  = windDetector.adjustedDirection  else {
             print("wind Data is not available in calcApparentWind")
             return
         }
-    
-       
+        
+        
  // boatCourse 와 boatSpeed는 locationManager에서 계산한 값만을 사용하고  locationManager에서만 업데이트 한다.
         // boatSpeed == 0 일때 바람의 속도의 50%로 보트가 진행한다고 가정하고 보트가 속도가 있을때는 실제 속도로 계산한다.
+        let windSpeed = windDetector.speed
         let boatCourse = locationManager.boatCourse
         let boatSpeed = locationManager.boatSpeed == 0 ?  windSpeed * 0.5 : locationManager.boatSpeed
         print("calcApparentWind from trueWind: \(windSpeed) windDirection \(windDirection)")

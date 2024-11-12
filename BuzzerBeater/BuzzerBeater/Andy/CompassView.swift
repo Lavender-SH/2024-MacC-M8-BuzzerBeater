@@ -149,9 +149,10 @@ struct CompassView: View {
                             // 왜 let direction = windDetector.adjustedDirection 하면 안되는걸까요?
                             
                             
-                            if let direction = windDetector.adjustedDirection, let speed = windDetector.speed {
+                            if let direction = windDetector.adjustedDirection {
                                 
-                                //                        let angle = Angle(degrees: 90 - direction +   (locationManager.heading?.trueHeading ?? 0))  // 각도 계산
+                                //   let angle = Angle(degrees: 90 - direction +   (locationManager.heading?.trueHeading ?? 0))  // 각도 계산
+                                let speed = windDetector.speed
                                 let angle = Angle(degrees: 90 - direction +   locationDirection)
                                 let x = r6 * cos(angle.radians) // x 좌표
                                 let y = r6 * sin(angle.radians) // y 좌표

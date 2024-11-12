@@ -37,44 +37,61 @@ struct MapPathView: View {
         
         VStack{
             if isDataLoaded {
-                
-                Text("\(formattedDuration(duration))").font(.caption2)
-                Text("Total Distance: \(formattedDistance(totalDistance))")
-                    .font(.caption2)
-                Text("Total Energy Burned: \(formattedEnergyBurned(totalEnergyBurned))")
-                    .font(.caption2)
-                Text("Active Energy Burned: \(formattedEnergyBurned(activeEnergyBurned))")
-                    .font(.caption2)
-                
-                Map(position: $position, interactionModes: [.all] ){
-                    if coordinates.count >= 2 {
-                        ForEach(0..<coordinates.count - 1, id: \.self) { index in
-                            let start = coordinates[index]
-                            let end = coordinates[index + 1]
-                            
-                            let velocity = velocities[index]
-                            let maxVelocity = velocities.max() ?? 10.0
-                            let minVelocity = velocities.min() ?? 0.0
-                            let color = calculateColor(for: velocity, minVelocity: minVelocity, maxVelocity: maxVelocity)
-                            
-                            MapPolyline(coordinates: [start, end])
-                                .stroke(color, lineWidth: 5)
+                ZStack(alignment: .top) {
+                    
+                    Map(position: $position, interactionModes: [.all] ){
+                        if coordinates.count >= 2 {
+                            ForEach(0..<coordinates.count - 1, id: \.self) { index in
+                                let start = coordinates[index]
+                                let end = coordinates[index + 1]
+                                
+                                let velocity = velocities[index]
+                                let maxVelocity = velocities.max() ?? 10.0
+                                let minVelocity = velocities.min() ?? 0.0
+                                let color = calculateColor(for: velocity, minVelocity: minVelocity, maxVelocity: maxVelocity)
+                                
+                                MapPolyline(coordinates: [start, end])
+                                    .stroke(color, lineWidth: 5)
+                            }
                         }
+                        
+                        MapPolyline(coordinates: coordinates)
+                            .stroke(Color.cyan, lineWidth: 1)
+                        
                     }
-                    
-                    MapPolyline(coordinates: coordinates)
-                        .stroke(Color.cyan, lineWidth: 1)
-                    
-                }
-                .mapControls{
-                    MapUserLocationButton()
-                    MapCompass()
+                    .mapControls{
+                        MapUserLocationButton()
+                        MapCompass()
 #if !os(watchOS)
-                    MapScaleView()
+                        MapScaleView()
 #endif
+                    }          .ignoresSafeArea(.all)
+                    
+                    
+                    
+                    VStack{
+#if !os(watchOS)
+                        Text("\(formattedDuration(duration))").font(.caption2)
+                        Text("Total Distance: \(formattedDistance(totalDistance))")
+                            .font(.caption2)
+                        Text("Total Energy Burned: \(formattedEnergyBurned(totalEnergyBurned))")
+                            .font(.caption2)
+                        Text("Active Energy Burned: \(formattedEnergyBurned(activeEnergyBurned))")
+                            .font(.caption2)
+                        
+#endif
+                        
+                        
+#if os(watchOS)
+                        Text("\(formattedDuration(duration))").font(.caption2)
+                        
+#endif
+                        
+                    }.padding()
+                    
                 }
-                
             }
+            
             else {
                 Text("Sky is Blue and Water is Clear!!!")
                 ProgressView()
@@ -112,7 +129,7 @@ struct MapPathView: View {
              
             }
             
-        }
+        } .ignoresSafeArea()
   
     }
     
@@ -239,18 +256,21 @@ struct MapPathView: View {
     func loadWorkoutData() {
         getRouteFrom(workout: workout) { success, error in
             if success {
-                self.coordinates = self.routePoints.map { $0.coordinate}
-                self.velocities = self.routePoints.map { $0.speed }
-                print("velocities:\(velocities.count), coordinates \(coordinates.count),  routePoints \(routePoints.count) in the getRouteFrom" )
-                self.isDataLoaded = true
+                DispatchQueue.main.async {
+                    self.coordinates = self.routePoints.map { $0.coordinate }
+                    self.velocities = self.routePoints.map { $0.speed }
+                    self.isDataLoaded = true
+                    print("velocities:\(self.velocities.count), coordinates \(self.coordinates.count), routePoints \(self.routePoints.count) in the getRouteFrom")
+                }
             } else {
-                self.isDataLoaded = true
-                print("loadWorkoutData error \(error?.localizedDescription ?? "unknown error")")
+                DispatchQueue.main.async {
+                    self.isDataLoaded = true
+                    print("loadWorkoutData error \(error?.localizedDescription ?? "unknown error")")
+                }
             }
         }
     }
-    
-    
+
     func formattedDuration(_ duration: TimeInterval) -> String {
         let hours = Int(duration) / 3600
         let minutes = (Int(duration) % 3600) / 60
@@ -258,8 +278,8 @@ struct MapPathView: View {
         
         return String(format: "%02d:%02d:%02d", hours, minutes, seconds)
     }
-    
-   
+
+
     func formattedDistance(_ distance: Double?) -> String {
         // distance가 nil이 아니면, 미터 단위로 값을 가져와서 킬로미터로 변환
         guard let distance = distance else { return "0.00 km" }
@@ -279,4 +299,6 @@ struct MapPathView: View {
         // 킬로미터 단위로 포맷팅해서 반환
         return String(format: "%d Kcal", caloriesInt)
     }
+
+    
 }
