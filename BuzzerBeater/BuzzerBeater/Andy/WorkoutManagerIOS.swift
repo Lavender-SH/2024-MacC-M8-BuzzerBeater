@@ -54,10 +54,9 @@ class WorkoutManager: ObservableObject
     var startDate: Date?
     var endDate : Date?
     var previousLocation: CLLocation?
-    @Published var  totalDistance: Double = 0
-    @Published var  totalEnergyBurned : Double = 0
-    @Published var  activeEnergyBurned : Double = 0
-    
+    var totalDistance: Double = 0
+    var totalEnergyBurned : Double = 0
+    var activeEnergyBurned : Double = 0
     var cancellables: Set<AnyCancellable> = []
     private let locationChangeThreshold: CLLocationDistance = 10.0 // 10 meters
     private let headingChangeThreshold: CLLocationDegrees = 15.0   // 15 degrees
@@ -177,16 +176,16 @@ class WorkoutManager: ObservableObject
                 print("startDate or endDate is nil")
             }
         }
-        // for test purpose
+        
         // 내가 저장하고 가장 큰값을 가져오는데 원래는 직접계산해서 BuzzBeater가 데이터 소스로 입력해줘야함.
         healthService.fetchTotalEnergyBurned(startDate: startDate, endDate: endDate){ totalEnergyBurnedQuantity in
             
             if  let totalEnergyBurnedQuantity = totalEnergyBurnedQuantity{
                 let totalEnergyBurned = totalEnergyBurnedQuantity.doubleValue(for: .kilocalorie())
-                print("totaleEnergyBurned in the collectData\(totalEnergyBurnedQuantity)")
+                print("totaleEnergyBurned in the collectData :  \(totalEnergyBurnedQuantity)")
                 
             } else {
-                print("totalEnergyBurned in the collectData is nil")
+                print("totaleEnergyBurned in the collectData is nil")
                 
             }
             
@@ -411,14 +410,14 @@ class WorkoutManager: ObservableObject
     }
     func updateWorkoutActiveEnergyBurned(startDate : Date, endDate: Date ,  completion: @escaping (Bool, Error?) -> Void ) {
         let MET = 4.0
-        guard let workoutBuilder = self.workoutBuilder else {
+        guard let builder = self.workoutBuilder else {
             print("workoutBuilder is nil")
             return }
         print("updateWorkoutActiveEnergyBurned is proceed")
         let device = HKDevice.local()
         let userWeight = healthService.userWeight
         let durationInhours = endDate.timeIntervalSince(startDate) / 3600.0
-        let calorieBurned =  calculateActiveEnergyWithMET(met: Double(MET) , weightInKg: userWeight ?? 75.0, durationInHours: durationInhours)
+        let calorieBurned =  calculateActiveEnergyWithMET(met: Double(MET) , weightInKg: userWeight ?? 75, durationInHours: durationInhours)
         print("ActiveEnergyBurned \(calorieBurned)")
         let activeEnergyBurnedQuantity = HKQuantity(unit: .kilocalorie(), doubleValue: calorieBurned)
         let activeEnergySample = HKQuantitySample(
@@ -430,7 +429,7 @@ class WorkoutManager: ObservableObject
             metadata: self.metadataForWorkout)
         
         print("activeEnergyBurnedSample \(activeEnergySample)")
-        workoutBuilder.add([activeEnergySample]) { (success, error) in
+        builder.add([activeEnergySample]) { (success, error) in
             if success  {
                 print("ActiveEnergyBurned updated successfully.")
                 
@@ -450,7 +449,7 @@ class WorkoutManager: ObservableObject
     
     func updateBasalEnergyBurned(startDate : Date, endDate: Date ,  completion: @escaping (Bool, Error?) -> Void ) {
         
-        guard let workoutBuilder = self.workoutBuilder else {
+        guard let builder = self.workoutBuilder else {
             print("workoutBuilder is nil")
             return }
         print("updateWorkoutActiveEnergyBurned is proceed")
@@ -463,7 +462,6 @@ class WorkoutManager: ObservableObject
         let basalEnergyBurned = bmrPerDay * workoutDuration // BMR에 운동 시간 비율을 곱합니다.
         
         let basalEnergyQuantity = HKQuantity(unit: .kilocalorie(), doubleValue: basalEnergyBurned)
-        print("basalEnergyQuantity \(basalEnergyQuantity)")
         let basalEnergyBurnedSample = HKQuantitySample(
             type: HKQuantityType.quantityType(forIdentifier: .basalEnergyBurned)!,
             quantity: basalEnergyQuantity,
@@ -472,7 +470,7 @@ class WorkoutManager: ObservableObject
             device :device,
             metadata: self.metadataForWorkout)
         
-        workoutBuilder.add([basalEnergyBurnedSample]) { (success, error) in
+        builder.add([basalEnergyBurnedSample]) { (success, error) in
             if success  {
                 print("basalEnergyBurned updated successfully.")
             }else if let error = error {
@@ -484,10 +482,6 @@ class WorkoutManager: ObservableObject
             completion(success, error)
         }
     }
-
-
-
-    
     
     func printWorkoutActivityType(workout: HKWorkout) {
         let activityType = workout.workoutActivityType
@@ -737,23 +731,25 @@ class WorkoutManager: ObservableObject
     
     func fetchTotalEnergyBurned(for workout: HKWorkout, completion: @escaping (HKQuantity?) -> Void) {
         // Get the total energy burned directly from the HKWorkout object
-        
-        HealthService.shared.fetchTotalEnergyBurned(startDate: workout.startDate, endDate: workout.endDate) {
-            totalEnergyBurned in
-            if let totalEnergyBurned  = totalEnergyBurned{
-                
-                completion(totalEnergyBurned)
-                print("activeEnergyBurned fetched successfully \(totalEnergyBurned)")
-                
-            } else {
-                completion(nil)
-                print("totalEnergyBurned is nil")
+        if let totalEnergyBurned = workout.totalEnergyBurned {
+            
+            // Return the total energy burned value
+            completion(totalEnergyBurned)
+        } else {
+            HealthService.shared.fetchTotalEnergyBurned(startDate: workout.startDate, endDate: workout.endDate) {
+                totalEnergyBurned in
+                if let totalEnergyBurned  = totalEnergyBurned{
+                    
+                    completion(totalEnergyBurned)
+                    print("activeEnergyBurned fetched successfully \(totalEnergyBurned)")
+                    
+                } else {
+                    completion(nil)
+                    print("totalEnergyBurned is nil")
+                }
             }
         }
-        
     }
-    
-    
     func fetchActiveEnergyBurned(startDate: Date, endDate: Date, completion: @escaping (HKQuantity?) -> Void) {
         let healthStore = HKHealthStore()
         

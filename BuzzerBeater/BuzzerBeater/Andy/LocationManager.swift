@@ -67,8 +67,8 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
     
     private var lastHeading : CLHeading?
     
-    let distanceFilter = 1.0
-    let headingFilter  = 1.0
+    let distanceFilter = 5.0
+    let headingFilter  = 5.0
     let locationUpdateTimeInterval = 3
     let boatSpeedBuffer = 0.3
     
@@ -242,7 +242,7 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
                 print("filtered location\(newLocation)")
                 let distance = newLocation.distance(from: lastLocation)
                 if distance >= self.distanceFilter   {
-                    // 10m 이상 차이날 때만 업데이트
+                    // 5m 이상 차이날 때만 업데이트
                     return true
                 } else {
                     return false
@@ -264,7 +264,7 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
                 }
                 let angleDifference = abs(newHeading.trueHeading - lastHeading.trueHeading)
                 if angleDifference >= self.headingFilter  {
-                    self.lastHeading = newHeading // 차이가 15도 이상일 때만 업데이트
+                    self.lastHeading = newHeading // 차이가 5도 이상일 때만 업데이트
                     return true
                 } else {
                     return false

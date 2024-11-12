@@ -271,8 +271,6 @@ struct MapPathView: View {
         }
     }
 
-    
-    
     func formattedDuration(_ duration: TimeInterval) -> String {
         let hours = Int(duration) / 3600
         let minutes = (Int(duration) % 3600) / 60
@@ -280,8 +278,8 @@ struct MapPathView: View {
         
         return String(format: "%02d:%02d:%02d", hours, minutes, seconds)
     }
-    
-   
+
+
     func formattedDistance(_ distance: Double?) -> String {
         // distance가 nil이 아니면, 미터 단위로 값을 가져와서 킬로미터로 변환
         guard let distance = distance else { return "0.00 km" }
@@ -301,4 +299,6 @@ struct MapPathView: View {
         // 킬로미터 단위로 포맷팅해서 반환
         return String(format: "%d Kcal", caloriesInt)
     }
+
+    
 }
