@@ -54,9 +54,10 @@ class WorkoutManager: ObservableObject
     var startDate: Date?
     var endDate : Date?
     var previousLocation: CLLocation?
-    var totalDistance: Double = 0
-    var totalEnergyBurned : Double = 0
-    var activeEnergyBurned : Double = 0
+    @Published var  totalDistance: Double = 0
+    @Published var  totalEnergyBurned : Double = 0
+    @Published var  activeEnergyBurned : Double = 0
+    
     var cancellables: Set<AnyCancellable> = []
     private let locationChangeThreshold: CLLocationDistance = 10.0 // 10 meters
     private let headingChangeThreshold: CLLocationDegrees = 15.0   // 15 degrees
@@ -90,7 +91,6 @@ class WorkoutManager: ObservableObject
                 DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
                     self.startTimer()
                     //for test to writable.
-                    self.updateActiveEnergyBurned(startDate: startDate, endDate: Date(), 1.0)
                     self.addHeartRateSample(heartRate: 77, date: Date())
                     
                 }
@@ -112,7 +112,7 @@ class WorkoutManager: ObservableObject
         }
     }
     
-    func collectData(startDate: Date, endDate: Date,  metadataForWorkout: [String: Any]?) {
+    func collectData(startDate: Date, endDate: Date,  metadataForWorkout: [String: Any]) {
         // 데이터 수집 예시
         
         guard let workoutBuilder = workoutBuilder else {
@@ -158,40 +158,48 @@ class WorkoutManager: ObservableObject
                     }
                }
                 
-                
+                await withCheckedContinuation { continuation in
+                    self.updateBasalEnergyBurned(startDate: startDate, endDate: endDate){ (success, error) in
+                        if success {
+                            print("Completion: BasalEnergyBurned update was successful.")
+                            continuation.resume()
+                        } else if let error = error {
+                            print("Completion: BasalEnergyBurned Error encountered - \(error)")
+                            continuation.resume()
+                        } else {
+                            print("Completion: BasalEnergyBurned Error encountered - Unknown error occurred.")
+                            continuation.resume()
+                        }
+                        // 추가 로직을 수행하거나 이 흐름을 종료
+                    }
+                }
             } else {
                 print("startDate or endDate is nil")
             }
         }
-        
+        // for test purpose
         // 내가 저장하고 가장 큰값을 가져오는데 원래는 직접계산해서 BuzzBeater가 데이터 소스로 입력해줘야함.
-        fetchActiveEnergyBurned(startDate: startDate, endDate: endDate){ activeEnergyBurnedQuantity in
+        healthService.fetchTotalEnergyBurned(startDate: startDate, endDate: endDate){ totalEnergyBurnedQuantity in
             
-            if  let activeEnergyBurnedQuantity = activeEnergyBurnedQuantity{
-                let activeEnergyBurned = activeEnergyBurnedQuantity.doubleValue(for: .kilocalorie())
-                print("activeEnergyBurned in the collectData\(activeEnergyBurnedQuantity)")
+            if  let totalEnergyBurnedQuantity = totalEnergyBurnedQuantity{
+                let totalEnergyBurned = totalEnergyBurnedQuantity.doubleValue(for: .kilocalorie())
+                print("totaleEnergyBurned in the collectData\(totalEnergyBurnedQuantity)")
                 
             } else {
-                print("activeEnergyBurned in the collectData is nil")
+                print("totalEnergyBurned in the collectData is nil")
                 
             }
             
         }
         
-        if let metadataForWorkout = metadataForWorkout {
-            print("metadata in the collectData\(metadataForWorkout)")
-            workoutBuilder.addMetadata(metadataForWorkout) { (success, error) in
-                guard success else {
-                    print("Error adding metadata:\(error?.localizedDescription ?? "Unknown error")")
-                    return
-                }
-                Task {
-                    await self.finishWorkoutAsync(endDate: endDate, metadataForWorkout: self.metadataForWorkout)
-                }
+        workoutBuilder.addMetadata(metadataForWorkout) { (success, error) in
+            if success {
+                print("metadataForWorkout : \(workoutBuilder.metadata)")
+            } else {
+                print("Error adding metadata: \(error?.localizedDescription ?? "Unknown error")")
             }
-        }
-        else{
-            print("metadataForWorkout is nil or invalid")
+            
+            // Regardless of success or failure, finish the workout
             Task {
                 await self.finishWorkoutAsync(endDate: endDate, metadataForWorkout: self.metadataForWorkout)
             }
@@ -397,16 +405,22 @@ class WorkoutManager: ObservableObject
             
         }
     }
-    
+    func calculateActiveEnergyWithMET(met: Double, weightInKg: Double, durationInHours: Double) -> Double {
+        let activeEnergyBurned = met * weightInKg * durationInHours
+        return activeEnergyBurned
+    }
     func updateWorkoutActiveEnergyBurned(startDate : Date, endDate: Date ,  completion: @escaping (Bool, Error?) -> Void ) {
-        guard let builder = self.workoutBuilder else {
+        let MET = 4.0
+        guard let workoutBuilder = self.workoutBuilder else {
             print("workoutBuilder is nil")
             return }
         print("updateWorkoutActiveEnergyBurned is proceed")
         let device = HKDevice.local()
-        let calorieBurned = healthService.fetchBMR()
+        let userWeight = healthService.userWeight
+        let durationInhours = endDate.timeIntervalSince(startDate) / 3600.0
+        let calorieBurned =  calculateActiveEnergyWithMET(met: Double(MET) , weightInKg: userWeight ?? 75.0, durationInHours: durationInhours)
         print("ActiveEnergyBurned \(calorieBurned)")
-        let activeEnergyBurnedQuantity = HKQuantity(unit: .meter(), doubleValue: calorieBurned)
+        let activeEnergyBurnedQuantity = HKQuantity(unit: .kilocalorie(), doubleValue: calorieBurned)
         let activeEnergySample = HKQuantitySample(
             type: HKQuantityType.quantityType(forIdentifier: .activeEnergyBurned)!,
             quantity: activeEnergyBurnedQuantity,
@@ -416,46 +430,63 @@ class WorkoutManager: ObservableObject
             metadata: self.metadataForWorkout)
         
         print("activeEnergyBurnedSample \(activeEnergySample)")
-        builder.add([activeEnergySample]) { (success, error) in
+        workoutBuilder.add([activeEnergySample]) { (success, error) in
             if success  {
                 print("ActiveEnergyBurned updated successfully.")
-               
+                
             }else if let error = error {
                 print("Error updating ActiveEnergyBurned: \(error)")
                 
             }
             else  {
                 print("Error updating ActiveEnergyBurned: unknown")
-            
+                
                 
             }
             completion(success, error)
             
         }
-        //builder.addSamples
-        //        Task {
-        //            do {
-        //                try await builder.addSamples([distanceSample])
-        //                print("Distance updated successfully.")
-        //                completion(true, nil)
-        //            } catch {
-        //                print("Error updating distance: \(error.localizedDescription)")
-        //                completion(false, error)
-        //            }
-        //        }
-        
-        //healthStore.save
-        //        Task {
-        //            do {
-        //               try await healthStore.save(distanceSample)
-        //                print("Distance updated successfully.")
-        //                completion(true, nil)
-        //            } catch {
-        //                print("Error updating distance: \(error.localizedDescription)")
-        //                completion(false, error)
-        //            }
-        //        }
     }
+    
+    func updateBasalEnergyBurned(startDate : Date, endDate: Date ,  completion: @escaping (Bool, Error?) -> Void ) {
+        
+        guard let workoutBuilder = self.workoutBuilder else {
+            print("workoutBuilder is nil")
+            return }
+        print("updateWorkoutActiveEnergyBurned is proceed")
+        let device = HKDevice.local()
+        let userWeight = healthService.userWeight
+        let durationInhours = endDate.timeIntervalSince(startDate) / 3600.0
+        
+        let bmrPerDay = HealthService.shared.fetchBMR() // BMR을 가져오는 사용자 정의 함수 (하루 단위)
+        let workoutDuration = endDate.timeIntervalSince(startDate) / 86400 // 운동 기간을 하루로 변환
+        let basalEnergyBurned = bmrPerDay * workoutDuration // BMR에 운동 시간 비율을 곱합니다.
+        
+        let basalEnergyQuantity = HKQuantity(unit: .kilocalorie(), doubleValue: basalEnergyBurned)
+        print("basalEnergyQuantity \(basalEnergyQuantity)")
+        let basalEnergyBurnedSample = HKQuantitySample(
+            type: HKQuantityType.quantityType(forIdentifier: .basalEnergyBurned)!,
+            quantity: basalEnergyQuantity,
+            start: startDate ,
+            end: endDate,
+            device :device,
+            metadata: self.metadataForWorkout)
+        
+        workoutBuilder.add([basalEnergyBurnedSample]) { (success, error) in
+            if success  {
+                print("basalEnergyBurned updated successfully.")
+            }else if let error = error {
+                print("Error updating basaleEnergyBurned: \(error)")
+            }
+            else  {
+                print("Error updating basalEnergyBurned: unknown")
+            }
+            completion(success, error)
+        }
+    }
+
+
+
     
     
     func printWorkoutActivityType(workout: HKWorkout) {
@@ -603,7 +634,7 @@ class WorkoutManager: ObservableObject
     }
     
     
-    func finishRoute(workout: HKWorkout, metadataForRoute: [String: Any]?) async -> Result<HKWorkoutRoute, Error> {
+    func finishRoute(workout: HKWorkout, metadataForRoute: [String: Any]) async -> Result<HKWorkoutRoute, Error> {
         return await withCheckedContinuation { continuation in
             workoutRouteBuilder?.finishRoute(with: workout, metadata: metadataForRoute) { route, error in
                 
@@ -706,25 +737,23 @@ class WorkoutManager: ObservableObject
     
     func fetchTotalEnergyBurned(for workout: HKWorkout, completion: @escaping (HKQuantity?) -> Void) {
         // Get the total energy burned directly from the HKWorkout object
-        if let totalEnergyBurned = workout.totalEnergyBurned {
-            
-            // Return the total energy burned value
-            completion(totalEnergyBurned)
-        } else {
-            fetchActiveEnergyBurned(startDate: workout.startDate, endDate: workout.endDate) {
-                activeEnergyBurned in
-                if let activeEnergyBurned  = activeEnergyBurned{
-                    
-                    completion(activeEnergyBurned)
-                    print("activeEnergyBurned fetched successfully \(activeEnergyBurned)")
-                    
-                } else {
-                    completion(nil)
-                    print("activeEnergyBurned is nil")
-                }
+        
+        HealthService.shared.fetchTotalEnergyBurned(startDate: workout.startDate, endDate: workout.endDate) {
+            totalEnergyBurned in
+            if let totalEnergyBurned  = totalEnergyBurned{
+                
+                completion(totalEnergyBurned)
+                print("activeEnergyBurned fetched successfully \(totalEnergyBurned)")
+                
+            } else {
+                completion(nil)
+                print("totalEnergyBurned is nil")
             }
         }
+        
     }
+    
+    
     func fetchActiveEnergyBurned(startDate: Date, endDate: Date, completion: @escaping (HKQuantity?) -> Void) {
         let healthStore = HKHealthStore()
         

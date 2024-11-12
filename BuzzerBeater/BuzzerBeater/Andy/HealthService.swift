@@ -56,7 +56,9 @@ class HealthService : ObservableObject {
         if let activeEnergyBurned = HKQuantityType.quantityType(forIdentifier: .activeEnergyBurned) {
             sampleTypes.insert(activeEnergyBurned)
         }
-        
+        if let basalEnergyBurned = HKQuantityType.quantityType(forIdentifier: .basalEnergyBurned) {
+            sampleTypes.insert(basalEnergyBurned)
+        }
         let workoutType = HKWorkoutType.workoutType()
         sampleTypes.insert(workoutType)
         let workoutRouteType = HKSeriesType.workoutRoute()
@@ -254,34 +256,39 @@ class HealthService : ObservableObject {
             completion(nil)
         }
     }
+
     
-    
-    func calculateTotalEnergyBurned(startDate: Date, endDate: Date, completion: @escaping (HKQuantity?) -> Void) {
+    func fetchTotalEnergyBurned(startDate: Date, endDate: Date, completion: @escaping (HKQuantity?) -> Void) {
         let healthStore = HKHealthStore()
         let activeEnergyBurnedType = HKQuantityType.quantityType(forIdentifier: .activeEnergyBurned)!
-        
+        var activeEnergyBurned :Double = 0
+        var basalEnergyBurned :Double = 0
         // 운동 중 누적 activeEnergyBurned 값을 쿼리합니다.
-        let predicate = HKQuery.predicateForSamples(withStart: startDate, end: endDate, options: .strictEndDate)
-        let statisticsQuery = HKStatisticsQuery(quantityType: activeEnergyBurnedType, quantitySamplePredicate: predicate, options: .cumulativeSum) { _, result, _ in
-            guard let activeEnergyBurned = result?.sumQuantity() else {
+        let predicate = HKQuery.predicateForSamples(withStart: startDate, end: endDate,  options: [.strictEndDate, .strictEndDate])
+        let activeEnergyQuery = HKStatisticsQuery(quantityType: activeEnergyBurnedType, quantitySamplePredicate: predicate, options: .cumulativeSum) { _, result, _ in
+            guard let activeEnergyBurnedQuantity = result?.sumQuantity() else {
+                completion(nil)
+                return
+            }
+            activeEnergyBurned = activeEnergyBurnedQuantity.doubleValue(for: .kilocalorie())
+            
+        }
+        healthStore.execute(activeEnergyQuery)
+        let basalEnergyBurnedType = HKQuantityType.quantityType(forIdentifier: .basalEnergyBurned)!
+        let basalEnergyQuery = HKStatisticsQuery(quantityType: basalEnergyBurnedType, quantitySamplePredicate: predicate, options: .cumulativeSum) { _, result, _ in
+            guard let basalEnergyBurnedQuantity = result?.sumQuantity() else {
                 completion(nil)
                 return
             }
             
-            // 사용자의 BMR을 가져와서 기초 대사 에너지를 계산합니다.
-            DispatchQueue.main.async {
-                let bmrPerDay = self.fetchBMR() // BMR을 가져오는 사용자 정의 함수 (하루 단위)
-                let workoutDuration = endDate.timeIntervalSince(startDate) / 86400 // 운동 기간을 하루로 변환
-                let basalEnergyBurned = bmrPerDay * workoutDuration // BMR에 운동 시간 비율을 곱합니다.
-                
-                let totalEnergyBurned = activeEnergyBurned.doubleValue(for: .kilocalorie()) + basalEnergyBurned
-                let totalEnergyQuantity = HKQuantity(unit: .kilocalorie(), doubleValue: totalEnergyBurned)
-                
-                completion(totalEnergyQuantity)
-            }
+            basalEnergyBurned = basalEnergyBurnedQuantity.doubleValue(for: .kilocalorie())
         }
-        
-        healthStore.execute(statisticsQuery)
+        healthStore.execute(basalEnergyQuery)
+        let toalEnergyBurned = activeEnergyBurned + basalEnergyBurned
+        let totalEnergyBurnedQuantity = HKQuantity(unit: .kilocalorie(), doubleValue: toalEnergyBurned)
+    
+        completion(totalEnergyBurnedQuantity)
+      
     }
 
     // 사용자의 BMR을 계산하거나 가져오는 예시 (사용자의 몸무게, 나이 등을 고려)

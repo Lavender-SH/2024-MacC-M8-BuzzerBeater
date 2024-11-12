@@ -37,27 +37,7 @@ struct MapPathView: View {
         
         VStack{
             if isDataLoaded {
-                ZStack{
-                    VStack{
-#if !os(watchOS)
-                        Text("\(formattedDuration(duration))").font(.caption2)
-                        Text("Total Distance: \(formattedDistance(totalDistance))")
-                            .font(.caption2)
-                        Text("Total Energy Burned: \(formattedEnergyBurned(totalEnergyBurned))")
-                            .font(.caption2)
-                        Text("Active Energy Burned: \(formattedEnergyBurned(activeEnergyBurned))")
-                            .font(.caption2)
-                        
-#endif
-                        
-                        
-#if os(watchOS)
-                        Text("\(formattedDuration(duration))").font(.caption2)
-                        
-#endif
-                        
-                    }.padding()
-                    
+                ZStack(alignment: .top) {
                     
                     Map(position: $position, interactionModes: [.all] ){
                         if coordinates.count >= 2 {
@@ -86,6 +66,29 @@ struct MapPathView: View {
                         MapScaleView()
 #endif
                     }          .ignoresSafeArea(.all)
+                    
+                    
+                    
+                    VStack{
+#if !os(watchOS)
+                        Text("\(formattedDuration(duration))").font(.caption2)
+                        Text("Total Distance: \(formattedDistance(totalDistance))")
+                            .font(.caption2)
+                        Text("Total Energy Burned: \(formattedEnergyBurned(totalEnergyBurned))")
+                            .font(.caption2)
+                        Text("Active Energy Burned: \(formattedEnergyBurned(activeEnergyBurned))")
+                            .font(.caption2)
+                        
+#endif
+                        
+                        
+#if os(watchOS)
+                        Text("\(formattedDuration(duration))").font(.caption2)
+                        
+#endif
+                        
+                    }.padding()
+                    
                 }
             }
             
