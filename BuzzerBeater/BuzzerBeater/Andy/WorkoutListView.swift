@@ -21,7 +21,8 @@ struct WorkoutListView: View {
                         NavigationLink(destination: MapPathView(workout: workout)) {
 
                             // Pass the selected workout to MapView
-                            Text("Start: \(workout.startDate)")
+                            Text("\(workout.startDate.formatted(.dateTime.year().month(.defaultDigits).day()))")
+
                         }
                     }
                 }

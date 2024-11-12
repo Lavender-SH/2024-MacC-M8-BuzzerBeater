@@ -32,6 +32,10 @@ class HealthService : ObservableObject {
     static let shared = HealthService()
     let healthStore = HKHealthStore()
     
+    var userAge :  Int?
+    var userHeight : Double?
+    var userGender : String?
+    var userWeight : Double?
   
     func startHealthKit() {
         var sampleTypes = Set<HKSampleType>()
@@ -73,7 +77,34 @@ class HealthService : ObservableObject {
                 }
             }
         }
+       
+        requestHealthDataPermissions { authorized in
+                if authorized {
+                    self.fetchUserHeight { height in
+                        print("Height: \(height ?? 0) cm")
+                        self.userHeight = height
+                    }
         
+                    self.fetchUserWeight { weight in
+                        print("Weight: \(weight ?? 0) kg")
+                        self.userWeight = weight
+                    }
+        
+                    self.fetchUserAge { age in
+                        print("Age: \(age ?? 0) years")
+                        self.userAge = age
+                    }
+        
+                    self.fetchUserGender { gender in
+                        print("Gender: \(gender ?? "unknown")")
+                        self.userGender = gender
+                    }
+                } else {
+                    print("HealthKit 권한이 거부되었습니다.")
+                    
+                }
+            }
+       
     }
     
     
@@ -192,7 +223,7 @@ class HealthService : ObservableObject {
         healthStore.execute(query)
     }
 
-    /*
+    
     // 나중에 개인별로 칼로리 계산할때 사용할듯 현재버전에서는 필요없음
     func fetchUserAge(completion: @escaping (Int?) -> Void) {
         do {
@@ -223,28 +254,72 @@ class HealthService : ObservableObject {
             completion(nil)
         }
     }
-// Usage:
-//    requestHealthDataPermissions { authorized in
-//        if authorized {
-//            fetchUserHeight { height in
-//                print("Height: \(height ?? 0) cm")
-//            }
-//            
-//            fetchUserWeight { weight in
-//                print("Weight: \(weight ?? 0) kg")
-//            }
-//            
-//            fetchUserAge { age in
-//                print("Age: \(age ?? 0) years")
-//            }
-//            
-//            fetchUserGender { gender in
-//                print("Gender: \(gender ?? "unknown")")
-//            }
-//        } else {
-//            print("HealthKit 권한이 거부되었습니다.")
-//        }
-//    }
-*/
+    
+    
+    func calculateTotalEnergyBurned(startDate: Date, endDate: Date, completion: @escaping (HKQuantity?) -> Void) {
+        let healthStore = HKHealthStore()
+        let activeEnergyBurnedType = HKQuantityType.quantityType(forIdentifier: .activeEnergyBurned)!
+        
+        // 운동 중 누적 activeEnergyBurned 값을 쿼리합니다.
+        let predicate = HKQuery.predicateForSamples(withStart: startDate, end: endDate, options: .strictEndDate)
+        let statisticsQuery = HKStatisticsQuery(quantityType: activeEnergyBurnedType, quantitySamplePredicate: predicate, options: .cumulativeSum) { _, result, _ in
+            guard let activeEnergyBurned = result?.sumQuantity() else {
+                completion(nil)
+                return
+            }
+            
+            // 사용자의 BMR을 가져와서 기초 대사 에너지를 계산합니다.
+            DispatchQueue.main.async {
+                let bmrPerDay = self.fetchBMR() // BMR을 가져오는 사용자 정의 함수 (하루 단위)
+                let workoutDuration = endDate.timeIntervalSince(startDate) / 86400 // 운동 기간을 하루로 변환
+                let basalEnergyBurned = bmrPerDay * workoutDuration // BMR에 운동 시간 비율을 곱합니다.
+                
+                let totalEnergyBurned = activeEnergyBurned.doubleValue(for: .kilocalorie()) + basalEnergyBurned
+                let totalEnergyQuantity = HKQuantity(unit: .kilocalorie(), doubleValue: totalEnergyBurned)
+                
+                completion(totalEnergyQuantity)
+            }
+        }
+        
+        healthStore.execute(statisticsQuery)
+    }
+
+    // 사용자의 BMR을 계산하거나 가져오는 예시 (사용자의 몸무게, 나이 등을 고려)
+    //  추후 수정
+    
+    func fetchBMR() -> Double {
+        // 기초 대사율(BMR) 계산 (단위: kcal/day)
+        // 예: 몸무게, 나이, 성별 등의 변수에 따라 조정
+        let weightInKG = self.userWeight  ?? 78.0
+        let heightInCM = self.userHeight  ?? 173.0
+        let gender =  self.userGender  ?? "male"
+        let ageInYears = self.userAge  ?? 55
+        
+        return calculateBMR(weightInKg: weightInKG, heightInCm:heightInCM, ageInYears: ageInYears, gender: gender)
+    }
+    
+    func calculateBMR(weightInKg: Double, heightInCm: Double, ageInYears: Int, gender: String) -> Double {
+        // Harris-Benedict 공식
+        if gender.lowercased() == "male" {
+            // 남성용 BMR 공식
+            let bmr = 88.362 + (13.397 * weightInKg) + (4.799 * heightInCm) - (5.677 * Double(ageInYears))
+            print("BMR for male \(bmr)) ")
+            return bmr
+        } else {
+            // 여성용 BMR 공식
+            let bmr = 447.593 + (9.247 * weightInKg) + (3.098 * heightInCm) - (4.330 * Double(ageInYears))
+            print("BMR for female \(bmr)) ")
+            return bmr
+        }
+    }
+
+//    // 예제 사용
+//    let weight = 70.0   // 체중(kg)
+//    let height = 175.0  // 키(cm)
+//    let age = 25        // 나이(년)
+//    let gender = "male" // 성별
+//
+//    let bmr = calculateBMR(weightInKg: weight, heightInCm: height, ageInYears: age, gender: gender)
+//    print("기초 대사율(BMR): \(bmr) kcal/day")
     
 }

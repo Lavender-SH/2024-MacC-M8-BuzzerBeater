@@ -66,7 +66,9 @@ class SailAngleFind: ObservableObject {
                 return speedChange || directionChange || headingChange || courseChange
             }
                .sink { [weak self] _, _, _ , _ in
-                   self?.calcSailAngle()
+                   DispatchQueue.main.async {
+                       self?.calcSailAngle()
+                   }
                }
                .store(in: &cancellables)
           
@@ -78,11 +80,11 @@ class SailAngleFind: ObservableObject {
     //- 180 <= Port 쪽 바람 각도<=0
     func calcSailAngle(){
         
-        guard let trueWindSpeed = windDetector.speed,
-              let trueWindDirection  = windDetector.adjustedDirection else {
+        guard let trueWindDirection  = windDetector.adjustedDirection else {
             print("True wind Data is not available in calcSailAngle")
             return
         }
+        let trueWindSpeed = windDetector.speed
         print("True windDetector is available  speed: \(trueWindSpeed) windDirection \(trueWindDirection)")
         
         let boatSpeed = locationManager.boatSpeed

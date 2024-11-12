@@ -4,11 +4,12 @@
 //
 //  Created by Giwoo Kim on 10/5/24.
 //
-import Foundation
-import SwiftUI
 import Combine
 import CoreLocation
+import Foundation
 import HealthKit
+import SwiftUI
+
 
 //HKWorkoutRoute와 중복되겠지만 일단 중복해서 저장하고 HKworkoutRoute의 기능을 파악해나가기로함
 
@@ -60,8 +61,6 @@ class SailingDataCollector : ObservableObject {
             print("not authorized to collect data")
             locationManager.checkAuthorizationStatus()
         }
-        
-        
     }
     
     
@@ -70,14 +69,22 @@ class SailingDataCollector : ObservableObject {
     }
     // heading이 15도 이상 바뀌었을때도 고려해서 넣어주자.
     func stopTimers() {
+        
+        endDate = Date()
         cancellables.removeAll() // 구독을 모두 취소하여 타이머 중지
+        // 어딘가 저장하는 루틴을 여기다 만들까?? 만약에 헬쓰킷을 안쓴다면.. 
+        
+        
     }
     
     func startCollectingData() {
-    
+        self.startDate = Date()
         Publishers.CombineLatest3(LocationManager.shared.locationPublisher, LocationManager.shared.headingPublisher, WindDetector.shared.windPublisher)
             .sink { [weak self] newLocation, newHeading, newWind in
-                self?.handleLocationAndHeadingUpdate(newLocation: newLocation, newHeading: newHeading, newWind: newWind)
+                DispatchQueue.main.async {
+                    self?.handleLocationAndHeadingUpdate(newLocation: newLocation, newHeading: newHeading, newWind: newWind)
+                    
+                }
             }
             .store(in: &cancellables)
         

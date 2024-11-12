@@ -56,7 +56,7 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
     @Published var lastLocation: CLLocation?
     
     
-    private var updateTimer: Timer?
+ 
     // 계산이나 회전을 위해서 아래 두 변수를 사용하기로 한다.  예를 들면 화면에 보여질때 보트스피드가 0인경우  direction값은 -1일테니까 이런경우  heading으로 값을 정한다.
     
     @Published var boatCourse : CLLocationDirection = 0.0
@@ -83,9 +83,11 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
         
         authorizationStatusSubject
             .sink { [weak self] status in
-                      self?.handleAuthorizationStatus(status)
-                  }
-                  .store(in: &cancellables)
+                DispatchQueue.main.async {
+                    self?.handleAuthorizationStatus(status)
+                }
+            }
+            .store(in: &cancellables)
         
     }
     
@@ -130,18 +132,7 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
             authorizationStatusSubject.send(status)
         }
     }
-    // GPS Info
-//    private func startLocationUpdateTimer() {
-//        updateTimer = Timer.scheduledTimer(withTimeInterval: locationUpdateTimeInterval, repeats: true) { [weak self] _ in
-//            guard let self = self else { return }
-//            self.locationManager.requestLocation()
-//            if let location = self.locationManager.location {
-//                self.updateLocation(location)
-//                self.locationPublisher.send(location)
-//            }
-//        }
-//    }
-//
+
     private func startLocationUpdateTimer() {
       Timer.publish(every: TimeInterval(locationUpdateTimeInterval), on: .main, in: .common)
             .autoconnect() // Timer가 자동으로 시작하도록 설정
@@ -194,10 +185,9 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
         }
         return
     }
-    // Magnetic Info : 그래서 분리했음.
+
     func locationManager(_ manager: CLLocationManager, didUpdateHeading newHeading: CLHeading) {
       //  주의 :  sef.course 가 유효한 값인지 꼭 체크해볼 필요가있음
-       
         headingPublisher.send(newHeading)
 
         return
@@ -238,20 +228,20 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
     func startUpdatingLocationAndHeading() {
         locationManager.startUpdatingLocation()
         locationManager.startUpdatingHeading()
-        
         startLocationUpdateTimer()
         
         locationPublisher
             .compactMap { $0 }
             .filter { [weak self] newLocation in
-                print("filtered location\(newLocation)")
-                guard let lastLocation = self?.lastLocation else {
-                    self?.lastLocation = newLocation
+                guard let self = self else { return false }
+                guard let lastLocation = self.lastLocation else {
+                    self.lastLocation = newLocation
                     return true // 첫 번째 위치는 항상 퍼블리시
                 }
+                
                 print("filtered location\(newLocation)")
                 let distance = newLocation.distance(from: lastLocation)
-                if distance >= self?.distanceFilter  ?? 3 {
+                if distance >= self.distanceFilter   {
                     // 10m 이상 차이날 때만 업데이트
                     return true
                 } else {
@@ -259,43 +249,40 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
                 }
             }
             .sink { [weak self] location in
-                self?.updateLocation(location)
+                guard let self = self else { return  }
+                self.updateLocation(location)
             }
             .store(in: &cancellables)
         
         headingPublisher
             .compactMap { $0 }
             .filter { [weak self] newHeading in
-                guard let lastHeading = self?.lastHeading else {
-                    self?.lastHeading = newHeading
+                guard let self = self else { return false }
+                guard let lastHeading = self.lastHeading else {
+                    self.lastHeading = newHeading
                     return true // 첫 번째 값은 항상 퍼블리시
                 }
                 let angleDifference = abs(newHeading.trueHeading - lastHeading.trueHeading)
-                if angleDifference >= self?.headingFilter ?? 1 {
-                    self?.lastHeading = newHeading // 차이가 15도 이상일 때만 업데이트
+                if angleDifference >= self.headingFilter  {
+                    self.lastHeading = newHeading // 차이가 15도 이상일 때만 업데이트
                     return true
                 } else {
                     return false
                 }
             }
             .sink { [weak self] heading in
-                self?.updateHeading(heading)
-                if let lastLocation = self?.lastLocation {
-                    self?.updateLocation(lastLocation)
+                guard let self = self else { return  }
+                self.updateHeading(heading)
+                if let lastLocation = self.lastLocation {
+                    self.updateLocation(lastLocation)
                 }
             }
             .store(in: &cancellables)
-        
-       
-        
-    }
+      }
     
     func stopUpdatingLocationAndHeading() {
         locationManager.stopUpdatingLocation()
         locationManager.stopUpdatingHeading()
-        if updateTimer != nil {
-            updateTimer?.invalidate()
-        }
         cancellables.removeAll()
     }
 }
