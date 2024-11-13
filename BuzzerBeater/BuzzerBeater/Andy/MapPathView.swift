@@ -10,6 +10,9 @@ import SwiftUI
 import HealthKit
 
 struct MapPathView: View {
+    
+    let workoutManager = WorkoutManager.shared
+
     var workout: HKWorkout // or the appropriate type for your workout data
     let healthStore =  HealthService.shared.healthStore
     let minDegree = 0.000025
@@ -29,7 +32,6 @@ struct MapPathView: View {
     @State var totalDistance: Double = 0
     @State var maxSpeed : Double = 0
     @State var duration : TimeInterval = 0
-    let workoutManager = WorkoutManager.shared
     
     init(workout: HKWorkout) {
         self.workout = workout

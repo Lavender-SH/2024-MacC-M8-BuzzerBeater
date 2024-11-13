@@ -56,6 +56,7 @@ class WorkoutManager:  ObservableObject
     var totalDistance: Double = 0
     var totalEnergyBurned : Double = 0
     var activeEnergyBurned : Double = 0
+    
     var cancellables: Set<AnyCancellable> = []
     private let locationChangeThreshold: CLLocationDistance = 10.0 // 10 meters
     private let headingChangeThreshold: CLLocationDegrees = 15.0   // 15 degrees

@@ -56,7 +56,9 @@ class WorkoutManager: ObservableObject
     var previousLocation: CLLocation?
     var totalDistance: Double = 0
     var totalEnergyBurned : Double = 0
+    var maxSpeed: Double = 0
     var activeEnergyBurned : Double = 0
+    
     var cancellables: Set<AnyCancellable> = []
     private let locationChangeThreshold: CLLocationDistance = 10.0 // 10 meters
     private let headingChangeThreshold: CLLocationDegrees = 15.0   // 15 degrees
@@ -707,12 +709,16 @@ class WorkoutManager: ObservableObject
     
     func makeMetadataForWorkout(appIdentifier: String) -> [String: Any] {
         var metadataForWorkout: [String: Any] = [:]
+        
         metadataForWorkout["AppIdentifier"] = appIdentifier
         metadataForWorkout["TotalDistance"] =  self.totalDistance
+        
+        metadataForWorkout["TotalDuration"] =  self.workout?.duration
+        metadataForWorkout["TotalEneryBurned"] =  self.workout?.totalEnergyBurned
+        metadataForWorkout["MaxSpeed"] = self.maxSpeed
         metadataForWorkout[HKMetadataKeyIndoorWorkout] = false
         metadataForWorkout[HKMetadataKeyActivityType] = HKWorkoutActivityType.sailing.rawValue
         metadataForWorkout[HKMetadataKeyWorkoutBrandName] = "Sailing"
-        
         return metadataForWorkout
     }
     
