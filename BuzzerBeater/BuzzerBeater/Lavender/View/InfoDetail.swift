@@ -1,3 +1,10 @@
+//
+//  InfoDetail.swift
+//  BuzzerBeater
+//
+//  Created by 이승현 on 11/13/24.
+//
+
 import Foundation
 import SwiftUI
 import Charts
