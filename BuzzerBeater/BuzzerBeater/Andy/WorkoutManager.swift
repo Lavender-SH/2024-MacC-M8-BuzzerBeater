@@ -61,7 +61,7 @@ class WorkoutManager:  ObservableObject
     private let headingChangeThreshold: CLLocationDegrees = 15.0   // 15 degrees
     private let timeIntervalForRoute = TimeInterval(10)
     private let timeIntervalForWind = TimeInterval(60*30)
-    
+    var maxSpeed : Double = 0
     
     func startWorkout(startDate: Date)  {
         // 운동을 시작하기 전에 HKWorkoutBuilder를 초기화
@@ -441,7 +441,7 @@ class WorkoutManager:  ObservableObject
         // 비동기 작업으로 변환
         try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, Error>) in
             routeDataQueue.async { [weak self] in
-                guard self != nil else {
+                guard let self = self else {
                     continuation.resume(throwing: HealthKitError.selfNilError)
                     return
                 }
@@ -451,10 +451,20 @@ class WorkoutManager:  ObservableObject
                         print("Error inserting route data: \(error.localizedDescription)")
                         return  continuation.resume(throwing: HealthKitError.routeInsertionFailed(error.localizedDescription))
                     }
+                    
                     guard success else {
+                        print("insertRouteData failed")
+                        
                         return  continuation.resume(throwing: HealthKitError.unknownError)
+                        
                     }
                     
+                    let speed = locations.last?.speed  ?? 0
+                    
+                    if speed > self.maxSpeed  {
+                        self.maxSpeed = speed
+                    }
+                    print("maxSpeed in workoutManager -- maxSpeed: \(self.maxSpeed) speed: \(speed)")
                     print("RouteData inserted successfully in the self.workoutRouteBuilder?.insertRouteData(locations)")
                     continuation.resume()
                 }
@@ -558,8 +568,13 @@ class WorkoutManager:  ObservableObject
     
     func makeMetadataForWorkout(appIdentifier: String) -> [String: Any] {
         var metadataForWorkout: [String: Any] = [:]
+        
         metadataForWorkout["AppIdentifier"] = appIdentifier
         metadataForWorkout["TotalDistance"] =  self.totalDistance
+        
+        metadataForWorkout["TotalDuration"] =  self.workout?.duration
+        metadataForWorkout["TotalEneryBurned"] =  self.workout?.totalEnergyBurned
+        metadataForWorkout["MaxSpeed"] = self.maxSpeed
         metadataForWorkout[HKMetadataKeyIndoorWorkout] = false
         metadataForWorkout[HKMetadataKeyActivityType] = HKWorkoutActivityType.sailing.rawValue
         metadataForWorkout[HKMetadataKeyWorkoutBrandName] = "Sailing"

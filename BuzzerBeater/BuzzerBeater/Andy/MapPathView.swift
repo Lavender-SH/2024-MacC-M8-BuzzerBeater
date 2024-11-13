@@ -20,12 +20,15 @@ struct MapPathView: View {
     @State var coordinates: [CLLocationCoordinate2D] = []
     @State var velocities: [CLLocationSpeed] = []
     @State var position: MapCameraPosition = .automatic
-    @State var totalEnergyBurned: Double = 0
-    @State var totalDistance: Double = 0
+   
     @State var activeEnergyBurned: Double = 0
-    @State var duration : TimeInterval = 0
     @State var isDataLoaded : Bool = false
     
+    
+    @State var totalEnergyBurned: Double = 0
+    @State var totalDistance: Double = 0
+    @State var maxSpeed : Double = 0
+    @State var duration : TimeInterval = 0
     let workoutManager = WorkoutManager.shared
     
     init(workout: HKWorkout) {
@@ -76,7 +79,7 @@ struct MapPathView: View {
                             .font(.caption2)
                         Text("Total Energy Burned: \(formattedEnergyBurned(totalEnergyBurned))")
                             .font(.caption2)
-                        Text("Active Energy Burned: \(formattedEnergyBurned(activeEnergyBurned))")
+                        Text("MaxSpeed: \(maxSpeed) --  maxVelocity \(velocities.max() ?? 10)")
                             .font(.caption2)
                         
 #endif
@@ -87,7 +90,7 @@ struct MapPathView: View {
                         
 #endif
                         
-                    }.padding()
+                    }.padding(.top, 50)
                     
                 }
             }
@@ -106,8 +109,12 @@ struct MapPathView: View {
                 Task {
                     await loadWorkoutData()
                 }
-                let totaldistance = workout.metadata?["TotalDistance"]  as? Double ?? 0.0
-                self.totalDistance = totaldistance
+             
+                self.totalDistance = workout.metadata?["TotalDistance"]  as? Double ?? 0.0
+                self.duration = workout.metadata?["Duration"] as? Double ?? 0.0
+                self.totalEnergyBurned =  workout.metadata?["TotalEnergyBurned"] as? Double ?? 0.0
+                self.maxSpeed = workout.metadata?["MaxSpeed"] as? Double ?? 0.0
+                
                 self.workoutManager.fetchActiveEnergyBurned(startDate: workout.startDate, endDate: workout.endDate) { activeEnergyBurned in
                     if let activeEnergyBurned  = activeEnergyBurned{
                         self.activeEnergyBurned = activeEnergyBurned.doubleValue(for: .kilocalorie())
