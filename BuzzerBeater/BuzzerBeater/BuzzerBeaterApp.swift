@@ -29,41 +29,6 @@ struct BuzzerBeaterApp: App {
             #elseif os(iOS)
             InfoRow()
             #endif
-            //            #elseif os(iOS)
-            //
-            //            NavigationView {
-            //                // iOS에서는 InfoDetail 화면을 기본으로 표시하고 workout 데이터를 전달합니다.
-            //                if let latestWorkout = viewModel.workouts.first {
-            //                    InfoDetail(workout: latestWorkout)
-            //                        .environmentObject(LocationManager.shared)
-            //                        .environmentObject(WindDetector.shared)
-            //                        .environmentObject(ApparentWind.shared)
-            //                        .environmentObject(SailAngleFind.shared)
-            //                        .environmentObject(SailingDataCollector.shared)
-            //                        .environmentObject(HealthService.shared)
-            //                        .onAppear {
-            //                            // 앱이 시작될 때 최신 workout 데이터를 가져옵니다.
-            //                            Task {
-            //                                await viewModel.fetchWorkout(appIdentifier: "seastheDay")
-            //                            }
-            //                        }
-            //                } else {
-            //                    Text("No workout data available")
-            //                        .font(.title)
-            //                        .foregroundColor(.secondary)
-            //                        .onAppear {
-            //                            // 앱이 시작될 때 최신 workout 데이터를 가져옵니다.
-            //                            Task {
-            //                                await viewModel.fetchWorkout(appIdentifier: "seastheDay")
-            //                            }
-            //                        }
-            //                }
-            //            }
-            //            .environmentObject(viewModel)
-            //            #endif
-            //        }
-            //    }
         }
-        
     }
 }
