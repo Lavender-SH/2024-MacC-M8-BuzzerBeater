@@ -296,7 +296,7 @@ struct CompassView: View {
                                     Button(action: startCountdown) {
                                         ZStack {
                                             Circle()
-                                                .stroke(Color.blue, lineWidth: 2)
+                                                .stroke(Color.clear, lineWidth: 2)
                                                 .background(Circle().fill(Color.clear))
                                             
                                             VStack {

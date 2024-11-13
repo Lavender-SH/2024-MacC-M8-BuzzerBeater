@@ -1,16 +1,12 @@
-//
-//  BuzzerBeaterApp.swift
-//  BuzzerBeater
-//
-//  Created by Jeho Ahn on 10/7/24.
-//
-
 import SwiftUI
+import HealthKit
 
 @main
 struct BuzzerBeaterApp: App {
+    @StateObject private var viewModel = WorkoutViewModel()  // WorkoutViewModel 인스턴스 생성
+    
     init() {
-           // 앱 시작 시 LocationManager.shared를 초기화하여 사용 준비를 합니다.
+        // 앱 시작 시 LocationManager와 HealthKit 서비스 등을 초기화합니다.
         _ = LocationManager.shared
         _ = WindDetector.shared
         _ = ApparentWind.shared
@@ -21,6 +17,7 @@ struct BuzzerBeaterApp: App {
     
     var body: some Scene {
         WindowGroup {
+            #if os(watchOS)
             ContentView()
                 .environmentObject(LocationManager.shared)
                 .environmentObject(WindDetector.shared)
@@ -28,6 +25,10 @@ struct BuzzerBeaterApp: App {
                 .environmentObject(SailAngleFind.shared)
                 .environmentObject(SailingDataCollector.shared)
                 .environmentObject(HealthService.shared)
+            
+            #elseif os(iOS)
+            InfoRow()
+            #endif
         }
     }
 }

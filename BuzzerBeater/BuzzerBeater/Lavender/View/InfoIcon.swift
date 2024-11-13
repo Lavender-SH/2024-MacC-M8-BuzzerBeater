@@ -2,7 +2,7 @@
 //  InfoIcon.swift
 //  BuzzerBeater
 //
-//  Created by 박세진 on 11/6/24.
+//  Created by 이승현 on 11/13/24.
 //
 
 import SwiftUI
