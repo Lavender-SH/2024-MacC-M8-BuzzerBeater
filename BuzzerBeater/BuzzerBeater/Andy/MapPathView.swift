@@ -103,8 +103,9 @@ struct MapPathView: View {
             // swift thinking 이 필요함 비동기적 사고방식을 항상 염두에 둘것.시작은 같으나 각각 다른 시점에 종료되고 혹시 종료되는 시점이
             // 다음 시점의 프라세스에 영향을 줄것인가에 대한 고민.
             DispatchQueue.main.async{
-                loadWorkoutData()
-                
+                Task {
+                    await loadWorkoutData()
+                }
                 let totaldistance = workout.metadata?["TotalDistance"]  as? Double ?? 0.0
                 self.totalDistance = totaldistance
                 self.workoutManager.fetchActiveEnergyBurned(startDate: workout.startDate, endDate: workout.endDate) { activeEnergyBurned in
@@ -253,7 +254,7 @@ struct MapPathView: View {
     }
     
     
-    func loadWorkoutData() {
+    func loadWorkoutData() async  {
         getRouteFrom(workout: workout) { success, error in
             if success {
                 DispatchQueue.main.async {

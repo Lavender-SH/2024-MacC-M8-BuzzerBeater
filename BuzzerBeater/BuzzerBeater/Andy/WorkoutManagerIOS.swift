@@ -738,7 +738,7 @@ class WorkoutManager: ObservableObject
         } else {
             HealthService.shared.fetchTotalEnergyBurned(startDate: workout.startDate, endDate: workout.endDate) {
                 totalEnergyBurned in
-                if let totalEnergyBurned  = totalEnergyBurned{
+                if let totalEnergyBurned  = totalEnergyBurned {
                     
                     completion(totalEnergyBurned)
                     print("activeEnergyBurned fetched successfully \(totalEnergyBurned)")
