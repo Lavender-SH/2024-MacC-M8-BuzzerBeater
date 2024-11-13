@@ -69,6 +69,7 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
     
     let distanceFilter = 5.0
     let headingFilter  = 5.0
+    let courseAngleFilter = 15.0
     let locationUpdateTimeInterval = 3
     let boatSpeedBuffer = 0.3
     
@@ -77,6 +78,7 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
         locationManager.delegate = self
         locationManager.distanceFilter = distanceFilter
         locationManager.headingFilter = headingFilter
+       
         locationManager.allowsBackgroundLocationUpdates = true
         locationManager.desiredAccuracy = kCLLocationAccuracyBest
         checkAuthorizationStatus()
@@ -101,10 +103,6 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
         case .authorizedWhenInUse, .authorizedAlways:
             
             print("authorizedWhenInUse or authorizedAlways")
-//            locationManager.startUpdatingLocation()
-//            locationManager.startUpdatingHeading()
-//            startLocationUpdateTimer()
-          //Combine Publiser방식으로 전환
             startUpdatingLocationAndHeading()
             showAlert = false
             
@@ -232,7 +230,7 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
         
         locationPublisher
             .compactMap { $0 }
-            .filter { [weak self] newLocation in
+            .filter { [weak self] newLocation  in
                 guard let self = self else { return false }
                 guard let lastLocation = self.lastLocation else {
                     self.lastLocation = newLocation
@@ -241,12 +239,23 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
                 
                 print("filtered location\(newLocation)")
                 let distance = newLocation.distance(from: lastLocation)
+                let angle = abs(newLocation.course - lastLocation.course)
+                
                 if distance >= self.distanceFilter   {
                     // 5m 이상 차이날 때만 업데이트
+                    print("filtered location distance\(distance) ")
                     return true
-                } else {
-                    return false
                 }
+                
+                if angle  >= self.courseAngleFilter   {
+                    // 5m 이상 차이날 때만 업데이트
+                    print("filtered location angel\(angle) ")
+                    return true
+                }
+                
+                return false
+                
+                
             }
             .sink { [weak self] location in
                 guard let self = self else { return  }
@@ -255,7 +264,9 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
             .store(in: &cancellables)
         
         headingPublisher
+            .throttle(for: .milliseconds(1000), scheduler: RunLoop.main, latest: true)
             .compactMap { $0 }
+        
             .filter { [weak self] newHeading in
                 guard let self = self else { return false }
                 guard let lastHeading = self.lastHeading else {

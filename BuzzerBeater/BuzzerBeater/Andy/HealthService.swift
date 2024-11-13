@@ -271,7 +271,7 @@ class HealthService : ObservableObject {
                 return
             }
             activeEnergyBurned = activeEnergyBurnedQuantity.doubleValue(for: .kilocalorie())
-            
+            print("activeEnergyBurned fetchTotalEnergyBurned : \(activeEnergyBurned)")
         }
         healthStore.execute(activeEnergyQuery)
         let basalEnergyBurnedType = HKQuantityType.quantityType(forIdentifier: .basalEnergyBurned)!
@@ -282,6 +282,7 @@ class HealthService : ObservableObject {
             }
             
             basalEnergyBurned = basalEnergyBurnedQuantity.doubleValue(for: .kilocalorie())
+            print("basalEnergyBurned fetchTotalEnergyBurned (시간단위인지 하루단위인지 체크해봐야함) \(basalEnergyBurned)")
         }
         healthStore.execute(basalEnergyQuery)
         let toalEnergyBurned = activeEnergyBurned + basalEnergyBurned

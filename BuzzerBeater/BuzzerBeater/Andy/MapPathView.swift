@@ -10,6 +10,9 @@ import SwiftUI
 import HealthKit
 
 struct MapPathView: View {
+    
+    let workoutManager = WorkoutManager.shared
+
     var workout: HKWorkout // or the appropriate type for your workout data
     let healthStore =  HealthService.shared.healthStore
     let minDegree = 0.000025
@@ -20,13 +23,15 @@ struct MapPathView: View {
     @State var coordinates: [CLLocationCoordinate2D] = []
     @State var velocities: [CLLocationSpeed] = []
     @State var position: MapCameraPosition = .automatic
-    @State var totalEnergyBurned: Double = 0
-    @State var totalDistance: Double = 0
+   
     @State var activeEnergyBurned: Double = 0
-    @State var duration : TimeInterval = 0
     @State var isDataLoaded : Bool = false
     
-    let workoutManager = WorkoutManager.shared
+    
+    @State var totalEnergyBurned: Double = 0
+    @State var totalDistance: Double = 0
+    @State var maxSpeed : Double = 0
+    @State var duration : TimeInterval = 0
     
     init(workout: HKWorkout) {
         self.workout = workout
@@ -76,7 +81,7 @@ struct MapPathView: View {
                             .font(.caption2)
                         Text("Total Energy Burned: \(formattedEnergyBurned(totalEnergyBurned))")
                             .font(.caption2)
-                        Text("Active Energy Burned: \(formattedEnergyBurned(activeEnergyBurned))")
+                        Text("MaxSpeed: \(maxSpeed) --  maxVelocity \(velocities.max() ?? 10)")
                             .font(.caption2)
                         
 #endif
@@ -87,7 +92,7 @@ struct MapPathView: View {
                         
 #endif
                         
-                    }.padding()
+                    }.padding(.top, 50)
                     
                 }
             }
@@ -103,10 +108,15 @@ struct MapPathView: View {
             // swift thinking 이 필요함 비동기적 사고방식을 항상 염두에 둘것.시작은 같으나 각각 다른 시점에 종료되고 혹시 종료되는 시점이
             // 다음 시점의 프라세스에 영향을 줄것인가에 대한 고민.
             DispatchQueue.main.async{
-                loadWorkoutData()
+                Task {
+                    await loadWorkoutData()
+                }
+             
+                self.totalDistance = workout.metadata?["TotalDistance"]  as? Double ?? 0.0
+                self.duration = workout.metadata?["Duration"] as? Double ?? 0.0
+                self.totalEnergyBurned =  workout.metadata?["TotalEnergyBurned"] as? Double ?? 0.0
+                self.maxSpeed = workout.metadata?["MaxSpeed"] as? Double ?? 0.0
                 
-                let totaldistance = workout.metadata?["TotalDistance"]  as? Double ?? 0.0
-                self.totalDistance = totaldistance
                 self.workoutManager.fetchActiveEnergyBurned(startDate: workout.startDate, endDate: workout.endDate) { activeEnergyBurned in
                     if let activeEnergyBurned  = activeEnergyBurned{
                         self.activeEnergyBurned = activeEnergyBurned.doubleValue(for: .kilocalorie())
@@ -253,7 +263,7 @@ struct MapPathView: View {
     }
     
     
-    func loadWorkoutData() {
+    func loadWorkoutData() async  {
         getRouteFrom(workout: workout) { success, error in
             if success {
                 DispatchQueue.main.async {
