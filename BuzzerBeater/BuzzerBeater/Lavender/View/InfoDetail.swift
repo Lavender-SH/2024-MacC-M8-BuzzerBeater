@@ -54,7 +54,7 @@ struct InfoDetail: View {
         
         List {
             Section {
-                HStack(spacing: 15) {
+                HStack(spacing: 20) {
                     InfoIcon()
                         .frame(width: 80, height: 80)
                     
@@ -81,7 +81,7 @@ struct InfoDetail: View {
                     }
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
-                .padding(.leading, 10)
+                .padding(.leading, 5)
             }
             .listRowBackground(Color.clear)
             
@@ -123,14 +123,14 @@ struct InfoDetail: View {
                                 .fontDesign(.rounded)
                         }
                     }
-                    .padding()
+                    .padding(1)
                 } else {
                     ProgressView("Loading Data...")
                 }
             }
             
             Section(
-                header: Text("Speed of a yacht")
+                header: Text("Speed of a Yacht")
                     .font(.title3)
                     .bold()
                     .foregroundColor(.white)
@@ -156,7 +156,7 @@ struct InfoDetail: View {
                                 )
                                 .foregroundStyle(.cyan)
                             }
-                        }                                    .frame(height: 200)
+                        }                                    .frame(height: 130)
                             .chartXScale(domain: 0...totalDurationInSeconds)  // Dynamic x-axis based on total duration
                             .chartXAxis {
                                 AxisMarks()
@@ -171,9 +171,10 @@ struct InfoDetail: View {
                 .foregroundColor(.white)
                 .textCase(nil)) {
                     MapPathView(workout: workout)
-                        .frame(height: 200)
+                        .frame(height: 250)
                 }
         }
+        .padding(.top, -1)
         .onAppear {
             DispatchQueue.main.async {
                 Task {
