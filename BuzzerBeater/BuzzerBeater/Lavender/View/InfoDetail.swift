@@ -14,18 +14,18 @@ import CoreLocation
 
 struct InfoDetail: View {
     let workoutManager = WorkoutManager.shared
-
+    
     var workout: HKWorkout // or the appropriate type for your workout data
     let healthStore =  HealthService.shared.healthStore
     let minDegree = 0.000025
     let mapDisplayAreaPadding = 2.0
     @State private var region: MKCoordinateRegion?
-
+    
     @State var routePoints: [CLLocation] = []
     @State var coordinates: [CLLocationCoordinate2D] = []
     @State var velocities: [CLLocationSpeed] = []
     @State var position: MapCameraPosition = .automatic
-   
+    
     @State var activeEnergyBurned: Double = 0
     @State var isDataLoaded : Bool = false
     
@@ -34,6 +34,8 @@ struct InfoDetail: View {
     @State var totalDistance: Double = 0
     @State var maxSpeed : Double = 0
     @State var duration : TimeInterval = 0
+    @State var startDate: Date?
+    @State var endDate: Date?
     
     init(workout: HKWorkout) {
         self.workout = workout
@@ -56,10 +58,12 @@ struct InfoDetail: View {
                     Text("Dinghy Yacht")
                         .font(.system(size: 25))
                         .padding(.bottom, 5)
-                    Text("Am 10:00 - 11:00")
-                        .font(.system(size: 20))
-                        .foregroundColor(.secondary)
-                        .padding(.bottom, 5)
+                    if let startDate = startDate, let endDate = endDate {
+                        Text("\(formattedTime(startDate)) - \(formattedTime(endDate))")
+                            .font(.system(size: 20))
+                            .foregroundColor(.secondary)
+                            .padding(.bottom, 5)
+                    }
                     
                     HStack(spacing: 4) {
                         Image(systemName: "location.fill")
@@ -69,13 +73,13 @@ struct InfoDetail: View {
                             .font(.system(size: 18))
                             .foregroundColor(.secondary)
                     }
-
-                        
+                    
+                    
                 }
             }
             .frame(maxWidth: .infinity, alignment: .leading)
             .padding(.leading, 25)
-
+            
             
             
             
@@ -124,7 +128,7 @@ struct InfoDetail: View {
                         ProgressView("Loading Data...")
                     }
                 }
-                .textCase(nil) // Prevents automatic capitalization for Section headers
+                .textCase(nil)
             }
             .onAppear {
                 DispatchQueue.main.async {
@@ -136,6 +140,8 @@ struct InfoDetail: View {
                     self.duration = workout.metadata?["Duration"] as? Double ?? 0.0
                     self.totalEnergyBurned = workout.metadata?["TotalEnergyBurned"] as? Double ?? 0.0
                     self.maxSpeed = workout.metadata?["MaxSpeed"] as? Double ?? 0.0
+                    self.startDate = workout.metadata?["StartDate"] as? Date ?? Date()
+                    self.endDate = workout.metadata?["EndDate"] as? Date ?? Date()
                     
                     self.workoutManager.fetchActiveEnergyBurned(startDate: workout.startDate, endDate: workout.endDate) { activeEnergyBurned in
                         if let activeEnergyBurned = activeEnergyBurned {
@@ -161,7 +167,7 @@ struct InfoDetail: View {
             .preferredColorScheme(.dark)
         }
     }
-
+    
     
     func loadWorkoutData() async  {
         getRouteFrom(workout: workout) { success, error in
@@ -275,7 +281,7 @@ struct InfoDetail: View {
             }
         }
     }
-
+    
     
     func formattedDuration(_ duration: TimeInterval) -> String {
         let hours = Int(duration) / 3600
@@ -283,7 +289,7 @@ struct InfoDetail: View {
         let seconds = Int(duration) % 60
         return String(format: "%02d:%02d:%02d", hours, minutes, seconds)
     }
-
+    
     func formattedDistance(_ distance: Double?) -> String {
         // distance가 nil이 아니면, 미터 단위로 값을 가져와서 킬로미터로 변환
         guard let distance = distance else { return "0.00 km" }
@@ -295,7 +301,7 @@ struct InfoDetail: View {
         // 킬로미터 단위로 포맷팅해서 반환
         return String(format: "%.2f km", kilometer)
     }
-
+    
     func formattedEnergyBurned(_ calories: Double?) -> String {
         // distance가 nil이 아니면, 미터 단위로 값을 가져와서 킬로미터로 변환
         guard let calories = calories else { return "0.00 Kcal" }
@@ -304,8 +310,17 @@ struct InfoDetail: View {
         // 킬로미터 단위로 포맷팅해서 반환
         return String(format: "%d Kcal", caloriesInt)
     }
+    
     func formattedMaxSpeed(_ speed: CLLocationSpeed) -> String {
         return String(format: "%.1f", speed)
     }
-
+    
+    private func formattedTime(_ date: Date) -> String {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "a h:mm"
+        formatter.amSymbol = "Am"
+        formatter.pmSymbol = "Pm"
+        return formatter.string(from: date)
+    }
+    
 }

@@ -17,7 +17,19 @@ struct BuzzerBeaterApp: App {
     
     var body: some Scene {
         WindowGroup {
-            #if os(watchOS)
+//            #if os(watchOS)
+//            ContentView()
+//                .environmentObject(LocationManager.shared)
+//                .environmentObject(WindDetector.shared)
+//                .environmentObject(ApparentWind.shared)
+//                .environmentObject(SailAngleFind.shared)
+//                .environmentObject(SailingDataCollector.shared)
+//                .environmentObject(HealthService.shared)
+//            
+//            #elseif os(iOS)
+//            InfoRow()
+//            #endif
+            
             ContentView()
                 .environmentObject(LocationManager.shared)
                 .environmentObject(WindDetector.shared)
@@ -25,10 +37,6 @@ struct BuzzerBeaterApp: App {
                 .environmentObject(SailAngleFind.shared)
                 .environmentObject(SailingDataCollector.shared)
                 .environmentObject(HealthService.shared)
-            
-            #elseif os(iOS)
-            InfoRow()
-            #endif
         }
     }
 }

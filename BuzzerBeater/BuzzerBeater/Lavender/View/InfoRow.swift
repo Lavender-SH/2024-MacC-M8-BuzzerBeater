@@ -56,19 +56,17 @@ struct InfoRow: View {
                                                     }
                                                 }
                                             }
-                                            .id(workout.hashValue) // Set the ID for scroll tracking
+                                            .id(workout.hashValue)
                                         }
                                     }
                             }
                         }
                         .refreshable {
-                            // Trigger refresh action when the list is pulled down
                             isLoading = true
                             await viewModel.fetchWorkout(appIdentifier: "seastheDay")
                             isLoading = false
                         }
                         .onAppear {
-                            // Restore the scroll position if there's a saved position
                             if let position = savedScrollPosition {
                                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
                                     scrollViewProxy.scrollTo(position, anchor: .zero)
