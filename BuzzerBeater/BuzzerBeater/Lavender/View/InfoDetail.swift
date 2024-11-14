@@ -22,6 +22,7 @@ struct InfoDetail: View {
     let minDegree = 0.000025
     let mapDisplayAreaPadding = 2.0
     @State private var region: MKCoordinateRegion?
+    @State private var isMapModalPresented = false
     
     @State var routePoints: [CLLocation] = []
     @State var coordinates: [CLLocationCoordinate2D] = []
@@ -170,11 +171,22 @@ struct InfoDetail: View {
                 .bold()
                 .foregroundColor(.white)
                 .textCase(nil)) {
-                    MapPathView(workout: workout)
-                        .frame(height: 250)
+                    // Button to show the map in a modal view
+                    Button(action: {
+                        isMapModalPresented = true // Present modal when tapped
+                    }) {
+                        MapPathView(workout: workout)
+                            .frame(height: 250)
+                    }
+                    .buttonStyle(PlainButtonStyle()) // Disable default button styling
                 }
         }
         .padding(.top, -1)
+        .sheet(isPresented: $isMapModalPresented) {
+            // Full-screen modal for the map view
+            MapPathView(workout: workout)
+                .edgesIgnoringSafeArea(.all) // Make the map fill the screen
+        }
         .onAppear {
             DispatchQueue.main.async {
                 Task {
@@ -205,7 +217,7 @@ struct InfoDetail: View {
         }
         .preferredColorScheme(.dark)
         .navigationBarBackButtonHidden(true)
-        #if os(iOS)
+#if os(iOS)
         .toolbar {
             ToolbarItem(placement: .navigationBarLeading) {
                 Button(action: {
@@ -221,7 +233,7 @@ struct InfoDetail: View {
                     .foregroundColor(.white)
             }
         }
-        #endif
+#endif
     }
     
     
