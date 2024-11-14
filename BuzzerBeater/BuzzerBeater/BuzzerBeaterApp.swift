@@ -29,6 +29,14 @@ struct BuzzerBeaterApp: App {
             #elseif os(iOS)
             InfoRow()
             #endif
+            
+//            ContentView()
+//                .environmentObject(LocationManager.shared)
+//                .environmentObject(WindDetector.shared)
+//                .environmentObject(ApparentWind.shared)
+//                .environmentObject(SailAngleFind.shared)
+//                .environmentObject(SailingDataCollector.shared)
+//                .environmentObject(HealthService.shared)
         }
     }
 }
