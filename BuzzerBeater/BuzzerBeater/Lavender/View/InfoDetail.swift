@@ -11,8 +11,10 @@ import Charts
 import MapKit
 import HealthKit
 import CoreLocation
+import Charts
 
 struct InfoDetail: View {
+    @Environment(\.presentationMode) var presentationMode
     let workoutManager = WorkoutManager.shared
     
     var workout: HKWorkout // or the appropriate type for your workout data
@@ -36,6 +38,7 @@ struct InfoDetail: View {
     @State var duration : TimeInterval = 0
     @State var startDate: Date?
     @State var endDate: Date?
+    @State var locationName: String = "Loading location..."
     
     init(workout: HKWorkout) {
         self.workout = workout
@@ -48,8 +51,9 @@ struct InfoDetail: View {
     ]
     
     var body: some View {
-        NavigationStack {
-            VStack(alignment: .leading) {
+        
+        List {
+            Section {
                 HStack(spacing: 15) {
                     InfoIcon()
                         .frame(width: 80, height: 80)
@@ -69,100 +73,156 @@ struct InfoDetail: View {
                             Image(systemName: "location.fill")
                                 .font(.system(size: 18))
                                 .foregroundColor(.secondary)
-                            Text("Pohang City")
+                            //Text("Pohang City")
+                            Text(locationName)
                                 .font(.system(size: 18))
                                 .foregroundColor(.secondary)
                         }
                     }
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
-                .padding(.leading, 25)
-
-                List {
-                    Section(
-                        header: Text("Navigation Details")
-                            .font(.title3)
-                            .bold()
-                            .foregroundColor(.white)
-                    ) {
-                        if isDataLoaded {
-                            LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], alignment: .leading, spacing: 16) {
-                                VStack(alignment: .leading, spacing: 8) {
-                                    Text("Sailing Time")
-                                    Text(formattedDuration(duration))
-                                        .font(.title)
-                                        .foregroundColor(.yellow)
-                                        .fontDesign(.rounded)
-                                }
-                                VStack(alignment: .leading, spacing: 8) {
-                                    Text("Sailing Distance")
-                                    Text("\(formattedDistance(totalDistance))")
-                                        .font(.title)
-                                        .foregroundColor(.cyan)
-                                        .fontDesign(.rounded)
-                                }
-                                VStack(alignment: .leading, spacing: 8) {
-                                    Text("Calories")
-                                    Text("\(formattedEnergyBurned(totalEnergyBurned))")
-                                        .font(.title)
-                                        .foregroundColor(.cyan)
-                                        .fontDesign(.rounded)
-                                }
-                                VStack(alignment: .leading, spacing: 8) {
-                                    Text("Highest Speed")
-                                    Text("\(formattedMaxSpeed(velocities.max() ?? 0)) m/s")
-                                        .font(.title)
-                                        .foregroundColor(.cyan)
-                                        .fontDesign(.rounded)
-                                }
-                            }
-                            .padding()
-                        } else {
-                            ProgressView("Loading Data...")
-                        }
-                    }
+                .padding(.leading, 10)
+            }
+            .listRowBackground(Color.clear)
+            
+            Section(
+                header: Text("Navigation Details")
+                    .font(.title3)
+                    .bold()
+                    .foregroundColor(.white)
                     .textCase(nil)
-
-                    Section(header: Text("Navigation Route")
-                                .font(.title3)
-                                .bold()
-                                .foregroundColor(.white)) {
-                        MapPathView(workout: workout)
-                            .frame(height: 200) // Set the height of the map
+            ) {
+                if isDataLoaded {
+                    LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], alignment: .leading, spacing: 16) {
+                        VStack(alignment: .leading, spacing: 8) {
+                            Text("Sailing Time")
+                            Text(formattedDuration(duration))
+                                .font(.title)
+                                .foregroundColor(.yellow)
+                                .fontDesign(.rounded)
+                        }
+                        VStack(alignment: .leading, spacing: 8) {
+                            Text("Sailing Distance")
+                            Text("\(formattedDistance(totalDistance))")
+                                .font(.title)
+                                .foregroundColor(.cyan)
+                                .fontDesign(.rounded)
+                        }
+                        VStack(alignment: .leading, spacing: 8) {
+                            Text("Calories")
+                            Text("\(formattedEnergyBurned(totalEnergyBurned))")
+                                .font(.title)
+                                .foregroundColor(.cyan)
+                                .fontDesign(.rounded)
+                        }
+                        VStack(alignment: .leading, spacing: 8) {
+                            Text("Highest Speed")
+                            Text("\(formattedMaxSpeed(velocities.max() ?? 0)) m/s")
+                                .font(.title)
+                                .foregroundColor(.cyan)
+                                .fontDesign(.rounded)
+                        }
+                    }
+                    .padding()
+                } else {
+                    ProgressView("Loading Data...")
+                }
+            }
+            
+            Section(
+                header: Text("Speed of a yacht")
+                    .font(.title3)
+                    .bold()
+                    .foregroundColor(.white)
+                    .textCase(nil)
+            ) {
+                if isDataLoaded {
+                    let startTime = routePoints.first?.timestamp ?? Date()
+                    let endTime = routePoints.last?.timestamp ?? Date()
+                    let totalDurationInSeconds = endTime.timeIntervalSince(startTime)
+                    let averageSpeed = velocities.reduce(0, +) / Double(velocities.count)
+                    
+                    VStack(alignment: .leading, spacing: 8){
+                        Text("Average Speed: \(String(format: "%.2f", averageSpeed)) m/s")
+                            .font(.headline)
+                            .padding(.bottom, 8)
+                            .foregroundStyle(.cyan)
+                        Chart {
+                            ForEach(Array(velocities.enumerated()), id: \.offset) { index, speed in
+                                let timeInSeconds = routePoints[index].timestamp.timeIntervalSince(startTime)
+                                LineMark(
+                                    x: .value("Time (sec)", timeInSeconds),
+                                    y: .value("Speed", speed)
+                                )
+                                .foregroundStyle(.cyan)
+                            }
+                        }                                    .frame(height: 200)
+                            .chartXScale(domain: 0...totalDurationInSeconds)  // Dynamic x-axis based on total duration
+                            .chartXAxis {
+                                AxisMarks()
+                            }
                     }
                 }
             }
-            .onAppear {
-                DispatchQueue.main.async {
-                    Task {
-                        await loadWorkoutData()
-                    }
-                    
-                    self.totalDistance = workout.metadata?["TotalDistance"] as? Double ?? 0.0
-                    self.duration = workout.metadata?["Duration"] as? Double ?? 0.0
-                    self.totalEnergyBurned = workout.metadata?["TotalEnergyBurned"] as? Double ?? 0.0
-                    self.maxSpeed = workout.metadata?["MaxSpeed"] as? Double ?? 0.0
-                    self.startDate = workout.startDate
-                    self.endDate = workout.endDate
-                    
-                    self.workoutManager.fetchActiveEnergyBurned(startDate: workout.startDate, endDate: workout.endDate) { activeEnergyBurned in
-                        if let activeEnergyBurned = activeEnergyBurned {
-                            self.activeEnergyBurned = activeEnergyBurned.doubleValue(for: .kilocalorie())
-                        }
-                    }
-                    
-                    self.workoutManager.fetchTotalEnergyBurned(for: workout) { totalEnergyBurned in
-                        if let totalEnergyBurned = totalEnergyBurned {
-                            self.totalEnergyBurned = totalEnergyBurned.doubleValue(for: .kilocalorie())
-                        }
-                    }
-                    
-                    self.duration = workout.endDate.timeIntervalSince(workout.startDate)
+            
+            Section(header: Text("Navigation Route")
+                .font(.title3)
+                .bold()
+                .foregroundColor(.white)
+                .textCase(nil)) {
+                    MapPathView(workout: workout)
+                        .frame(height: 200)
                 }
-            }
-            .preferredColorScheme(.dark)
         }
+        .onAppear {
+            DispatchQueue.main.async {
+                Task {
+                    await loadWorkoutData()
+                }
+                
+                self.totalDistance = workout.metadata?["TotalDistance"] as? Double ?? 0.0
+                self.duration = workout.metadata?["Duration"] as? Double ?? 0.0
+                self.totalEnergyBurned = workout.metadata?["TotalEnergyBurned"] as? Double ?? 0.0
+                self.maxSpeed = workout.metadata?["MaxSpeed"] as? Double ?? 0.0
+                self.startDate = workout.startDate
+                self.endDate = workout.endDate
+                
+                self.workoutManager.fetchActiveEnergyBurned(startDate: workout.startDate, endDate: workout.endDate) { activeEnergyBurned in
+                    if let activeEnergyBurned = activeEnergyBurned {
+                        self.activeEnergyBurned = activeEnergyBurned.doubleValue(for: .kilocalorie())
+                    }
+                }
+                
+                self.workoutManager.fetchTotalEnergyBurned(for: workout) { totalEnergyBurned in
+                    if let totalEnergyBurned = totalEnergyBurned {
+                        self.totalEnergyBurned = totalEnergyBurned.doubleValue(for: .kilocalorie())
+                    }
+                }
+                
+                self.duration = workout.endDate.timeIntervalSince(workout.startDate)
+            }
+        }
+        .preferredColorScheme(.dark)
+        .navigationBarBackButtonHidden(true)
+        #if os(iOS)
+        .toolbar {
+            ToolbarItem(placement: .navigationBarLeading) {
+                Button(action: {
+                    presentationMode.wrappedValue.dismiss()
+                }) {
+                    Image(systemName: "chevron.left")
+                        .foregroundColor(.white)
+                }
+            }
+            ToolbarItem(placement: .principal) {
+                Text(formattedDate(startDate))
+                    .font(.headline)
+                    .foregroundColor(.white)
+            }
+        }
+        #endif
     }
+    
     
     
     func loadWorkoutData() async  {
@@ -172,7 +232,10 @@ struct InfoDetail: View {
                     self.coordinates = self.routePoints.map { $0.coordinate }
                     self.velocities = self.routePoints.map { $0.speed }
                     self.isDataLoaded = true
-                    print("velocities:\(self.velocities.count), coordinates \(self.coordinates.count), routePoints \(self.routePoints.count) in the getRouteFrom")
+                    if let firstLocation = routePoints.first {
+                        fetchLocationName(for: firstLocation)
+                    }
+                    print("velocities:\(self.velocities.count), coordinates \(self.coordinates.count), routePoints \(self.routePoints.count) in the getRouteFrom, 지역이름\(locationName)")
                 }
             } else {
                 DispatchQueue.main.async {
@@ -314,9 +377,28 @@ struct InfoDetail: View {
     private func formattedTime(_ date: Date) -> String {
         let formatter = DateFormatter()
         formatter.dateFormat = "a h:mm"
-        formatter.amSymbol = "Am"
-        formatter.pmSymbol = "Pm"
+        formatter.amSymbol = "AM"
+        formatter.pmSymbol = "PM"
         return formatter.string(from: date)
     }
+    private func formattedDate(_ date: Date?) -> String {
+        guard let date = date else { return "" }
+        let formatter = DateFormatter()
+        formatter.dateFormat = "yyyy. MM. dd (EEE)"
+        return formatter.string(from: date)
+    }
+    
+    func fetchLocationName(for location: CLLocation) {
+        let geocoder = CLGeocoder()
+        geocoder.reverseGeocodeLocation(location, preferredLocale: Locale(identifier: "en_US")) { placemarks, error in
+            if let placemark = placemarks?.first, let city = placemark.locality {
+                self.locationName = city
+            } else {
+                self.locationName = "Unknown Location"
+            }
+        }
+    }
+    
+    
     
 }

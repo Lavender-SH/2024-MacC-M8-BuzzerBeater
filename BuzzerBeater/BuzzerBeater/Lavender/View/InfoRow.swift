@@ -15,7 +15,7 @@ struct InfoRow: View {
     @Namespace private var scrollNamespace
     
     var body: some View {
-        NavigationView {
+        NavigationStack {
             VStack {
                 if isLoading {
                     ProgressView("Loading Workouts...")
@@ -30,7 +30,6 @@ struct InfoRow: View {
                                             NavigationLink(
                                                 destination: InfoDetail(workout: workout)
                                                     .onDisappear {
-                                                        // Save the current scroll position when navigating back
                                                         savedScrollPosition = workout.hashValue
                                                     }
                                             ) {
@@ -58,6 +57,9 @@ struct InfoRow: View {
                                             }
                                             .id(workout.hashValue)
                                         }
+                                        .onDelete { indexSet in
+                                                                                deleteWorkout(at: indexSet, in: workouts)
+                                                                            }
                                     }
                             }
                         }
@@ -102,4 +104,13 @@ struct InfoRow: View {
         
         return grouped.sorted { $0.key > $1.key }
     }
+    private func deleteWorkout(at indexSet: IndexSet, in workouts: [HKWorkout]) {
+            indexSet.forEach { index in
+                let workout = workouts[index]
+                viewModel.deleteWorkout(workout) // Calls the delete method in the ViewModel
+            }
+            Task {
+                await viewModel.fetchWorkout(appIdentifier: "seastheDay") // Refresh the workout list
+            }
+        }
 }
