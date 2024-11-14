@@ -49,86 +49,88 @@ struct InfoDetail: View {
     
     var body: some View {
         NavigationStack {
-            
-            HStack(spacing: 15) {
-                InfoIcon()
-                    .frame(width: 80, height: 80)
-                
-                VStack(alignment: .leading) {
-                    Text("Dinghy Yacht")
-                        .font(.system(size: 25))
-                        .padding(.bottom, 5)
-                    if let startDate = startDate, let endDate = endDate {
-                        Text("\(formattedTime(startDate)) - \(formattedTime(endDate))")
-                            .font(.system(size: 20))
-                            .foregroundColor(.secondary)
+            VStack(alignment: .leading) {
+                HStack(spacing: 15) {
+                    InfoIcon()
+                        .frame(width: 80, height: 80)
+                    
+                    VStack(alignment: .leading) {
+                        Text("Dinghy Yacht")
+                            .font(.system(size: 25))
                             .padding(.bottom, 5)
+                        if let startDate = startDate, let endDate = endDate {
+                            Text("\(formattedTime(startDate)) - \(formattedTime(endDate))")
+                                .font(.system(size: 20))
+                                .foregroundColor(.secondary)
+                                .padding(.bottom, 5)
+                        }
+                        
+                        HStack(spacing: 4) {
+                            Image(systemName: "location.fill")
+                                .font(.system(size: 18))
+                                .foregroundColor(.secondary)
+                            Text("Pohang City")
+                                .font(.system(size: 18))
+                                .foregroundColor(.secondary)
+                        }
                     }
-                    
-                    HStack(spacing: 4) {
-                        Image(systemName: "location.fill")
-                            .font(.system(size: 18))
-                            .foregroundColor(.secondary)
-                        Text("Pohang City")
-                            .font(.system(size: 18))
-                            .foregroundColor(.secondary)
-                    }
-                    
-                    
                 }
-            }
-            .frame(maxWidth: .infinity, alignment: .leading)
-            .padding(.leading, 25)
-            
-            
-            
-            
-            List {
-                Section(
-                    header: HStack {
-                        Text("Navigation Details")
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .padding(.leading, 25)
+
+                List {
+                    Section(
+                        header: Text("Navigation Details")
                             .font(.title3)
                             .bold()
                             .foregroundColor(.white)
-                    }
-                ) {
-                    if isDataLoaded {
-                        LazyVGrid(columns: columns, alignment: .leading, spacing: 16) {
-                            VStack(alignment: .leading, spacing: 8) {
-                                Text("Sailing Time")
-                                Text(formattedDuration(duration))
-                                    .font(.title)
-                                    .foregroundColor(.yellow)
-                                    .fontDesign(.rounded)
+                    ) {
+                        if isDataLoaded {
+                            LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], alignment: .leading, spacing: 16) {
+                                VStack(alignment: .leading, spacing: 8) {
+                                    Text("Sailing Time")
+                                    Text(formattedDuration(duration))
+                                        .font(.title)
+                                        .foregroundColor(.yellow)
+                                        .fontDesign(.rounded)
+                                }
+                                VStack(alignment: .leading, spacing: 8) {
+                                    Text("Sailing Distance")
+                                    Text("\(formattedDistance(totalDistance))")
+                                        .font(.title)
+                                        .foregroundColor(.cyan)
+                                        .fontDesign(.rounded)
+                                }
+                                VStack(alignment: .leading, spacing: 8) {
+                                    Text("Calories")
+                                    Text("\(formattedEnergyBurned(totalEnergyBurned))")
+                                        .font(.title)
+                                        .foregroundColor(.cyan)
+                                        .fontDesign(.rounded)
+                                }
+                                VStack(alignment: .leading, spacing: 8) {
+                                    Text("Highest Speed")
+                                    Text("\(formattedMaxSpeed(velocities.max() ?? 0)) m/s")
+                                        .font(.title)
+                                        .foregroundColor(.cyan)
+                                        .fontDesign(.rounded)
+                                }
                             }
-                            VStack(alignment: .leading, spacing: 8) {
-                                Text("Sailing Distance")
-                                Text("\(formattedDistance(totalDistance))")
-                                    .font(.title)
-                                    .foregroundColor(.cyan)
-                                    .fontDesign(.rounded)
-                            }
-                            VStack(alignment: .leading, spacing: 8) {
-                                Text("Calories")
-                                Text("\(formattedEnergyBurned(totalEnergyBurned))")
-                                    .font(.title)
-                                    .foregroundColor(.cyan)
-                                    .fontDesign(.rounded)
-                            }
-                            VStack(alignment: .leading, spacing: 8) {
-                                Text("Highest Speed")
-                                Text("\(formattedMaxSpeed(velocities.max() ?? 0)) m/s")
-                                    .font(.title)
-                                    .foregroundColor(.cyan)
-                                    .fontDesign(.rounded)
-                            }
+                            .padding()
+                        } else {
+                            ProgressView("Loading Data...")
                         }
-                        .padding()
-                    } else {
-                        ProgressView("Loading Data...")
+                    }
+                    .textCase(nil)
+
+                    Section(header: Text("Navigation Route")
+                                .font(.title3)
+                                .bold()
+                                .foregroundColor(.white)) {
+                        MapPathView(workout: workout)
+                            .frame(height: 200) // Set the height of the map
                     }
                 }
-                .textCase(nil)
             }
             .onAppear {
                 DispatchQueue.main.async {
@@ -140,24 +142,18 @@ struct InfoDetail: View {
                     self.duration = workout.metadata?["Duration"] as? Double ?? 0.0
                     self.totalEnergyBurned = workout.metadata?["TotalEnergyBurned"] as? Double ?? 0.0
                     self.maxSpeed = workout.metadata?["MaxSpeed"] as? Double ?? 0.0
-                    self.startDate = workout.metadata?["StartDate"] as? Date ?? Date()
-                    self.endDate = workout.metadata?["EndDate"] as? Date ?? Date()
+                    self.startDate = workout.startDate
+                    self.endDate = workout.endDate
                     
                     self.workoutManager.fetchActiveEnergyBurned(startDate: workout.startDate, endDate: workout.endDate) { activeEnergyBurned in
                         if let activeEnergyBurned = activeEnergyBurned {
                             self.activeEnergyBurned = activeEnergyBurned.doubleValue(for: .kilocalorie())
-                            print("activeEnergyBurned fetched successfully \(activeEnergyBurned)")
-                        } else {
-                            print("activeEnergyBurned is nil")
                         }
                     }
                     
                     self.workoutManager.fetchTotalEnergyBurned(for: workout) { totalEnergyBurned in
                         if let totalEnergyBurned = totalEnergyBurned {
                             self.totalEnergyBurned = totalEnergyBurned.doubleValue(for: .kilocalorie())
-                            print("totalEnergyBurned fetched successfully \(totalEnergyBurned)")
-                        } else {
-                            print("totalEnergyBurned is nil")
                         }
                     }
                     
