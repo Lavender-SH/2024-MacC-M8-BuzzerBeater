@@ -65,8 +65,11 @@ struct MapPathView: View {
                         
                     }
                     .mapControls{
+                        VStack{
                         MapUserLocationButton()
                         MapCompass()
+                    }
+                        
 #if !os(watchOS)
                         MapScaleView()
 #endif
@@ -74,25 +77,25 @@ struct MapPathView: View {
                     
                     
                     
-                    VStack{
-#if !os(watchOS)
-                        Text("\(formattedDuration(duration))").font(.caption2)
-                        Text("Total Distance: \(formattedDistance(totalDistance))")
-                            .font(.caption2)
-                        Text("Total Energy Burned: \(formattedEnergyBurned(totalEnergyBurned))")
-                            .font(.caption2)
-                        Text("MaxSpeed: \(maxSpeed) --  maxVelocity \(velocities.max() ?? 10)")
-                            .font(.caption2)
-                        
-#endif
-                        
-                        
-#if os(watchOS)
-                        Text("\(formattedDuration(duration))").font(.caption2)
-                        
-#endif
-                        
-                    }.padding(.top, 50)
+//                    VStack{
+//#if !os(watchOS)
+//                        Text("\(formattedDuration(duration))").font(.caption2)
+//                        Text("Total Distance: \(formattedDistance(totalDistance))")
+//                            .font(.caption2)
+//                        Text("Total Energy Burned: \(formattedEnergyBurned(totalEnergyBurned))")
+//                            .font(.caption2)
+//                        Text("MaxSpeed: \(maxSpeed) --  maxVelocity \(velocities.max() ?? 10)")
+//                            .font(.caption2)
+//                        
+//#endif
+//                        
+//                        
+//#if os(watchOS)
+//                        Text("\(formattedDuration(duration))").font(.caption2)
+//                        
+//#endif
+//                        
+//                    }.padding(.top, 50)
                     
                 }
             }

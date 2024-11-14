@@ -194,6 +194,18 @@ class WorkoutViewModel: NSObject, ObservableObject {
             healthStore.execute(locationQuery) // Execute the query
         }
     }
+    
+    func deleteWorkout(_ workout: HKWorkout) {
+            healthStore.delete(workout) { [weak self] success, error in
+                if success {
+                    DispatchQueue.main.async {
+                        self?.workouts.removeAll { $0 == workout }
+                    }
+                } else if let error = error {
+                    print("Failed to delete workout: \(error.localizedDescription)")
+                }
+            }
+        }
 
 }
 
