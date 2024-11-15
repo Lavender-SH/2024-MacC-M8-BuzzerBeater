@@ -719,6 +719,10 @@ class WorkoutManager: ObservableObject
         metadataForWorkout[HKMetadataKeyIndoorWorkout] = false
         metadataForWorkout[HKMetadataKeyActivityType] = HKWorkoutActivityType.sailing.rawValue
         metadataForWorkout[HKMetadataKeyWorkoutBrandName] = "Sailing"
+        
+        let uuidStr = workout?.uuid.uuidString ??  UUID().uuidString
+        metadataForWorkout[HKMetadataKeySyncIdentifier] = "\(appIdentifier)_workout_\(uuidStr)"
+        metadataForWorkout[HKMetadataKeySyncVersion] = 1
         return metadataForWorkout
     }
     
