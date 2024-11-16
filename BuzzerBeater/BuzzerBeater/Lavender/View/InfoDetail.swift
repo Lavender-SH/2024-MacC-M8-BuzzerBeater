@@ -15,6 +15,7 @@ import Charts
 
 struct InfoDetail: View {
     @Environment(\.presentationMode) var presentationMode
+    @State private var isMapModalPresented = false
     let workoutManager = WorkoutManager.shared
     
     var workout: HKWorkout // or the appropriate type for your workout data
@@ -22,7 +23,6 @@ struct InfoDetail: View {
     let minDegree = 0.000025
     let mapDisplayAreaPadding = 2.0
     @State private var region: MKCoordinateRegion?
-    @State private var isMapModalPresented = false
     
     @State var routePoints: [CLLocation] = []
     @State var coordinates: [CLLocationCoordinate2D] = []
@@ -175,7 +175,7 @@ struct InfoDetail: View {
                     Button(action: {
                         isMapModalPresented = true // Present modal when tapped
                     }) {
-                        MapPathView(workout: workout)
+                        MapPathView(workout: workout, isModal: false)
                             .frame(height: 250)
                     }
                     .buttonStyle(PlainButtonStyle()) // Disable default button styling
@@ -183,9 +183,8 @@ struct InfoDetail: View {
         }
         .padding(.top, -1)
         .sheet(isPresented: $isMapModalPresented) {
-            // Full-screen modal for the map view
-            MapPathView(workout: workout)
-                .edgesIgnoringSafeArea(.all) // Make the map fill the screen
+            MapPathView(workout: workout, isModal: true)
+                .edgesIgnoringSafeArea(.all)
         }
         .onAppear {
             DispatchQueue.main.async {

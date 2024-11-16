@@ -12,18 +12,18 @@ import HealthKit
 struct MapPathView: View {
     
     let workoutManager = WorkoutManager.shared
-
+    
     var workout: HKWorkout // or the appropriate type for your workout data
     let healthStore =  HealthService.shared.healthStore
     let minDegree = 0.000025
     let mapDisplayAreaPadding = 2.0
     @State private var region: MKCoordinateRegion?
-
+    
     @State var routePoints: [CLLocation] = []
     @State var coordinates: [CLLocationCoordinate2D] = []
     @State var velocities: [CLLocationSpeed] = []
     @State var position: MapCameraPosition = .automatic
-   
+    
     @State var activeEnergyBurned: Double = 0
     @State var isDataLoaded : Bool = false
     
@@ -33,9 +33,11 @@ struct MapPathView: View {
     @State var maxSpeed : Double = 0
     @State var duration : TimeInterval = 0
     
-    init(workout: HKWorkout) {
+    var isModal: Bool
+    
+    init(workout: HKWorkout, isModal: Bool = false) {
         self.workout = workout
-        
+        self.isModal = isModal
     }
     
     var body: some View {
@@ -66,9 +68,9 @@ struct MapPathView: View {
                     }
                     .mapControls{
                         VStack{
-                        MapUserLocationButton()
-                        MapCompass()
-                    }
+                            MapUserLocationButton()
+                            MapCompass()
+                        }
                         
 #if !os(watchOS)
                         MapScaleView()
@@ -77,26 +79,35 @@ struct MapPathView: View {
                     
                     
                     
-//                    VStack{
-//#if !os(watchOS)
-//                        Text("\(formattedDuration(duration))").font(.caption2)
-//                        Text("Total Distance: \(formattedDistance(totalDistance))")
-//                            .font(.caption2)
-//                        Text("Total Energy Burned: \(formattedEnergyBurned(totalEnergyBurned))")
-//                            .font(.caption2)
-//                        Text("MaxSpeed: \(maxSpeed) --  maxVelocity \(velocities.max() ?? 10)")
-//                            .font(.caption2)
-//                        
-//#endif
-//                        
-//                        
-//#if os(watchOS)
-//                        Text("\(formattedDuration(duration))").font(.caption2)
-//                        
-//#endif
-//                        
-//                    }.padding(.top, 50)
-                    
+                    //                    VStack{
+                    //#if !os(watchOS)
+                    //                        Text("\(formattedDuration(duration))").font(.caption2)
+                    //                        Text("Total Distance: \(formattedDistance(totalDistance))")
+                    //                            .font(.caption2)
+                    //                        Text("Total Energy Burned: \(formattedEnergyBurned(totalEnergyBurned))")
+                    //                            .font(.caption2)
+                    //                        Text("MaxSpeed: \(maxSpeed) --  maxVelocity \(velocities.max() ?? 10)")
+                    //                            .font(.caption2)
+                    //
+                    //#endif
+                    //
+                    //
+                    //#if os(watchOS)
+                    //                        Text("\(formattedDuration(duration))").font(.caption2)
+                    //
+                    //#endif
+                    //
+                    //                    }.padding(.top, 50)
+                    if isModal {
+                        VStack {
+                            RoundedRectangle(cornerRadius: 3)
+                                .fill(Color.white)
+                                .frame(width: 150, height: 5)
+                                .padding(.top, 10)
+                            
+                            Spacer()
+                        }
+                    }
                 }
             }
             
@@ -114,7 +125,7 @@ struct MapPathView: View {
                 Task {
                     await loadWorkoutData()
                 }
-             
+                
                 self.totalDistance = workout.metadata?["TotalDistance"]  as? Double ?? 0.0
                 self.duration = workout.metadata?["Duration"] as? Double ?? 0.0
                 self.totalEnergyBurned =  workout.metadata?["TotalEnergyBurned"] as? Double ?? 0.0
@@ -139,11 +150,11 @@ struct MapPathView: View {
                     }
                 }
                 self.duration = workout.endDate.timeIntervalSince(workout.startDate)
-             
+                
             }
             
         } .ignoresSafeArea()
-  
+        
     }
     
     func calculateColor(for velocity: Double, minVelocity: Double, maxVelocity: Double) -> Color {
@@ -239,7 +250,7 @@ struct MapPathView: View {
         // routeQuery 실행
         healthStore.execute(routeQuery)
     }
-
+    
     
     func getMetric(){
         let latitudes = routePoints.map { $0.coordinate.latitude }
@@ -283,7 +294,7 @@ struct MapPathView: View {
             }
         }
     }
-
+    
     func formattedDuration(_ duration: TimeInterval) -> String {
         let hours = Int(duration) / 3600
         let minutes = (Int(duration) % 3600) / 60
@@ -291,8 +302,8 @@ struct MapPathView: View {
         
         return String(format: "%02d:%02d:%02d", hours, minutes, seconds)
     }
-
-
+    
+    
     func formattedDistance(_ distance: Double?) -> String {
         // distance가 nil이 아니면, 미터 단위로 값을 가져와서 킬로미터로 변환
         guard let distance = distance else { return "0.00 km" }
@@ -312,6 +323,6 @@ struct MapPathView: View {
         // 킬로미터 단위로 포맷팅해서 반환
         return String(format: "%d Kcal", caloriesInt)
     }
-
+    
     
 }
