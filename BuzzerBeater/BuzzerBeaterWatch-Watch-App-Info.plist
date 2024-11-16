@@ -6,6 +6,10 @@
 	<array>
 		<string>location</string>
 		<string>processing</string>
+		<string>bluetooth-central</string>
+		<string>remote-notification</string>
+		<string>external-accessory</string>
+		<string>bluetooth-peripheral</string>
 	</array>
 	<key>WKBackgroundModes</key>
 	<array>

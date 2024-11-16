@@ -15,7 +15,7 @@ struct ContentView: View {
     @EnvironmentObject private var apparentWind :ApparentWind
     @EnvironmentObject private var sailAngleFind : SailAngleFind
     @EnvironmentObject private var sailingDataCollector : SailingDataCollector
-    
+    @EnvironmentObject private var bleDeviceManager: BleDeviceManager
     
     var body: some View {
       
@@ -42,7 +42,8 @@ struct ContentView: View {
                         Image(systemName: "info.circle.fill")
                         Text("Info")
                     }
-                
+                BleView()
+                    .environmentObject(BleDeviceManager.shared)
             }
         
     }
@@ -141,7 +142,7 @@ struct InfoPage: View {
                         .font(.caption2)
                     Text("TWD: \(windDetector.direction ?? 0 , specifier: "%.f")°")
                         .font(.caption2)
-                    Text("TWS: \(windDetector.speed ?? 0 , specifier: "%.f") m/s")
+                    Text("TWS: \(windDetector.speed , specifier: "%.f") m/s")
                         .font(.caption2)
                     Text("AWD: \(apparentWind.direction ?? 0 , specifier: "%.f")°")
                         .font(.caption2)

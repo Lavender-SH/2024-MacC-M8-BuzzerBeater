@@ -1,0 +1,125 @@
+//
+//  蓝牙5.0协议处理器
+//
+//  Created by huangyajun on 2022/9/1.
+//
+
+import Foundation
+
+class BWT901BLE5_0ProtocolResolver : IProtocolResolver {
+    
+    // data to be parsed
+    var activeByteDataBuffer:[UInt8] = [UInt8]()
+    
+    // Temporary byte array used for processing
+    var activeByteTemp:[UInt8] = [UInt8]()
+    
+    // send data
+    func sendData(sendData: [UInt8], deviceModel: DeviceModel, waitTime: Int64) throws{
+        
+        //callback method
+        let callback:(_ rtnData:[UInt8]) -> Void = { rtnBytes in
+            
+            if sendData[3] == 0x03 {
+                print("")
+            }
+            
+            if (sendData.count >= 5 && sendData[2] == 0x27 && rtnBytes.count >= 20) {
+                let returnData:[UInt8]? = self.findReturnData(rtnBytes)
+                if (returnData != nil && returnData?.count == 20) {
+                    let readReg:Int = Int(sendData[4] << 8 | sendData[3])
+                    let rtnReg:Int = Int((returnData?[3] ?? 0) << 8 | (returnData?[2] ?? 0))
+                    
+                    if (readReg == rtnReg) {
+                        var Pack:[Int16] = [Int16](repeating: 0, count: 9)
+                        var i = 0
+                        while (i < 4) {
+                            Pack[i] = Int16(Int16(returnData?[5 + (i*2)] ?? 0) << 8 | Int16(returnData?[4 + (i*2)] ?? 0))
+                            var reg:String = String(format: "%02X",readReg + i).uppercased()
+                            reg = StringUtils.padLeft(reg, 2, "0")
+                            deviceModel.setDeviceData(reg, String(Pack[i]));
+                            i = i+1
+                        }
+                    }
+                }
+            }
+            
+        }
+        // Function to send data
+       try deviceModel.sendData(data: sendData,callback: callback, waitTime: waitTime)
+        
+    }
+    
+    
+    /**
+     * find the value returned by the sensor
+     *
+     * @author huangyajun
+     * @date 2022/5/23 14:17
+     */
+    func findReturnData(_ returnData:[UInt8]) -> [UInt8]? {
+        var temp:[UInt8]
+        if let index55 = returnData.firstIndex(of: 0x55){
+            if index55 + 1 < returnData.count, returnData[index55 + 1] == 0x71{
+                temp = Array(returnData[index55...])
+                return Array(temp.prefix(20))
+            }
+        }
+        return nil;
+    }
+    
+    
+    // calculate real-time data
+    func passiveReceiveData(data: [UInt8], deviceModel: DeviceModel) {
+        
+        if (data.count < 1) {
+            return;
+        }
+        
+        
+        activeByteDataBuffer.append(contentsOf: data)
+        
+        // remove invalid data
+        while (activeByteDataBuffer.count > 0
+               && activeByteDataBuffer[0] != 0x55
+               && (activeByteDataBuffer[1] != 0x61 || activeByteDataBuffer[1] != 0x71)) {
+            activeByteDataBuffer.remove(at: 0)
+        }
+        
+        while (activeByteDataBuffer.count >= 20) {
+            activeByteTemp = activeByteDataBuffer[0..<20].reversed()
+            activeByteDataBuffer = activeByteDataBuffer[20..<activeByteDataBuffer.count].reversed()
+            
+            // The packet must be 55 61
+            
+            if (activeByteTemp[0] == 0x55 && activeByteTemp[1] == 0x61) {
+                var fData:[Int16] = [Int16](repeating: 0, count: 9)
+                var i:Int = 0
+                while (i < 9) {
+                    
+                    let h:Int16 = Int16(activeByteTemp[i * 2 + 3])
+                    let l:Int16 = Int16(activeByteTemp[i * 2 + 2])
+                    fData[i] = Int16(h << 8 | l & 0xff)
+                    let Identify:String = String(format: "%2X",activeByteTemp[1])
+                    deviceModel.setDeviceData("\(Identify)_\(i)", "\(fData[i])")
+                    i = i+1
+                }
+            }
+            else if(activeByteTemp[0] == 0x55 && activeByteTemp[1] == 0x71){
+                let readReg:Int = Int(activeByteTemp[3]) << 8 | Int(activeByteTemp[2])
+                var Pack:[Int16] = [Int16](repeating: 0, count: 4)
+                var i = 0
+                while (i < 4) {
+                    Pack[i] = Int16(activeByteTemp[5 + (i*2)]) << 8 | Int16(activeByteTemp[4 + (i*2)])
+                    var reg:String = String(format: "%02X",readReg + i).uppercased()
+                    reg = StringUtils.padLeft(reg, 2, "0")
+                    deviceModel.setDeviceData(reg, String(Pack[i]));
+                    i = i+1
+                }
+            }
+        }
+        
+    }
+}
+
+
