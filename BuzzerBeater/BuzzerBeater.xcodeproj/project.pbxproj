@@ -37,6 +37,8 @@
 		CE1B72252CD299F60044895B /* WorkoutViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE1B72232CD299EB0044895B /* WorkoutViewModel.swift */; };
 		CE5E09992CD8F576005DCB57 /* MapPathView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE5E09982CD8F563005DCB57 /* MapPathView.swift */; };
 		CE5E099A2CD8F576005DCB57 /* MapPathView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE5E09982CD8F563005DCB57 /* MapPathView.swift */; };
+		CEA237532CE8DF1A00E58A53 /* WitSDKWatchKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CEA2374B2CE8DF1A00E58A53 /* WitSDKWatchKit.framework */; };
+		CEA237542CE8DF1A00E58A53 /* WitSDKWatchKit.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = CEA2374B2CE8DF1A00E58A53 /* WitSDKWatchKit.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		CEA9CBA82CD5F63F005F1814 /* WorkoutManagerIOS.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEA9CBA62CD5F63A005F1814 /* WorkoutManagerIOS.swift */; };
 		CEF0D8622CCEFFF800243992 /* HealthService.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEF0D8612CCEFFDD00243992 /* HealthService.swift */; };
 		CEF0D8632CCEFFF800243992 /* HealthService.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEF0D8612CCEFFDD00243992 /* HealthService.swift */; };
@@ -54,6 +56,16 @@
 		EFA4CD742CDB960A003FBF78 /* TimeInterval+Formats.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFA4CD722CDB95E9003FBF78 /* TimeInterval+Formats.swift */; };
 /* End PBXBuildFile section */
 
+/* Begin PBXContainerItemProxy section */
+		CEA237512CE8DF1A00E58A53 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 9291A7812CB37D6300E44161 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = CEA2374A2CE8DF1A00E58A53;
+			remoteInfo = WitSDKWatchKit;
+		};
+/* End PBXContainerItemProxy section */
+
 /* Begin PBXCopyFilesBuildPhase section */
 		0297A25F2CC3E65D0024AEC9 /* Embed Watch Content */ = {
 			isa = PBXCopyFilesBuildPhase;
@@ -64,6 +76,17 @@
 				0297A25E2CC3E65D0024AEC9 /* BuzzerBeaterWatch Watch App.app in Embed Watch Content */,
 			);
 			name = "Embed Watch Content";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		CEA237592CE8DF1A00E58A53 /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				CEA237542CE8DF1A00E58A53 /* WitSDKWatchKit.framework in Embed Frameworks */,
+			);
+			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXCopyFilesBuildPhase section */
@@ -92,6 +115,7 @@
 		CE1B72202CD299A30044895B /* WorkoutListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkoutListView.swift; sourceTree = "<group>"; };
 		CE1B72232CD299EB0044895B /* WorkoutViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkoutViewModel.swift; sourceTree = "<group>"; };
 		CE5E09982CD8F563005DCB57 /* MapPathView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapPathView.swift; sourceTree = "<group>"; };
+		CEA2374B2CE8DF1A00E58A53 /* WitSDKWatchKit.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = WitSDKWatchKit.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		CEA9CBA62CD5F63A005F1814 /* WorkoutManagerIOS.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkoutManagerIOS.swift; sourceTree = "<group>"; };
 		CEF0D8612CCEFFDD00243992 /* HealthService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthService.swift; sourceTree = "<group>"; };
 		EF79974C2CDB65F6004FF039 /* Date+startOfDay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Date+startOfDay.swift"; sourceTree = "<group>"; };
@@ -102,10 +126,31 @@
 		EFA4CD722CDB95E9003FBF78 /* TimeInterval+Formats.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TimeInterval+Formats.swift"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		CEA237552CE8DF1A00E58A53 /* Exceptions for "WitSDKWatchKit" folder in "WitSDKWatchKit" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				WitSDKWatchKit.docc,
+			);
+			publicHeaders = (
+				WitSDKWatchKit.h,
+			);
+			target = CEA2374A2CE8DF1A00E58A53 /* WitSDKWatchKit */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		0297A2522CC3E65C0024AEC9 /* BuzzerBeaterWatch Watch App */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			path = "BuzzerBeaterWatch Watch App";
+			sourceTree = "<group>";
+		};
+		CEA2374C2CE8DF1A00E58A53 /* WitSDKWatchKit */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				CEA237552CE8DF1A00E58A53 /* Exceptions for "WitSDKWatchKit" folder in "WitSDKWatchKit" target */,
+			);
+			path = WitSDKWatchKit;
 			sourceTree = "<group>";
 		};
 /* End PBXFileSystemSynchronizedRootGroup section */
@@ -115,10 +160,18 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				CEA237532CE8DF1A00E58A53 /* WitSDKWatchKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 		9291A7862CB37D6300E44161 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		CEA237482CE8DF1A00E58A53 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -187,6 +240,7 @@
 			children = (
 				0297A28D2CC51A740024AEC9 /* BuzzerBeater */,
 				0297A2522CC3E65C0024AEC9 /* BuzzerBeaterWatch Watch App */,
+				CEA2374C2CE8DF1A00E58A53 /* WitSDKWatchKit */,
 				0297A2632CC3E6780024AEC9 /* Frameworks */,
 				9291A78A2CB37D6300E44161 /* Products */,
 			);
@@ -197,6 +251,7 @@
 			children = (
 				9291A7892CB37D6300E44161 /* BuzzerBeater.app */,
 				0297A2512CC3E65C0024AEC9 /* BuzzerBeaterWatch Watch App.app */,
+				CEA2374B2CE8DF1A00E58A53 /* WitSDKWatchKit.framework */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -232,6 +287,16 @@
 		};
 /* End PBXGroup section */
 
+/* Begin PBXHeadersBuildPhase section */
+		CEA237462CE8DF1A00E58A53 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXHeadersBuildPhase section */
+
 /* Begin PBXNativeTarget section */
 		0297A2502CC3E65C0024AEC9 /* BuzzerBeaterWatch Watch App */ = {
 			isa = PBXNativeTarget;
@@ -240,10 +305,12 @@
 				0297A24D2CC3E65C0024AEC9 /* Sources */,
 				0297A24E2CC3E65C0024AEC9 /* Frameworks */,
 				0297A24F2CC3E65C0024AEC9 /* Resources */,
+				CEA237592CE8DF1A00E58A53 /* Embed Frameworks */,
 			);
 			buildRules = (
 			);
 			dependencies = (
+				CEA237522CE8DF1A00E58A53 /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
 				0297A2522CC3E65C0024AEC9 /* BuzzerBeaterWatch Watch App */,
@@ -275,6 +342,29 @@
 			productReference = 9291A7892CB37D6300E44161 /* BuzzerBeater.app */;
 			productType = "com.apple.product-type.application";
 		};
+		CEA2374A2CE8DF1A00E58A53 /* WitSDKWatchKit */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = CEA237562CE8DF1A00E58A53 /* Build configuration list for PBXNativeTarget "WitSDKWatchKit" */;
+			buildPhases = (
+				CEA237462CE8DF1A00E58A53 /* Headers */,
+				CEA237472CE8DF1A00E58A53 /* Sources */,
+				CEA237482CE8DF1A00E58A53 /* Frameworks */,
+				CEA237492CE8DF1A00E58A53 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				CEA2374C2CE8DF1A00E58A53 /* WitSDKWatchKit */,
+			);
+			name = WitSDKWatchKit;
+			packageProductDependencies = (
+			);
+			productName = WitSDKWatchKit;
+			productReference = CEA2374B2CE8DF1A00E58A53 /* WitSDKWatchKit.framework */;
+			productType = "com.apple.product-type.framework";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -290,6 +380,9 @@
 					};
 					9291A7882CB37D6300E44161 = {
 						CreatedOnToolsVersion = 16.0;
+					};
+					CEA2374A2CE8DF1A00E58A53 = {
+						CreatedOnToolsVersion = 16.1;
 					};
 				};
 			};
@@ -311,6 +404,7 @@
 			targets = (
 				9291A7882CB37D6300E44161 /* BuzzerBeater */,
 				0297A2502CC3E65C0024AEC9 /* BuzzerBeaterWatch Watch App */,
+				CEA2374A2CE8DF1A00E58A53 /* WitSDKWatchKit */,
 			);
 		};
 /* End PBXProject section */
@@ -330,6 +424,13 @@
 				0297A2982CC51A740024AEC9 /* Preview Assets.xcassets in Resources */,
 				0297A2992CC51A740024AEC9 /* .gitignore in Resources */,
 				0297A29A2CC51A740024AEC9 /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		CEA237492CE8DF1A00E58A53 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -391,7 +492,22 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		CEA237472CE8DF1A00E58A53 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		CEA237522CE8DF1A00E58A53 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = CEA2374A2CE8DF1A00E58A53 /* WitSDKWatchKit */;
+			targetProxy = CEA237512CE8DF1A00E58A53 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
 		0297A2602CC3E65D0024AEC9 /* Debug */ = {
@@ -414,9 +530,12 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "BuzzerBeaterWatch-Watch-App-Info.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = BuzzerBeaterWatch;
+				INFOPLIST_KEY_LSApplicationCategoryType = "";
+				INFOPLIST_KEY_NSBluetoothAlwaysUsageDescription = "we will use the bluetooth.";
+				INFOPLIST_KEY_NSBluetoothPeripheralUsageDescription = "we will use th bluetooth";
+				INFOPLIST_KEY_NSBluetoothWhileInUseUsageDescription = "We will use the bluetooth.";
 				INFOPLIST_KEY_NSHealthClinicalHealthRecordsShareUsageDescription = "App uses health Info";
 				INFOPLIST_KEY_NSHealthShareUsageDescription = "App uses health Info";
-				INFOPLIST_KEY_NSHealthUpdateUsageDescription = "App uses health Info";
 				INFOPLIST_KEY_NSLocationAlwaysAndWhenInUseUsageDescription = "we will use location";
 				INFOPLIST_KEY_NSLocationAlwaysUsageDescription = "we will use location";
 				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "we will use location";
@@ -461,9 +580,12 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "BuzzerBeaterWatch-Watch-App-Info.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = BuzzerBeaterWatch;
+				INFOPLIST_KEY_LSApplicationCategoryType = "";
+				INFOPLIST_KEY_NSBluetoothAlwaysUsageDescription = "we will use the bluetooth.";
+				INFOPLIST_KEY_NSBluetoothPeripheralUsageDescription = "we will use th bluetooth";
+				INFOPLIST_KEY_NSBluetoothWhileInUseUsageDescription = "We will use the bluetooth.";
 				INFOPLIST_KEY_NSHealthClinicalHealthRecordsShareUsageDescription = "App uses health Info";
 				INFOPLIST_KEY_NSHealthShareUsageDescription = "App uses health Info";
-				INFOPLIST_KEY_NSHealthUpdateUsageDescription = "App uses health Info";
 				INFOPLIST_KEY_NSLocationAlwaysAndWhenInUseUsageDescription = "we will use location";
 				INFOPLIST_KEY_NSLocationAlwaysUsageDescription = "we will use location";
 				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "we will use location";
@@ -541,7 +663,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.6;
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
@@ -600,7 +722,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.6;
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
@@ -705,6 +827,89 @@
 			};
 			name = Release;
 		};
+		CEA237572CE8DF1A00E58A53 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUILD_LIBRARY_FOR_DISTRIBUTION = YES;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEFINES_MODULE = YES;
+				DEVELOPMENT_TEAM = TB9MFLQJ6C;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				ENABLE_MODULE_VERIFIER = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_NSBluetoothAlwaysUsageDescription = "we will connect with the bluetooth.";
+				INFOPLIST_KEY_NSBluetoothPeripheralUsageDescription = "we will connect with the bluetoothl";
+				INFOPLIST_KEY_NSBluetoothWhileInUseUsageDescription = "we will connect with the bluetooth.";
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				MODULE_VERIFIER_SUPPORTED_LANGUAGES = "objective-c objective-c++";
+				MODULE_VERIFIER_SUPPORTED_LANGUAGE_STANDARDS = "gnu17 gnu++20";
+				PRODUCT_BUNDLE_IDENTIFIER = com.giwoo.andy.WitSDKWatchKit;
+				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
+				SDKROOT = watchos;
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_INSTALL_OBJC_HEADER = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 4;
+				VERSIONING_SYSTEM = "apple-generic";
+				VERSION_INFO_PREFIX = "";
+				WATCHOS_DEPLOYMENT_TARGET = 11.1;
+			};
+			name = Debug;
+		};
+		CEA237582CE8DF1A00E58A53 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUILD_LIBRARY_FOR_DISTRIBUTION = YES;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "iPhone Developer";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEFINES_MODULE = YES;
+				DEVELOPMENT_TEAM = "";
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				ENABLE_MODULE_VERIFIER = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_NSBluetoothAlwaysUsageDescription = "we will connect with the bluetooth.";
+				INFOPLIST_KEY_NSBluetoothPeripheralUsageDescription = "we will connect with the bluetoothl";
+				INFOPLIST_KEY_NSBluetoothWhileInUseUsageDescription = "we will connect with the bluetooth.";
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				MODULE_VERIFIER_SUPPORTED_LANGUAGES = "objective-c objective-c++";
+				MODULE_VERIFIER_SUPPORTED_LANGUAGE_STANDARDS = "gnu17 gnu++20";
+				PRODUCT_BUNDLE_IDENTIFIER = com.giwoo.andy.WitSDKWatchKit;
+				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
+				SDKROOT = watchos;
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_INSTALL_OBJC_HEADER = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 4;
+				VERSIONING_SYSTEM = "apple-generic";
+				VERSION_INFO_PREFIX = "";
+				WATCHOS_DEPLOYMENT_TARGET = 11.1;
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -731,6 +936,15 @@
 			buildConfigurations = (
 				9291A7982CB37D6400E44161 /* Debug */,
 				9291A7992CB37D6400E44161 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		CEA237562CE8DF1A00E58A53 /* Build configuration list for PBXNativeTarget "WitSDKWatchKit" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				CEA237572CE8DF1A00E58A53 /* Debug */,
+				CEA237582CE8DF1A00E58A53 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
