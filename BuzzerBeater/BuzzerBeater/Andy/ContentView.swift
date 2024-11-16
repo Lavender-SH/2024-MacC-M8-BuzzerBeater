@@ -76,7 +76,7 @@ struct MapPage: View {
                 MapView()
                     .environmentObject(LocationManager.shared)
                     .environmentObject(SailingDataCollector.shared)
-                    .frame(width: minOfWidthAndHeight * 0.9, height: minOfWidthAndHeight * 0.9) // 전체 크기로 설정
+                    .frame(width: minOfWidthAndHeight * 1, height: minOfWidthAndHeight * 1) // 전체 크기로 설정
                     .navigationTitle("Map")
                 // 적당한 패딩을 추가하여 가장자리에 여유 공간 추가
                 Spacer()
