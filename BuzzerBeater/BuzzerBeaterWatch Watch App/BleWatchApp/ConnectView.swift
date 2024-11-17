@@ -8,7 +8,7 @@
 import SwiftUI
 import CoreBluetooth
 import simd
-import WitSDKWatchKit
+
 
 // **********************************************************
 

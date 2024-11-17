@@ -1,7 +1,7 @@
 {
   "images" : [
     {
-      "filename" : "sailicon.png",
+      "filename" : "메인세일링.png",
       "idiom" : "universal",
       "platform" : "ios",
       "size" : "1024x1024"
@@ -13,7 +13,7 @@
           "value" : "dark"
         }
       ],
-      "filename" : "sailicon 1.png",
+      "filename" : "메인세일링 1.png",
       "idiom" : "universal",
       "platform" : "ios",
       "size" : "1024x1024"
@@ -25,7 +25,7 @@
           "value" : "tinted"
         }
       ],
-      "filename" : "sailicon 2.png",
+      "filename" : "메인세일링 2.png",
       "idiom" : "universal",
       "platform" : "ios",
       "size" : "1024x1024"

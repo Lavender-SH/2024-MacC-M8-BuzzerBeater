@@ -70,7 +70,7 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
     let distanceFilter = 5.0
     let headingFilter  = 5.0
     let courseAngleFilter = 15.0
-    let locationUpdateTimeInterval = 3
+    let locationUpdateTimeInterval = 5
     let boatSpeedBuffer = 0.3
     
     override init() {
@@ -264,7 +264,7 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
             .store(in: &cancellables)
         
         headingPublisher
-            .throttle(for: .milliseconds(1000), scheduler: RunLoop.main, latest: true)
+            .throttle(for: .milliseconds(200), scheduler: RunLoop.main, latest: true)
             .compactMap { $0 }
         
             .filter { [weak self] newHeading in

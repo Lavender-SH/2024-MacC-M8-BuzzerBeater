@@ -7,7 +7,7 @@
 import SwiftUI
 import CoreBluetooth
 import simd
-import WitSDKWatchKit
+
 
 // MARK: Home view start
 // **********************************************************

@@ -302,11 +302,11 @@ struct CompassView: View {
                                             VStack {
                                                 Image(systemName: "figure.sailing")
                                                     .font(.system(size: 40))
-                                                    .foregroundColor(.blue)
+                                                    .foregroundColor(.cyan)
                                                 
                                                 Text("Start")
                                                     .font(.system(size: 16))
-                                                    .foregroundColor(.blue)
+                                                    .foregroundColor(.cyan)
                                             }
                                             .padding(17)
                                             
@@ -319,7 +319,7 @@ struct CompassView: View {
                                 if let countdown = countdown {
                                                             Text("\(countdown)")
                                                                 .font(.system(size: 60, weight: .bold))
-                                                                .foregroundColor(.blue)
+                                                                .foregroundColor(.cyan)
                                                                 .transition(.scale) // 애니메이션 효과
                                                                 .position(x: cx, y: cy)
                                                         }

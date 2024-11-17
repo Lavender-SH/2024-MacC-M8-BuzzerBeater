@@ -9,7 +9,6 @@
 import SwiftUI
 import CoreBluetooth
 import simd
-import WitSDKWatchKit
 import Combine
 
 class BleDeviceManager: ObservableObject ,IBluetoothEventObserver, IBwt901bleRecordObserver{
