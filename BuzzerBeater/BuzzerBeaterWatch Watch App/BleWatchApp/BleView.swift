@@ -7,8 +7,6 @@
 
 import SwiftUI
 import CoreBluetooth
-
-
 struct BleView: View {
    
     
@@ -22,6 +20,8 @@ struct BleView: View {
                 
                 HomeView()
                     .environmentObject(BleDeviceManager.shared)
+                
+                BiasCheckView()
             }
             .padding()
         }

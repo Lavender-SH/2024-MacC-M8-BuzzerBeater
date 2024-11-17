@@ -83,7 +83,7 @@ struct InfoRow: View {
                 await viewModel.fetchWorkout(appIdentifier: "seastheDay")
                 isLoading = false
             }
-            .navigationTitle("Navigation record")
+            .navigationTitle("Navigation Record")
             
         }
     }

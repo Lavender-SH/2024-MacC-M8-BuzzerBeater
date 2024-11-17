@@ -35,19 +35,20 @@ struct ConnectView: View {
                     }
                 }.padding(5)
                 
-                ScrollViewReader { proxy in
-                    
-                    ForEach (self.viewModel.deviceList) { device in
-                        Bwt901bleView(device, viewModel)
-                        
-                    }
-                    .onAppear {
-                        print(" list: \(self.viewModel.deviceList) count:  \(self.viewModel.deviceList.count)")
-                    }
-                    
+                // 왜 List는 안될까???
+//                List(self.viewModel.deviceList , id: \.id ) { device in
+//                    Text("device.name: \(String(describing: device.name))")
+//                    Bwt901bleView(device, viewModel)
+//                }
+
+
+                ForEach (self.viewModel.deviceList) { device in
+                    Bwt901bleView(device, viewModel)
+
                 }
+
                 
-            }.font(Font.system(size: 12))
+            }.font(Font.system(size: 16))
         }
     }
 }
