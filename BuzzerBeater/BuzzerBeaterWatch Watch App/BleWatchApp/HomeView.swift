@@ -8,7 +8,6 @@ import SwiftUI
 import CoreBluetooth
 import simd
 
-
 // MARK: Home view start
 // **********************************************************
 struct HomeView: View {
@@ -23,7 +22,7 @@ struct HomeView: View {
             VStack(alignment: .center){
                 HStack {
                     Text(" Control device")
-                        .font(Font.system(size: 10))
+                        .font(Font.system(size: 16))
                 }
                 HStack{
                     VStack{
@@ -36,7 +35,7 @@ struct HomeView: View {
                         Button("Stop mag"){
                             viewModel.endFieldCalibration()
                         }.padding(5)
-                    }.font(Font.system(size: 10))
+                    }.font(Font.system(size: 12))
                     VStack{
                         Button("Read03reg"){
                             viewModel.readReg03()
@@ -47,17 +46,19 @@ struct HomeView: View {
                         Button("Set10hzrate"){
                             viewModel.setBackRate10hz()
                         }.padding(10)
-                    }.font(Font.system(size: 10))
+                    }.font(Font.system(size: 12))
                 }
                 
                 HStack {
                     Text("Device data")
-                        .font(Font.system(size: 10))
+                        .font(Font.system(size: 16))
                 }
-                Text(String(format: "%.f", self.viewModel.angles.x))
-                Text(String(format: "%.f", self.viewModel.angles.y))
-                Text(String(format: "%.f", self.viewModel.angles.z))
-            }.font(Font.system(size: 12))
+                HStack {
+                    Text(String(format: "( %.f ,", self.viewModel.angles.x))
+                    Text(String(format: "%.f ," , self.viewModel.angles.y))
+                    Text(String(format: "%.f )", self.viewModel.angles.z))
+                }
+            }.font(Font.system(size: 16))
         }.navigationBarHidden(true)
     }
 }

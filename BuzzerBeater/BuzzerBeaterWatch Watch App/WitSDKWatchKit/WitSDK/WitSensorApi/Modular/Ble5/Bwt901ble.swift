@@ -13,7 +13,9 @@ import Combine
 
 public class Bwt901ble :Identifiable, ObservableObject{
     
-    // Bluetooth Manager    var bluetoothManager: WitBluetoothManager = WitBluetoothManager.instance
+    public var id : UUID = UUID()
+    // Bluetooth Manager
+    let bluetoothManager = WitBluetoothManager.shared
     
     // Bluetooth Connection Object
     var bluetoothBLE: BluetoothBLE?

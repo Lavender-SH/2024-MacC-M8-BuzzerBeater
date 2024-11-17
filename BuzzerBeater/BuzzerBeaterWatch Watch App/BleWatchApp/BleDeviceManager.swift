@@ -9,6 +9,7 @@
 import SwiftUI
 import CoreBluetooth
 import simd
+
 import Combine
 
 class BleDeviceManager: ObservableObject ,IBluetoothEventObserver, IBwt901bleRecordObserver{
@@ -165,7 +166,15 @@ class BleDeviceManager: ObservableObject ,IBluetoothEventObserver, IBwt901bleRec
         Timer.publish(every: TimeInterval(0.5), on: .main, in: .common)
             .autoconnect() // Timer가 자동으로 시작하도록 설정
             .sink { [weak self] _ in
-                self?.refreshView()
+                guard let self = self else { 
+                    print("self is nil")
+                    return
+                          }
+                if (self.bluetoothManager.isScaning == true && self.deviceList.count > 0){
+                    
+                    self.refreshView()
+                }
+             
             } .store(in: &cancellables)
     }
     

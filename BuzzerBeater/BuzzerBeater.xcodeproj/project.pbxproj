@@ -9,7 +9,6 @@
 /* Begin PBXBuildFile section */
 		0273E9CB2CE9D2760043B886 /* Splash.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0273E9CA2CE9D2760043B886 /* Splash.swift */; };
 		0273E9CC2CE9D2760043B886 /* Splash.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0273E9CA2CE9D2760043B886 /* Splash.swift */; };
-		0273E9D12CE9E15C0043B886 /* Launch Screen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 0273E9D02CE9E15C0043B886 /* Launch Screen.storyboard */; };
 		0273E9D22CE9E15C0043B886 /* Launch Screen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 0273E9D02CE9E15C0043B886 /* Launch Screen.storyboard */; };
 		0297A25E2CC3E65D0024AEC9 /* BuzzerBeaterWatch Watch App.app in Embed Watch Content */ = {isa = PBXBuildFile; fileRef = 0297A2512CC3E65C0024AEC9 /* BuzzerBeaterWatch Watch App.app */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		0297A28E2CC51A740024AEC9 /* ApparentWind.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0297A27B2CC51A740024AEC9 /* ApparentWind.swift */; };
@@ -327,7 +326,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				0273E9D12CE9E15C0043B886 /* Launch Screen.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
