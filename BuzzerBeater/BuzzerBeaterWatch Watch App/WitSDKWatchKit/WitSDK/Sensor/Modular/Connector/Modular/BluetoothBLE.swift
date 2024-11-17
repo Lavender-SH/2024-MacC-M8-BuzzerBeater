@@ -17,11 +17,11 @@ public class BluetoothBLE:NSObject{
 
     // UUID for reading characteristics
     var uuidRead: String?
-
+    
     // Bluetooth manager
     @MainActor
-    var bluetoothManager: WitBluetoothManager = WitBluetoothManager.instance
-
+    let bluetoothManager  = WitBluetoothManager.shared
+    
     // Currently connected device
     public var peripheral: CBPeripheral!
 

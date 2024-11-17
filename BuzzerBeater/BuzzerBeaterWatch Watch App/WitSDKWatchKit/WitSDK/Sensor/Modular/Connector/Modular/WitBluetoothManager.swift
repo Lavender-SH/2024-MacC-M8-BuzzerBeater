@@ -15,7 +15,7 @@ public class WitBluetoothManager:NSObject {
     
     // Singleton object
 
-   public static let instance = WitBluetoothManager()
+   public static let shared = WitBluetoothManager()
     
     // Central object
 
@@ -51,20 +51,20 @@ public class WitBluetoothManager:NSObject {
     // MARK: Method to scan for devices with specified search criteria
     public func startScan(_ serviceUUIDS:[CBUUID]?, options:[String: AnyObject]?){
         // Clear all discovered devices
-
+        
         self.bluetoothBLEDist?.removeAll()
         // Start scanning
-
+        
         self.central?.scanForPeripherals(withServices: serviceUUIDS, options: options)
         // Mark as scanning in progress
         self.isScaning = true
     }
-        public func startScan(){
-     
+    public func startScan(){
+        
         self.bluetoothBLEDist?.removeAll()
-       
+        
         self.central?.scanForPeripherals(withServices: nil, options: nil)
-       
+        
         self.isScaning = true
     }
     

@@ -65,6 +65,10 @@ class WorkoutManager: ObservableObject
     private let timeIntervalForRoute = TimeInterval(10)
     private let timeIntervalForWind = TimeInterval(60*30)
     
+    deinit {
+           cancellables.removeAll() // 모든 구독 해제
+           print("WorkoutIOS deinitialized")
+       }
     func startWorkout(startDate: Date) {
         // 운동을 시작하기 전에 HKWorkoutBuilder를 초기화
         if isWorkoutActive  { return }
@@ -790,7 +794,7 @@ class WorkoutManager: ObservableObject
         healthStore.execute(statisticsQuery)
         
         // 임시방편으로 IOS에서만 직접 activeEnergyBurned를 저장한다.
-   }
+    }
     
     func updateActiveEnergyBurned(startDate : Date, endDate:Date , _ energyBurned: Double) {
         let energyQuantity = HKQuantity(unit: .kilocalorie(), doubleValue: energyBurned)

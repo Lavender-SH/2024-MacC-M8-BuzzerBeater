@@ -30,6 +30,7 @@
 		0297A2A22CC51A740024AEC9 /* WindDetector.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0297A2832CC51A740024AEC9 /* WindDetector.swift */; };
 		0297A2A32CC51A740024AEC9 /* LocationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0297A27F2CC51A740024AEC9 /* LocationManager.swift */; };
 		0297A2A42CC51A740024AEC9 /* MapView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0297A2802CC51A740024AEC9 /* MapView.swift */; };
+		CE183F582CE96973002689B4 /* Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 0297A28C2CC51A740024AEC9 /* Info.plist */; };
 		CE1B721E2CD27B030044895B /* WorkoutManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE1B721D2CD27AFB0044895B /* WorkoutManager.swift */; };
 		CE1B72212CD299B00044895B /* WorkoutListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE1B72202CD299A30044895B /* WorkoutListView.swift */; };
 		CE1B72222CD299B00044895B /* WorkoutListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE1B72202CD299A30044895B /* WorkoutListView.swift */; };
@@ -327,6 +328,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				CE183F582CE96973002689B4 /* Info.plist in Resources */,
 				0297A2982CC51A740024AEC9 /* Preview Assets.xcassets in Resources */,
 				0297A2992CC51A740024AEC9 /* .gitignore in Resources */,
 				0297A29A2CC51A740024AEC9 /* Assets.xcassets in Resources */,
