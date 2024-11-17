@@ -39,7 +39,7 @@ extension WitCoreConnector{
         if (connectType == ConnectType.BLE) {
             
             // Get the Bluetooth Client
-            bleClient = WitBluetoothManager.instance.bluetoothBLEDist?[config?.bluetoothBLEOption?.mac ?? ""]
+            bleClient = WitBluetoothManager.shared.bluetoothBLEDist?[config?.bluetoothBLEOption?.mac ?? ""]
             
             if (bleClient == nil) {
                 throw CoreConnectError.ConnectError(message: " Nonexistent Bluetooth Device")

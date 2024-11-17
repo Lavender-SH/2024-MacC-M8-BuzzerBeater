@@ -64,6 +64,10 @@ class WorkoutManager:  ObservableObject
     private let timeIntervalForWind = TimeInterval(60*30)
     var maxSpeed : Double = 0
     
+    deinit {
+           cancellables.removeAll() // 모든 구독 해제
+           print("Workout deinitialized")
+       }
     func startWorkout(startDate: Date)  {
         // 운동을 시작하기 전에 HKWorkoutBuilder를 초기화
         if isWorkoutActive  { return }
