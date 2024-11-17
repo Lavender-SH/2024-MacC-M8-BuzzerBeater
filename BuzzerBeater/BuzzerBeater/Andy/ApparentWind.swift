@@ -41,7 +41,7 @@ class ApparentWind: ObservableObject {
                 }
                 return (speed, adjustedDirection, heading, lastLocation)
             }
-            .throttle(for: .milliseconds(2000), scheduler: RunLoop.main, latest: true)
+            .throttle(for: .milliseconds(200), scheduler: RunLoop.main, latest: true)
             .sink { [weak self] (speed: Double?, adjustedDirection: Double?, heading: CLHeading?, lastLocation: CLLocation?)  in
                 DispatchQueue.main.async {
                     self?.calcApparentWind()

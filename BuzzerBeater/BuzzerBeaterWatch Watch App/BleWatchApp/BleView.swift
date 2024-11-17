@@ -7,7 +7,7 @@
 
 import SwiftUI
 import CoreBluetooth
-import WitSDKWatchKit
+
 
 struct BleView: View {
    
