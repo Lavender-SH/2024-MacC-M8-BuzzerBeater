@@ -640,7 +640,7 @@
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = BuzzerBeater/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = "";
+				INFOPLIST_KEY_CFBundleDisplayName = WindTalker;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.lifestyle";
 				INFOPLIST_KEY_NSBluetoothAlwaysUsageDescription = Yes;
 				INFOPLIST_KEY_NSBluetoothPeripheralUsageDescription = Yes;
@@ -693,7 +693,7 @@
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = BuzzerBeater/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = "";
+				INFOPLIST_KEY_CFBundleDisplayName = WindTalker;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.lifestyle";
 				INFOPLIST_KEY_NSBluetoothAlwaysUsageDescription = Yes;
 				INFOPLIST_KEY_NSBluetoothPeripheralUsageDescription = Yes;
