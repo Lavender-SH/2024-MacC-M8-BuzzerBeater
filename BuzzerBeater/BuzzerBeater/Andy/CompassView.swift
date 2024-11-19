@@ -27,23 +27,18 @@ struct CompassView: View {
     @State var isCrownIdle = true
     @State var showBoatView = false
     @State var countdown: Int? = nil
-    @State var testString : String = "00:00:00"
+    
     let sharedWorkoutManager = WorkoutManager.shared
     
     var body: some View {
         VStack{
-            Text(testString)
+            Text(sharedWorkoutManager.formattedElapsedTime)
                 .foregroundColor(.yellow)
                 .font(.system(size: 17))
                 .fontDesign(.rounded)
                 .multilineTextAlignment(.leading)
                 .padding([.leading], -90)
                 .padding(.top, -41)
-                .onChange(of: sharedWorkoutManager.formattedElapsedTime) { _  , _ in
-                    
-                    self.testString = sharedWorkoutManager.formattedElapsedTime
-                    
-                }
             
             VStack{
                 GeometryReader { geometry in
