@@ -16,7 +16,9 @@ class BiasCheckViewModel: ObservableObject {
         startButtonCheck()
     }
     
-    
+    deinit{
+        cancellables.removeAll()
+    }
     func startButtonCheck(){
         Publishers.CombineLatest(bleDeviceManager.canEnableButton, sailAngleDetect.$isSailAngleDetect)
             .map { canEnableButton, isSailAngleDetect in

@@ -116,7 +116,7 @@ class SailAngleDetect : ObservableObject{
        DispatchQueue.main.async{
             self.boatHeading = boatHeading
             self.biasCompass = bias
-            self.deviceHeading = deviceHeadingConverted + bias
+            self.deviceHeading = fmod(deviceHeadingConverted + bias  + 360 , 360)
         }
         print(String(format: "angles (%.0f, %.0f, %.0f)",
                      bleDeviceManager.angles.x,
