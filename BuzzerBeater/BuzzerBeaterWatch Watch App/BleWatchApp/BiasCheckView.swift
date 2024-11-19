@@ -24,38 +24,18 @@ struct BiasCheckView: View {
                 .padding()
             Text("Sail Heading : \(deviceHeading, specifier: "%.f")") .font(Font.system (size:16))
             Button("Calibrate Bias") {
-                calibrateBias()
+                SailAngleDetect.shared.calibrateBias()
+            } .font(Font.system (size:16))
+            .padding()
+            Button("Show SailAngle ") {
+                SailAngleDetect.shared.isSailAngleDetect = true
+            } .font(Font.system (size:16))
+            .padding()
+            
+            Button("Hide SailAngle ") {
+                SailAngleDetect.shared.isSailAngleDetect = false
             } .font(Font.system (size:16))
             .padding()
         }
-    }
-
-    func calibrateBias() {
-        guard let boatHeading = locationManager.heading?.magneticHeading else {
-            print("No Heading information")
-            return
-        }
-
-        print("Boat Heading: \(boatHeading)")
-        let deviceHeading = Double(viewModel.angles.z)
-        print("Device Heading: \(deviceHeading)")
-
-        // Convert deviceHeading
-        let deviceHeadingConverted = deviceHeading < 0 ? -Double(deviceHeading) : 360 - Double(deviceHeading)
-        
-        var bias = (boatHeading - 180) - deviceHeadingConverted
-        
-        if bias > 180 {
-            bias -= 360
-        }
-        if bias < -180 {
-            bias += 360
-        }
-        DispatchQueue.main.async{
-            self.deviceHeading = deviceHeadingConverted
-            self.boatHeading = boatHeading
-            self.biasCompass = bias
-        }
-        print(bias > 0 ? "Positive Bias: \(bias)" : "Negative Bias: \(bias)")
     }
 }
