@@ -16,6 +16,7 @@ struct CompassView: View {
     @EnvironmentObject  var windDetector : WindDetector
     @EnvironmentObject  var apparentWind :ApparentWind
     @EnvironmentObject  var sailAngleFind : SailAngleFind
+    @EnvironmentObject  var sailAngleDetect : SailAngleDetect
     
     // View에서는  Sigleton 썼더니 화면이 업데이트가 안되서 다시 원복.
     @State var showAlert : Bool = false
@@ -286,6 +287,7 @@ struct CompassView: View {
                                 BoatView()
                                     .offset(x: cx, y: cy)
                                     .environmentObject(sailAngleFind)
+                                    .environmentObject(sailAngleDetect)
                                 
                                 
                                 

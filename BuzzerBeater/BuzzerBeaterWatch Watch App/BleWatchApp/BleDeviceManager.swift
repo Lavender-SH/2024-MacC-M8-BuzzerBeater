@@ -156,6 +156,7 @@ class BleDeviceManager: ObservableObject ,IBluetoothEventObserver, IBwt901bleRec
         
         let deviceData =  getDeviceDataToString(bwt901ble)
         self.angles  =  getDeviceAngleData(bwt901ble)
+       
         dataPublisher.send(angles)
  
         //Prints to the console, where you can also log the data to your file

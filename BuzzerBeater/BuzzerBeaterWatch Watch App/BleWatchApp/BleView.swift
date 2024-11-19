@@ -23,6 +23,7 @@ struct BleView: View {
                 
                 BiasCheckView()
                     .environmentObject(BleDeviceManager.shared)
+                    .environmentObject(SailAngleDetect.shared)
             }
             .padding()
         }

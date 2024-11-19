@@ -22,7 +22,7 @@ struct BoatView: View{
     @State private var angleStep : Angle = .degrees(1)
     
     @EnvironmentObject private var sailAngleFind : SailAngleFind
-    let sailAngleDetect =  SailAngleDetect.shared
+    @EnvironmentObject private var sailAngleDetect : SailAngleDetect
     // sigleton을 사용하면 화면 업데이트가 안됨 다시 @EnvironmentObject로 복귀
 //    let sailAngleFind = SailAngleFind.shared
     @State private var cancellable: AnyCancellable? = nil

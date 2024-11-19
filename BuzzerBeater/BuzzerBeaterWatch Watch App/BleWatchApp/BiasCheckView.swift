@@ -9,8 +9,11 @@ import SwiftUI
 
 struct BiasCheckView: View {
     @EnvironmentObject var bleDeviceManager : BleDeviceManager
+   
     let locationManager = LocationManager.shared
-    let sailAngleDetect = SailAngleDetect.shared
+//    let sailAngleDetect = SailAngleDetect.shared
+    @EnvironmentObject var sailAngleDetect : SailAngleDetect
+   
     @State private var biasCompass: Double = 0
     @State private var boatHeading: Double = 0
     @State private var deviceHeading : Double = 0
@@ -21,9 +24,8 @@ struct BiasCheckView: View {
             Text("Bias Check") .font(Font.system (size:16))
             Text("Align the Boat Heading in your watch and Sail in line.").font(Font.system (size:16))
             
-            Text("Bias: \(sailAngleDetect.biasCompass, specifier: "%.2f")") .font(Font.system (size:16))
+            Text("Bias: \(sailAngleDetect.biasCompass, specifier: "%.f")") .font(Font.system (size:16))
             Text("Boat Heading : \(sailAngleDetect.boatHeading, specifier: "%.f")") .font(Font.system (size:16))
-                .padding()
             Text("Sail Heading : \(sailAngleDetect.deviceHeading, specifier: "%.f")") .font(Font.system (size:16))
             
             

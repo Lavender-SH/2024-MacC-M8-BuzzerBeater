@@ -65,61 +65,67 @@ class SailAngleDetect : ObservableObject{
         let boatHeading = locationManager.boatCourse
         DispatchQueue.main.async {
             self.boatHeading = boatHeading
+            print("calib:biasCompas \(self.biasCompass)")
+            print("calib: boatHeading \(self.boatHeading)")
+            
         }
-        let angleZ =  self.angles.z + self.biasCompass
+        let deviceHeading = Double(self.angles.z)
+    
+        // Convert deviceHeading north Clockwise
+        let deviceHeadingConverted = deviceHeading < 0 ? -Double(deviceHeading) : 360 - Double(deviceHeading)
         
-        let sailAngleFromNorth = fmod (angleZ + 360 , 360)
+        
+        DispatchQueue.main.async{
+            self.deviceHeading = deviceHeadingConverted + self.biasCompass
+        }
+  
+        let sailAngleFromNorth = fmod (self.deviceHeading + 360 , 360)
+        
         DispatchQueue.main.async{
             self.sailAngleFromNorth = sailAngleFromNorth
+            print("calib:sailAngleFromNorth \(self.sailAngleFromNorth)")
         }
-        var tempSailAngleFromBoatHeading = fmod( sailAngleFromNorth - boatHeading , 360)
-        var tempSailAngleFromMast  = 0
-        // 왼쪽방향을 넘어서면 오른쪽 방향에서 계산
-        if tempSailAngleFromBoatHeading  <  -180 {
-             tempSailAngleFromMast  += 360
-        }
-        if tempSailAngleFromBoatHeading  >=  180 {
-             tempSailAngleFromMast  -= 360
-        }
+        var tempSailAngleFromBoatHeading = fmod( sailAngleFromNorth - boatHeading  + 360 , 360)
         
-        if tempSailAngleFromMast < 0 {
-            DispatchQueue.main.async {
-                self.sailAngleFromMast = -(180 - abs(tempSailAngleFromBoatHeading))
-            }
-        }
-        
-        if tempSailAngleFromMast >= 0 {
-            DispatchQueue.main.async{
-                self.sailAngleFromMast = 180 - abs(tempSailAngleFromBoatHeading)
-            }
+        DispatchQueue.main.async {
+            self.sailAngleFromMast = (180 - tempSailAngleFromBoatHeading)
+            print("calib:sailAngleFromMast \(self.sailAngleFromMast)")
         }
     }
     
    
     func calibrateBias() {
         let boatHeading = locationManager.boatCourse
-        print("Boat Heading: \(boatHeading)")
-     
+      
         let deviceHeading = Double(bleDeviceManager.angles.z)
-        print("Device Heading: \(deviceHeading)")
-        // Convert deviceHeading
+    
+        // Convert deviceHeading north Clockwise
         let deviceHeadingConverted = deviceHeading < 0 ? -Double(deviceHeading) : 360 - Double(deviceHeading)
         
         var bias = (boatHeading - 180) - deviceHeadingConverted
+        print("calib 1 bias: \(bias)")
         
+        //0 <= bias <= 180  or -180 <= bias < 0
         if bias > 180 {
             bias -= 360
         }
         if bias < -180 {
             bias += 360
         }
-        
+        print("calib 2 bias:\(bias)")
        DispatchQueue.main.async{
             self.boatHeading = boatHeading
             self.biasCompass = bias
             self.deviceHeading = deviceHeadingConverted + bias
         }
-        print(bias > 0 ? "Positive Bias: \(bias)" : "Negative Bias: \(bias)")
+        print(String(format: "angles (%.0f, %.0f, %.0f)",
+                     bleDeviceManager.angles.x,
+                     bleDeviceManager.angles.y,
+                     bleDeviceManager.angles.z))
+        print(String(format: "calib boat Heading: %.0f", self.boatHeading))
+        print(String(format: "calib device Heading before adj: %.0f", deviceHeadingConverted))
+        print(String(format: "calib device Heading: %.0f", self.deviceHeading))
+        print(String(format: "calib: Bias: %.0f", self.biasCompass))
     }
 }
 
