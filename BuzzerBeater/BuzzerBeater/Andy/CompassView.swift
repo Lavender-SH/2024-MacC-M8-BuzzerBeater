@@ -319,13 +319,13 @@ struct CompassView: View {
                                     .buttonStyle(.plain)
                                 }
                                 if let countdown = countdown {
-                                                            Text("\(countdown)")
-                                                                .font(.system(size: 60, weight: .bold))
-                                                                .foregroundColor(.cyan)
-                                                                .transition(.scale) // 애니메이션 효과
-                                                                .position(x: cx, y: cy)
-                                                        }
-
+                                    Text("\(countdown)")
+                                        .font(.system(size: 60, weight: .bold))
+                                        .foregroundColor(.cyan)
+                                        .transition(.scale) // 애니메이션 효과
+                                        .position(x: cx, y: cy)
+                                }
+                                
                             }
                             
                         }
@@ -370,6 +370,14 @@ struct CompassView: View {
             .padding(.bottom, -20)
             
         }
+        .onAppear {
+            NotificationCenter.default.addObserver(forName: .resetCompassView, object: nil, queue: .main) { _ in
+                resetToInitialState()
+            }
+        }
+        .onDisappear {
+            NotificationCenter.default.removeObserver(self, name: .resetCompassView, object: nil)
+        }
     }
     
     private func adjustWindCorrection(by amount: Double) {
@@ -384,14 +392,14 @@ struct CompassView: View {
     private func startCountdown() {
         countdown = 3
         showBoatView = false
-       
+        
         DispatchQueue.main.asyncAfter(deadline: .now() + TimeInterval(countdown ?? 3 )){
             sharedWorkoutManager.isSavingData = true
             sharedWorkoutManager.startStopwatch()
             sharedWorkoutManager.startToSaveHealthStore()
             sharedWorkoutManager.activateWaterLock()
         }
-     
+        
         Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { timer in
             if let currentCount = countdown, currentCount > 1 {
                 withAnimation {
@@ -403,12 +411,17 @@ struct CompassView: View {
                     countdown = nil
                     showBoatView = true
                 }
-               
+                
             }
         }
     }
     
-
+    func resetToInitialState() {
+        countdown = nil
+        showBoatView = false
+    }
+    
+    
 }
 
 
@@ -422,3 +435,6 @@ struct CompassView_Previews: PreviewProvider {
 }
 
 
+extension Notification.Name {
+    static let resetCompassView = Notification.Name("resetCompassView")
+}

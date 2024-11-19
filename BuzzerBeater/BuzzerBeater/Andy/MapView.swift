@@ -87,9 +87,10 @@ struct MapView: View {
                         
                     }) {
                         ZStack {
-                            Circle()
-                                .fill(Color.gray.opacity(0.3))
-                                .frame(width: 35, height: 35)
+                            Rectangle()
+                                //.fill(Color.clear)
+                                .fill(Color.gray.opacity(0.001))
+                                .frame(width: 50, height: 300)
                                 .zIndex(1)
                             Image(systemName: "chevron.left")
                                 .resizable()
@@ -99,15 +100,16 @@ struct MapView: View {
                         }
                     }
                     .buttonStyle(.plain)
-                    .position(x: geometry.size.width * 0.1, y: geometry.size.height * 0.5)
+                    .position(x: geometry.size.width * 0.13, y: geometry.size.height * 0.5)
                     
                     Button(action: {
     
                     }) {
                         ZStack {
-                            Circle()
-                                .fill(Color.gray.opacity(0.3))
-                                .frame(width: 35, height: 35)
+                            Rectangle()
+                                //.fill(Color.clear)
+                                .fill(Color.gray.opacity(0.001))
+                                .frame(width: 50, height: 100)
                                 .zIndex(1)
                             Image(systemName: "chevron.right")
                                 .resizable()
@@ -117,7 +119,7 @@ struct MapView: View {
                         }
                     }
                     .buttonStyle(.plain)
-                    .position(x: geometry.size.width * 0.9, y: geometry.size.height * 0.5)
+                    .position(x: geometry.size.width * 0.87, y: geometry.size.height * 0.5)
                 }
             }
             
