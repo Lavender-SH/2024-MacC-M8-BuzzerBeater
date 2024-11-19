@@ -75,9 +75,10 @@ class WorkoutManager:  ObservableObject
     private var isPaused: Bool = false // 일시정지 상태를 저장하는 변수
     
     deinit {
-           cancellables.removeAll() // 모든 구독 해제
-           print("Workout deinitialized")
-       }
+        // 모든 구독 해제
+        stopStopwatch()
+        print("Workout deinitialized")
+    }
     func startWorkout(startDate: Date)  {
         // 운동을 시작하기 전에 HKWorkoutBuilder를 초기화
         if isWorkoutActive  { return }
@@ -695,13 +696,14 @@ class WorkoutManager:  ObservableObject
         //            }
         //
         isPaused = false
-        Timer.publish(every: TimeInterval(1), on: .main, in: .common)
+        Timer.publish(every: TimeInterval(1), on: .main, in: .default)
             .autoconnect() // Timer가 자동으로 시작하도록 설정
             .sink { [weak self] _ in
                 guard let self = self else { return }
                 if !isPaused {
                     self.elapsedTime += 1
                     self.updateFormattedElapsedTime()
+                    
                 }
             } .store(in: &cancellables)
     }

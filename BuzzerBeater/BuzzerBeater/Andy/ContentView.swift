@@ -16,6 +16,7 @@ struct ContentView: View {
     @EnvironmentObject private var sailAngleFind : SailAngleFind
     @EnvironmentObject private var sailingDataCollector : SailingDataCollector
     @EnvironmentObject private var bleDeviceManager: BleDeviceManager
+    @EnvironmentObject var sharedWorkoutManager : WorkoutManager
     
     @State private var selection = 2
     private let totalTabs = 3 // 총 탭 수
@@ -29,6 +30,7 @@ struct ContentView: View {
                 .environmentObject(ApparentWind.shared)
                 .environmentObject(SailAngleFind.shared)
                 .environmentObject(SailingDataCollector.shared)
+                .environmentObject(sharedWorkoutManager)
                 .tabItem {
                     Image(systemName: "info.circle.fill")
                     Text("Info")
@@ -72,14 +74,14 @@ struct SessionPage: View {
     @EnvironmentObject  var sailAngleFind : SailAngleFind
     @EnvironmentObject  var sailingDataCollector : SailingDataCollector
     //var sharedWorkoutManager = WorkoutManager.shared
-    
+    @EnvironmentObject var sharedWorkoutManager : WorkoutManager
     @State private var isSavingData = false
     @State var isShowingWorkoutList = false
     @State private var elapsedTime: TimeInterval = 0 // 스탑워치 시간
     @State private var timer: Timer? // 타이머 인스턴스
     @State private var isPaused = false // 일시정지 상태 변수
     
-    let sharedWorkoutManager = WorkoutManager.shared
+    //let sharedWorkoutManager = WorkoutManager.shared
     
     
     var body: some View {
