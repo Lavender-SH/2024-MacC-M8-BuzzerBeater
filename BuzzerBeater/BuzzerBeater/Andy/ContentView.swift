@@ -16,52 +16,62 @@ struct ContentView: View {
     @EnvironmentObject private var sailAngleFind : SailAngleFind
     @EnvironmentObject private var sailingDataCollector : SailingDataCollector
     @EnvironmentObject private var bleDeviceManager: BleDeviceManager
-    
     @State private var selection = 2
     private let totalTabs = 3 // 총 탭 수
     
     var body: some View {
-      
-        TabView(selection:$selection) {
-            SessionPage()
-                .environmentObject(LocationManager.shared)
-                .environmentObject(WindDetector.shared)
-                .environmentObject(ApparentWind.shared)
-                .environmentObject(SailAngleFind.shared)
-                .environmentObject(SailingDataCollector.shared)
-                .tabItem {
-                    Image(systemName: "info.circle.fill")
-                    Text("Info")
-                }
-                .tag(1)
-            
-            CompassPage()
-                .tabItem {
-                    Image(systemName: "location.north.fill")
-                    Text("Compass")
-                }
-                .tag(2)
-            MapPage()
-                .tabItem {
-                    Image(systemName: "map.fill")
-                    Text("Map")
-                }
-                .tag(3)
-            
-//            InfoPage()
-//                .environmentObject(LocationManager.shared)
-//                .environmentObject(WindDetector.shared)
-//                .environmentObject(ApparentWind.shared)
-//                .environmentObject(SailAngleFind.shared)
-//                .environmentObject(SailingDataCollector.shared)
-//                .tabItem {
-//                    Image(systemName: "info.circle.fill")
-//                    Text("Info")
-//                }
-//                .tag(4)
-            BleView()
-                .environmentObject(BleDeviceManager.shared)
-                .tag(4)
+        NavigationStack {
+            TabView(selection:$selection) {
+                SessionPage()
+                    .environmentObject(LocationManager.shared)
+                    .environmentObject(WindDetector.shared)
+                    .environmentObject(ApparentWind.shared)
+                    .environmentObject(SailAngleFind.shared)
+                    .environmentObject(SailingDataCollector.shared)
+                    .tabItem {
+                        Image(systemName: "info.circle.fill")
+                        //Text("Info")
+                    }
+                    .tag(1)
+                
+                CompassPage()
+                    .tabItem {
+                        Image(systemName: "location.north.fill")
+                        //Text("Compass")
+                    }
+                    .tag(2)
+                MapPage()
+                    .tabItem {
+                        Image(systemName: "map.fill")
+                        //Text("Map")
+                    }
+                    .tag(3)
+                
+                //            InfoPage()
+                //                .environmentObject(LocationManager.shared)
+                //                .environmentObject(WindDetector.shared)
+                //                .environmentObject(ApparentWind.shared)
+                //                .environmentObject(SailAngleFind.shared)
+                //                .environmentObject(SailingDataCollector.shared)
+                //                .tabItem {
+                //                    Image(systemName: "info.circle.fill")
+                //                    Text("Info")
+                //                }
+                //                .tag(4)
+                BleView()
+                    .environmentObject(BleDeviceManager.shared)
+                    .tag(4)
+            }
+//            .navigationDestination(isPresented: $showWatchResultRecord) {
+//                            if let latestWorkout = WorkoutManager.shared.workout {
+//                                WatchResultRecord(workout: latestWorkout)
+//                            } else {
+//                                Text("No recent workout data available.")
+//                                    .font(.headline)
+//                                    .foregroundColor(.red)
+//                            }
+//            }
+
         }
     }
 }
@@ -77,7 +87,7 @@ struct SessionPage: View {
     @State private var elapsedTime: TimeInterval = 0 // 스탑워치 시간
     @State private var timer: Timer? // 타이머 인스턴스
     @State private var isPaused = false // 일시정지 상태 변수
-    
+    @State private var isMap = false
     
     let sharedWorkoutManager = WorkoutManager.shared
     
@@ -111,9 +121,9 @@ struct SessionPage: View {
                 
                 Button(action: {
                     isShowingWorkoutList.toggle()
-                    
+                    isMap = true
                 }) {
-                    Image(systemName: "chart.bar.xaxis")
+                    Image(systemName: "map") //chart.bar.xaxis
                         .resizable()
                         .scaledToFit()
                         .frame(width: 30, height: 30) // 아이콘 크기 설정
@@ -126,7 +136,7 @@ struct SessionPage: View {
                 ))
                 
                 .sheet(isPresented: $isShowingWorkoutList) {
-                    WorkoutListView().disabled( WKInterfaceDevice.current().isWaterLockEnabled)
+                    WorkoutListView(isMap: $isMap).disabled( WKInterfaceDevice.current().isWaterLockEnabled)
                 }
                 .disabled(sharedWorkoutManager.isSavingData)
             }
@@ -144,6 +154,9 @@ struct SessionPage: View {
                     
                     NotificationCenter.default.post(name: .resetCompassView, object: nil)
                     
+                    isShowingWorkoutList.toggle()
+                    
+                    isMap = false
                 }) {
                     Image(systemName: "xmark")
                         .resizable()
@@ -156,6 +169,9 @@ struct SessionPage: View {
                     backgroundColor: sharedWorkoutManager.isSavingData ? Color(hex: "#330D0A") : Color.black,
                     foregroundColor: .white
                 ))
+                .sheet(isPresented: $isShowingWorkoutList) {
+                    WorkoutListView(isMap: $isMap)
+                }
                 .disabled(!sharedWorkoutManager.isSavingData)
                 
                 // Pause/Resume 버튼
@@ -184,7 +200,7 @@ struct SessionPage: View {
             }
         }
         .padding(.top, 10)
-        .navigationTitle("Info")
+        //.navigationTitle("Info")
         
     }
 }
@@ -202,7 +218,7 @@ struct CompassPage: View {
                 .frame(width: geometry.size.width * 0.8 , height: geometry.size.width * 0.8)
                 .position(x: geometry.size.width / 2, y: geometry.size.height / 2)
                 .padding(5)
-                .navigationTitle("Compass")
+                //.navigationTitle("Compass")
         }
     }
 }
@@ -217,7 +233,7 @@ struct MapPage: View {
                     .environmentObject(LocationManager.shared)
                     .environmentObject(SailingDataCollector.shared)
                     .frame(width: minOfWidthAndHeight * 1, height: minOfWidthAndHeight * 1) // 전체 크기로 설정
-                    .navigationTitle("Map")
+                    //.navigationTitle("Map")
                 // 적당한 패딩을 추가하여 가장자리에 여유 공간 추가
                 Spacer()
             } .frame(width: geometry.size.width, height: geometry.size.height)
@@ -329,14 +345,14 @@ struct InfoPage: View {
                 .cornerRadius(10)
                 
                 .sheet(isPresented: $isShowingWorkoutList) {
-                    WorkoutListView()
+                    //WorkoutListView()
                 }
                 
             }
             
         }
         .padding(.top, 10)
-        .navigationTitle("Info")
+        //.navigationTitle("Info")
     }
     
 
