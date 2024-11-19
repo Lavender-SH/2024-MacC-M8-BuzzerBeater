@@ -25,7 +25,9 @@ struct CompassView: View {
     @State var windCorrectionDetent : Double  = 0
     @State var isCrownIdle = true
     @State var showBoatView = false
-    @State private var countdown: Int? = nil
+    @State var countdown: Int? = nil
+    
+    let sharedWorkoutManager = WorkoutManager.shared
     
     var body: some View {
         VStack{
@@ -380,23 +382,31 @@ struct CompassView: View {
     }
     
     private func startCountdown() {
-            countdown = 3
-            showBoatView = false
-
-            Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { timer in
-                if let currentCount = countdown, currentCount > 1 {
-                    withAnimation {
-                        countdown = currentCount - 1
-                    }
-                } else {
-                    timer.invalidate()
-                    withAnimation {
-                        countdown = nil
-                        showBoatView = true
-                    }
+        countdown = 3
+        showBoatView = false
+       
+        DispatchQueue.main.asyncAfter(deadline: .now() + TimeInterval(countdown ?? 3 )){
+            sharedWorkoutManager.isSavingData = true
+            sharedWorkoutManager.startStopwatch()
+            sharedWorkoutManager.startToSaveHealthStore()
+            sharedWorkoutManager.activateWaterLock()
+        }
+     
+        Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { timer in
+            if let currentCount = countdown, currentCount > 1 {
+                withAnimation {
+                    countdown = currentCount - 1
                 }
+            } else {
+                timer.invalidate()
+                withAnimation {
+                    countdown = nil
+                    showBoatView = true
+                }
+               
             }
         }
+    }
     
 
 }

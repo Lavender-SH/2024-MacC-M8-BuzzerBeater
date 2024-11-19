@@ -13,7 +13,6 @@
 		0297A25E2CC3E65D0024AEC9 /* BuzzerBeaterWatch Watch App.app in Embed Watch Content */ = {isa = PBXBuildFile; fileRef = 0297A2512CC3E65C0024AEC9 /* BuzzerBeaterWatch Watch App.app */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		0297A28E2CC51A740024AEC9 /* ApparentWind.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0297A27B2CC51A740024AEC9 /* ApparentWind.swift */; };
 		0297A28F2CC51A740024AEC9 /* BoatView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0297A27C2CC51A740024AEC9 /* BoatView.swift */; };
-		0297A2902CC51A740024AEC9 /* CompassView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0297A27D2CC51A740024AEC9 /* CompassView.swift */; };
 		0297A2922CC51A740024AEC9 /* LocationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0297A27F2CC51A740024AEC9 /* LocationManager.swift */; };
 		0297A2932CC51A740024AEC9 /* MapView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0297A2802CC51A740024AEC9 /* MapView.swift */; };
 		0297A2942CC51A740024AEC9 /* SailAngleFind.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0297A2812CC51A740024AEC9 /* SailAngleFind.swift */; };
@@ -384,7 +383,6 @@
 				CE1B72222CD299B00044895B /* WorkoutListView.swift in Sources */,
 				0273E9CC2CE9D2760043B886 /* Splash.swift in Sources */,
 				0297A28F2CC51A740024AEC9 /* BoatView.swift in Sources */,
-				0297A2902CC51A740024AEC9 /* CompassView.swift in Sources */,
 				EF7997592CDB7469004FF039 /* DateFormatter+Formats.swift in Sources */,
 				EF79975D2CDB7C34004FF039 /* InfoIcon.swift in Sources */,
 				CEA9CBA82CD5F63F005F1814 /* WorkoutManagerIOS.swift in Sources */,
