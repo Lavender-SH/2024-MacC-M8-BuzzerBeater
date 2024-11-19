@@ -1,19 +1,16 @@
 //
-//  InfoDetail.swift
-//  BuzzerBeater
+//  WatchResultRecord.swift
+//  BuzzerBeaterWatch Watch App
 //
-//  Created by 이승현 on 11/13/24.
+//  Created by 이승현 on 11/19/24.
 //
 
-import Foundation
 import SwiftUI
-import Charts
-import MapKit
 import HealthKit
 import CoreLocation
-import Charts
+import MapKit
 
-struct InfoDetail: View {
+struct WatchResultRecord: View {
     @Environment(\.presentationMode) var presentationMode
     @State private var isMapModalPresented = false
     let workoutManager = WorkoutManager.shared
@@ -46,146 +43,53 @@ struct InfoDetail: View {
         
     }
     
-    let columns = [
-        GridItem(.flexible()),
-        GridItem(.flexible())
-    ]
-    
     var body: some View {
-        
-        List {
-            Section {
-                HStack(spacing: 20) {
-                    InfoIcon()
-                        .frame(width: 80, height: 80)
-                    
-                    VStack(alignment: .leading) {
-                        Text("Dinghy Yacht")
-                            .font(.system(size: 25))
-                            .padding(.bottom, 5)
-                        if let startDate = startDate, let endDate = endDate {
-                            Text("\(formattedTime(startDate)) - \(formattedTime(endDate))")
-                                .font(.system(size: 20))
-                                .foregroundColor(.secondary)
-                                .padding(.bottom, 5)
-                        }
-                        
-                        HStack(spacing: 4) {
-                            Image(systemName: "location.fill")
-                                .font(.system(size: 18))
-                                .foregroundColor(.secondary)
-                            //Text("Pohang City")
-                            Text(locationName)
-                                .font(.system(size: 18))
-                                .foregroundColor(.secondary)
-                        }
-                    }
-                }
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .padding(.leading, 5)
-            }
-            .listRowBackground(Color.clear)
-            
-            Section(
-                header: Text("Navigation Details")
-                    .font(.title3)
-                    .bold()
+        VStack(spacing: 8) { // 전체 줄 간격
+            if isDataLoaded {
+                // 날짜 표시
+                Text(formattedDate(startDate))
+                    .font(.caption)
                     .foregroundColor(.white)
-                    .textCase(nil)
-            ) {
-                if isDataLoaded {
-                    LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], alignment: .leading, spacing: 16) {
-                        VStack(alignment: .leading, spacing: 8) {
-                            Text("Sailing Time")
-                            Text(formattedDuration(duration))
-                                .font(.title)
-                                .foregroundColor(.yellow)
-                                .fontDesign(.rounded)
-                        }
-                        VStack(alignment: .leading, spacing: 8) {
-                            Text("Sailing Distance")
-                            Text("\(formattedDistance(totalDistance))")
-                                .font(.title)
-                                .foregroundColor(.cyan)
-                                .fontDesign(.rounded)
-                        }
-                        VStack(alignment: .leading, spacing: 8) {
-                            Text("Calories")
-                            Text("\(formattedEnergyBurned(totalEnergyBurned))")
-                                .font(.title)
-                                .foregroundColor(.cyan)
-                                .fontDesign(.rounded)
-                        }
-                        VStack(alignment: .leading, spacing: 8) {
-                            Text("Highest Speed")
-                            Text("\(formattedMaxSpeed(velocities.max() ?? 0)) m/s")
-                                .font(.title)
-                                .foregroundColor(.cyan)
-                                .fontDesign(.rounded)
-                        }
-                    }
-                    .padding(1)
-                } else {
-                    ProgressView("Loading Data...")
+                
+                // 상자 그룹
+                HStack(spacing: 8) {
+                    // Time 상자
+                    InfoBox(title: "Time", value: formattedDuration(duration), valueColor: .yellow)
+                    // Distance 상자
+                    InfoBox(title: "Distance", value: "\(formattedDistance(totalDistance))", valueColor: .cyan)
                 }
+                HStack(spacing: 8) {
+                    // Calories 상자
+                    InfoBox(title: "Calories", value: "\(formattedEnergyBurned(totalEnergyBurned))", valueColor: .cyan)
+                    // Max Speed 상자
+                    InfoBox(title: "Max Speed", value: "\(formattedMaxSpeed(velocities.max() ?? 0)) m/s", valueColor: .cyan)
+                }
+                
+                // 시작 및 종료 시간
+                if let startDate = startDate, let endDate = endDate {
+                    Text("\(formattedTime(startDate)) - \(formattedTime(endDate))")
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                }
+                
+                // 위치 정보
+                HStack(spacing: 2) {
+                    Image(systemName: "location.fill")
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                    Text(locationName)
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                }
+            } else {
+                // 데이터 로딩 중 표시
+                ProgressView("Loading Data...")
+                    .font(.caption)
             }
-            
-            Section(
-                header: Text("Speed of a Yacht")
-                    .font(.title3)
-                    .bold()
-                    .foregroundColor(.white)
-                    .textCase(nil)
-            ) {
-                if isDataLoaded {
-                    let startTime = routePoints.first?.timestamp ?? Date()
-                    let endTime = routePoints.last?.timestamp ?? Date()
-                    let totalDurationInSeconds = endTime.timeIntervalSince(startTime)
-                    let averageSpeed = velocities.reduce(0, +) / Double(velocities.count)
-                    
-                    VStack(alignment: .leading, spacing: 8){
-                        Text("Average Speed: \(String(format: "%.2f", averageSpeed)) m/s")
-                            .font(.headline)
-                            .padding(.bottom, 8)
-                            .foregroundStyle(.cyan)
-                        Chart {
-                            ForEach(Array(velocities.enumerated()), id: \.offset) { index, speed in
-                                let timeInSeconds = routePoints[index].timestamp.timeIntervalSince(startTime)
-                                LineMark(
-                                    x: .value("Time (sec)", timeInSeconds),
-                                    y: .value("Speed", speed)
-                                )
-                                .foregroundStyle(.cyan)
-                            }
-                        }                                    .frame(height: 130)
-                            .chartXScale(domain: 0...totalDurationInSeconds)  // Dynamic x-axis based on total duration
-                            .chartXAxis {
-                                AxisMarks()
-                            }
-                    }
-                }
-            }
-            
-            Section(header: Text("Navigation Route")
-                .font(.title3)
-                .bold()
-                .foregroundColor(.white)
-                .textCase(nil)) {
-                    // Button to show the map in a modal view
-                    Button(action: {
-                        isMapModalPresented = true // Present modal when tapped
-                    }) {
-                        MapPathView(workout: workout, isModal: false)
-                            .frame(height: 250)
-                    }
-                    .buttonStyle(PlainButtonStyle()) // Disable default button styling
-                }
         }
-        .padding(.top, -1)
-        .sheet(isPresented: $isMapModalPresented) {
-            MapPathView(workout: workout, isModal: true)
-                .edgesIgnoringSafeArea(.all)
-        }
+        .padding(.vertical, 8)
+        .padding(.horizontal, 12)
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
         .onAppear {
             DispatchQueue.main.async {
                 Task {
@@ -214,28 +118,8 @@ struct InfoDetail: View {
                 self.duration = workout.endDate.timeIntervalSince(workout.startDate)
             }
         }
-        .preferredColorScheme(.dark)
-        .navigationBarBackButtonHidden(true)
-#if os(iOS)
-        .toolbar {
-            ToolbarItem(placement: .navigationBarLeading) {
-                Button(action: {
-                    presentationMode.wrappedValue.dismiss()
-                }) {
-                    Image(systemName: "chevron.left")
-                        .foregroundColor(.white)
-                }
-            }
-            ToolbarItem(placement: .principal) {
-                Text(formattedDate(startDate))
-                    .font(.headline)
-                    .foregroundColor(.white)
-            }
-        }
-#endif
     }
-    
-    
+
     
     func loadWorkoutData() async  {
         getRouteFrom(workout: workout) { success, error in
@@ -258,7 +142,8 @@ struct InfoDetail: View {
         }
     }
     
-    public func getRouteFrom(workout: HKWorkout, completion: @escaping (_ success: Bool, _ error: Error?) -> Void) {
+
+    func getRouteFrom(workout: HKWorkout, completion: @escaping (_ success: Bool, _ error: Error?) -> Void) {
         // Create a predicate for objects associated with the workout
         let runningObjectQuery = HKQuery.predicateForObjects(from: workout)
         
@@ -301,7 +186,7 @@ struct InfoDetail: View {
                 // 위치 데이터를 저장하고 후속 작업을 수행
                 DispatchQueue.main.async {
                     self.routePoints.append(contentsOf: locations)
-                    self.getMetric()  // 필요에 따라 정의된 메트릭 계산 함수 호출
+                    //self.getMetric()  // 필요에 따라 정의된 메트릭 계산 함수 호출
                 }
                 
                 // 위치 데이터의 마지막 청크가 도착했을 때, 쿼리 정지 및 성공 콜백
@@ -329,29 +214,41 @@ struct InfoDetail: View {
         // routeQuery 실행
         healthStore.execute(routeQuery)
     }
-    func getMetric(){
-        let latitudes = routePoints.map { $0.coordinate.latitude }
-        let longitudes = routePoints.map { $0.coordinate.longitude }
-        
-        // Calculate the map region's boundaries
-        guard let maxLat = latitudes.max(), let minLat = latitudes.min(),
-              let maxLong = longitudes.max(), let minLong = longitudes.min() else {
-            print("mapSpan error will happen!!!")
-            return
-        }
-        let mapCenter = CLLocationCoordinate2D(latitude: (minLat + maxLat) / 2, longitude: (minLong + maxLong) / 2)
-        let mapSpan = MKCoordinateSpan(latitudeDelta: max((maxLat - minLat) * mapDisplayAreaPadding , self.minDegree), longitudeDelta: max((maxLong - minLong) * mapDisplayAreaPadding , self.minDegree))
-        
-        print("mapspan in MapPathView: \(mapSpan)")
-        // Update the map region and plot the route on the main thread
-        DispatchQueue.main.async {
-            self.region = MKCoordinateRegion(center: mapCenter, span: mapSpan)
-            // Stop the route locations query now that we're done
-            if let region = self.region {
-                self.position = .region(region)
+    
+    func fetchRouteData(workout: HKWorkout) {
+        let predicate = HKQuery.predicateForObjects(from: workout)
+        let routeQuery = HKAnchoredObjectQuery(type: HKSeriesType.workoutRoute(), predicate: predicate, anchor: nil, limit: HKObjectQueryNoLimit) { query, samples, _, _, error in
+            guard let routes = samples as? [HKWorkoutRoute], error == nil else {
+                print("Error fetching route data: \(String(describing: error))")
+                return
+            }
+            
+            let dispatchGroup = DispatchGroup()
+            for route in routes {
+                dispatchGroup.enter()
+                let routeLocationsQuery = HKWorkoutRouteQuery(route: route) { _, locations, done, error in
+                    if let locations = locations {
+                        self.velocities.append(contentsOf: locations.map { $0.speed })
+                    }
+                    if done || error != nil {
+                        dispatchGroup.leave()
+                    }
+                }
+                self.healthStore.execute(routeLocationsQuery)
+            }
+            
+            dispatchGroup.notify(queue: .main) {
+                self.maxSpeed = self.velocities.max() ?? 0
+                self.isDataLoaded = true
             }
         }
+        self.healthStore.execute(routeQuery)
     }
+    
+    
+    
+    
+    
     
     
     func formattedDuration(_ duration: TimeInterval) -> String {
@@ -393,7 +290,7 @@ struct InfoDetail: View {
         formatter.pmSymbol = "PM"
         return formatter.string(from: date)
     }
-    private func formattedDate(_ date: Date?) -> String {
+    func formattedDate(_ date: Date?) -> String {
         guard let date = date else { return "" }
         let formatter = DateFormatter()
         formatter.dateFormat = "yyyy. MM. dd (EEE)"
@@ -410,7 +307,53 @@ struct InfoDetail: View {
             }
         }
     }
+}
+
+struct WatchResultRecord_Previews: PreviewProvider {
+    static var previews: some View {
+        WatchResultRecord(
+            workout: createDummyWorkout()
+        )
+    }
     
-    
-    
+    static func createDummyWorkout() -> HKWorkout {
+        // 더미 HKWorkout 객체 생성
+        return HKWorkout(
+            activityType: .sailing,
+            start: Date(),
+            end: Date().addingTimeInterval(3600),
+            workoutEvents: nil,
+            totalEnergyBurned: HKQuantity(unit: .kilocalorie(), doubleValue: 500),
+            totalDistance: HKQuantity(unit: .meter(), doubleValue: 10000),
+            metadata: [
+                "TotalDistance": 10000.0,
+                "TotalEnergyBurned": 500.0
+            ]
+        )
+    }
+}
+
+
+struct InfoBox: View {
+    let title: String
+    let value: String
+    let valueColor: Color
+
+    var body: some View {
+        VStack(spacing: 4) {
+            Text(title)
+                .font(.footnote)
+                .foregroundColor(.white)
+            Text(value)
+                .font(.headline)
+                .foregroundColor(valueColor)
+        }
+        .frame(maxWidth: .infinity) // 상자가 균등하게 배치되도록
+        .padding(5)
+        .background(
+            RoundedRectangle(cornerRadius: 8)
+                .fill(Color(.darkGray).opacity(0.3))
+                .shadow(color: .black.opacity(0.1), radius: 2, x: 0, y: 2)
+        )
+    }
 }
