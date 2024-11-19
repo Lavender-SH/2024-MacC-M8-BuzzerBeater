@@ -61,12 +61,14 @@ struct InfoDetail: View {
                     
                     VStack(alignment: .leading) {
                         Text("Dinghy Yacht")
-                            .font(.system(size: 25))
+                            .font(.system(size: 25).bold())
+                            .fontDesign(.rounded)
                             .padding(.bottom, 5)
                         if let startDate = startDate, let endDate = endDate {
                             Text("\(formattedTime(startDate)) - \(formattedTime(endDate))")
-                                .font(.system(size: 20))
+                                .font(.system(size: 20).bold())
                                 .foregroundColor(.secondary)
+                                .fontDesign(.rounded)
                                 .padding(.bottom, 5)
                         }
                         
@@ -76,7 +78,8 @@ struct InfoDetail: View {
                                 .foregroundColor(.secondary)
                             //Text("Pohang City")
                             Text(locationName)
-                                .font(.system(size: 18))
+                                .font(.system(size: 18).bold())
+                                .fontDesign(.rounded)
                                 .foregroundColor(.secondary)
                         }
                     }

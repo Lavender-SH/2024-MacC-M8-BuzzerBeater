@@ -39,7 +39,7 @@ struct InfoRow: View {
                                                     
                                                     VStack(alignment: .leading) {
                                                         Text("Dinghy Yacht")
-                                                            .font(.system(size: 17, weight: .bold, design: .rounded))
+                                                            .font(.system(size: 20, weight: .bold, design: .rounded))
                                                             .foregroundColor(.white)
                                                         
                                                         let totalDistance = workout.metadata?["TotalDistance"] as? Double ?? 0.0
@@ -84,15 +84,16 @@ struct InfoRow: View {
                 await viewModel.fetchWorkout(appIdentifier: "seastheDay")
                 isLoading = false
             }
-            .toolbar {
-                ToolbarItem(placement: .automatic) {
-                    Text("Navigation Record")
-                        .font(.system(size: 24, weight: .bold, design: .rounded))
-                        .foregroundColor(.white)
-                        .padding(10)
-                        .background(Capsule().fill(Color.blue))
-                }
-            }
+            .navigationTitle("Navigation Record")
+//            .toolbar {
+//                ToolbarItem(placement: .automatic) {
+//                    Text("Navigation Record")
+//                        .font(.system(size: 24, weight: .bold, design: .rounded))
+//                        .foregroundColor(.white)
+//                        .padding(10)
+//                        .background(Capsule().fill(Color.blue))
+//                }
+//            }
         }
     }
     
