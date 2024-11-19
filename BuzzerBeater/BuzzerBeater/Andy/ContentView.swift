@@ -71,15 +71,16 @@ struct SessionPage: View {
     @EnvironmentObject  var apparentWind :ApparentWind
     @EnvironmentObject  var sailAngleFind : SailAngleFind
     @EnvironmentObject  var sailingDataCollector : SailingDataCollector
+    //var sharedWorkoutManager = WorkoutManager.shared
     
-    @State  private var isSavingData = false
+    @State private var isSavingData = false
     @State var isShowingWorkoutList = false
     @State private var elapsedTime: TimeInterval = 0 // 스탑워치 시간
     @State private var timer: Timer? // 타이머 인스턴스
     @State private var isPaused = false // 일시정지 상태 변수
     
-    
     let sharedWorkoutManager = WorkoutManager.shared
+    
     
     var body: some View {
         VStack(alignment: .center) {
