@@ -1,5 +1,6 @@
 //
-//  蓝牙5.0数据处理器
+// Bluetooth 5.0 Data Processor
+
 //
 //  Created by huangyajun on 2022/9/1.
 //
@@ -9,16 +10,17 @@ import Foundation
 
 class BWT901BLE5_0DataProcessor : IDataProcessor {
     
-    // 控制自动读取数据线程
+    // Control the thread for automatic data reading
     var readDataThreadRuning:Bool = false
     
-    // 设备模型
+    // Device model
     var deviceModel:DeviceModel?
     
-    // 传感器打开时
+    // When the sensor is turned on
     func onOpen(deviceModel: DeviceModel) {
         self.deviceModel = deviceModel
-        // 开启读取数据线程
+        // Start the data reading thread
+
         let thread = Thread(target: self,
                             selector: #selector(readDataThread),
                             object: nil)
@@ -26,39 +28,48 @@ class BWT901BLE5_0DataProcessor : IDataProcessor {
         thread.start()
     }
     
-    // 自动读取数据线程
+    // Automatic data reading thread
+
     @objc func readDataThread(){
         
         var count:Int = 0;
         while (readDataThreadRuning) {
             do {
                 
-                let magType:String? = deviceModel?.getDeviceData("72");// 磁场类型
+                let magType:String? = deviceModel?.getDeviceData("72");//Magnetic field type
+
                 if (StringUtils.IsNullOrEmpty(magType)) {
-                    // 读取72磁场类型寄存器,后面解析磁场的时候要用到
+                    // Read the 72 magnetic field type register, which will be used later when parsing the magnetic field
+
                     try sendProtocolData(data: [0xff, 0xaa, 0x27, 0x72, 0x00], waitTime: 0.5);
                 }
                 
-                let reg2e:String? = deviceModel?.getDeviceData("2E");// 版本号
-                let reg2f:String? = deviceModel?.getDeviceData("2F");// 版本号
+                let reg2e:String? = deviceModel?.getDeviceData("2E");// Version number
+                let reg2f:String? = deviceModel?.getDeviceData("2F");// // Version number
+
                 if (StringUtils.IsNullOrEmpty(reg2e) || StringUtils.IsNullOrEmpty(reg2f)) {
-                    // 读版本号
+                    // Read version number
+
                     try sendProtocolData(data: [0xff,0xaa, 0x27, 0x2E, 0x00], waitTime: 0.5);
                 }
                 
-                try sendProtocolData(data: [0xff, 0xaa, 0x27, 0x3a, 0x00], waitTime: 0.5);// 磁场
-                try sendProtocolData(data: [0xff, 0xaa, 0x27, 0x51, 0x00], waitTime: 0.5);// 四元数
-                // 不需要读那么快的数据
+                try sendProtocolData(data: [0xff, 0xaa, 0x27, 0x3a, 0x00], waitTime: 0.5);// Magnetic field
+
+                try sendProtocolData(data: [0xff, 0xaa, 0x27, 0x51, 0x00], waitTime: 0.5);// Quaternion
+
+                // No need to read data at such a fast rate
+
                 count = count + 1
                 if (count % 50 == 0 || count < 5) {
-                    try sendProtocolData(data: [ 0xff, 0xaa, 0x27, 0x64, 0x00], waitTime: 0.5);// 电量
-                    try sendProtocolData(data: [ 0xff, 0xaa, 0x27, 0x40, 0x00], waitTime: 0.5);// 温度
+                    try sendProtocolData(data: [ 0xff, 0xaa, 0x27, 0x64, 0x00], waitTime: 0.5);// Battery level
+
+                    try sendProtocolData(data: [ 0xff, 0xaa, 0x27, 0x40, 0x00], waitTime: 0.5);// Temperature
 //                    WitCoreConnect coreConnect = deviceModel.getCoreConnect();
 //                    BluetoothBLEOption bluetoothBLEOption = coreConnect.getConfig().getBluetoothBLEOption();
 //                    deviceModel.setDeviceData(WitSensorKey.SignalValue, WitBluetoothManager.getRssi(bluetoothBLEOption.getMac()) + "");
                 }
             } catch {
-                print("BWT901BLECL5_0DataProcessor:自动读取数据异常");
+                print("BWT901BLECL5_0DataProcessor:Automatic data reading exception");
             }
         }
         
@@ -69,43 +80,51 @@ class BWT901BLE5_0DataProcessor : IDataProcessor {
         Thread.sleep(forTimeInterval: waitTime)
     }
     
-    // 传感器关闭时
+    // When the sensor is turned off
+
     func onClose() {
         readDataThreadRuning = false
     }
     
-    // 传感器更新时
+    // When the sensor is updated
+
     func onUpdate(deviceModel:DeviceModel) {
         
-        // 加速度
+        // Acceleration
         let regAx:String? = deviceModel.getDeviceData("61_0");
         let regAy:String? = deviceModel.getDeviceData("61_1");
         let regAz:String? = deviceModel.getDeviceData("61_2");
-        // 角速度
+        // Angular velocity
+
         let regWx:String? = deviceModel.getDeviceData("61_3");
         let regWy:String? = deviceModel.getDeviceData("61_4");
         let regWz:String? = deviceModel.getDeviceData("61_5");
-        // 角度
+        // Angle
+
         let regAngleX:String? = deviceModel.getDeviceData("61_6");
         let regAngleY:String? = deviceModel.getDeviceData("61_7");
         let regAngleZ:String? = deviceModel.getDeviceData("61_8");
         
-        // 四元数
+        // Quaternion
+
         let regQ1:String? = deviceModel.getDeviceData("51");
         let regQ2:String? = deviceModel.getDeviceData("52");
         let regQ3:String? = deviceModel.getDeviceData("53");
         let regQ4:String? = deviceModel.getDeviceData("54");
-        // 温度和电量
+        // Temperature and battery level
+
         let regTemperature:String? = deviceModel.getDeviceData("40");
         let regPower:String? = deviceModel.getDeviceData("64");
         
         
-        // 版本号
+        // Version number
+
         let reg2e:String? = deviceModel.getDeviceData("2E");// 版本号
         let reg2f:String? = deviceModel.getDeviceData("2F");// 版本号
         
    
-        // 如果有版本号
+        // If there is a version number
+
         if (reg2e != nil &&
             reg2f != nil) {
             let reg2eValue:Int16 = Int16((reg2e as NSString?)?.intValue ?? 0)
@@ -115,7 +134,8 @@ class BWT901BLE5_0DataProcessor : IDataProcessor {
             let tempVersion:UInt32 = UInt32(bitPattern: sum)
             var sbinary:String =  String(tempVersion, radix: 2)
             sbinary = StringUtils.padLeft(sbinary, 32, "0")
-            if (sbinary.first == "1")// 新版本号
+            if (sbinary.first == "1")// New version number
+
             {
                 var tempNewVS:String = String(UInt32(StringUtils.subString(sbinary, (4 - 3), (14 + 3)), radix: 2) ?? 0)
                 tempNewVS = tempNewVS + "." + String(UInt32(StringUtils.subString(sbinary, 18, 6), radix: 2) ?? 0)
@@ -126,7 +146,8 @@ class BWT901BLE5_0DataProcessor : IDataProcessor {
             }
         }
         
-        // 加速度解算
+        // Acceleration calculation
+
         if (!StringUtils.IsNullOrEmpty(regAx)) {
             deviceModel.setDeviceData(WitSensorKey.AccX, String(format:"%.3f", Double.parseDouble(regAx) / 32768 * 16, 3));
         }
@@ -137,7 +158,8 @@ class BWT901BLE5_0DataProcessor : IDataProcessor {
             deviceModel.setDeviceData(WitSensorKey.AccZ, String(format:"%.3f", Double.parseDouble(regAz) / 32768 * 16, 3));
         }
         
-        // 角速度解算
+        // Angular velocity calculation
+
         if (!StringUtils.IsNullOrEmpty(regWx)) {
             deviceModel.setDeviceData(WitSensorKey.GyroX, String(format:"%.3f", Double.parseDouble(regWx) / 32768 * 2000, 3));
         }
@@ -148,7 +170,8 @@ class BWT901BLE5_0DataProcessor : IDataProcessor {
             deviceModel.setDeviceData(WitSensorKey.GyroZ, String(format:"%.3f", Double.parseDouble(regWz) / 32768 * 2000, 3));
         }
         
-        // 角度
+        // Angle
+
         if (!StringUtils.IsNullOrEmpty(regAngleX)) {
             deviceModel.setDeviceData(WitSensorKey.AngleX, String(format:"%.3f", Double.parseDouble(regAngleX) / 32768 * 180, 3));
         }
@@ -159,12 +182,13 @@ class BWT901BLE5_0DataProcessor : IDataProcessor {
             let anZ:String = String(format:"%.3f", Double.parseDouble(regAngleZ) / 32768 * 180, 3)
             deviceModel.setDeviceData(WitSensorKey.AngleZ, anZ);
         }
-        
-        // 磁场
+        // Magnetic field
+
         let regHX:String? = deviceModel.getDeviceData("3A");
         let regHY:String? = deviceModel.getDeviceData("3B");
         let regHZ:String? = deviceModel.getDeviceData("3C");
-        // 磁场类型
+        // Magnetic field type
+
         let magType:String? = deviceModel.getDeviceData("72");
         if (!StringUtils.IsNullOrEmpty(regHX) &&
             !StringUtils.IsNullOrEmpty(regHY) &&
@@ -172,18 +196,21 @@ class BWT901BLE5_0DataProcessor : IDataProcessor {
             !StringUtils.IsNullOrEmpty(magType)
         ) {
             let type:Int16 = Int16(magType ?? "0", radix: 10) ?? 0
-            // 解算数据,并且保存到设备数据里
+            // Calculate the data and save it to the device data
+
             deviceModel.setDeviceData(WitSensorKey.MagX, String(DipSensorMagHelper.GetMagToUt(type, Double.parseDouble(regHX))));
             deviceModel.setDeviceData(WitSensorKey.MagY, String(DipSensorMagHelper.GetMagToUt(type, Double.parseDouble(regHY))));
             deviceModel.setDeviceData(WitSensorKey.MagZ, String(DipSensorMagHelper.GetMagToUt(type, Double.parseDouble(regHZ))));
         }
         
-        // 温度
+        // Temperature
+
         if (!StringUtils.IsNullOrEmpty(regTemperature)) {
             deviceModel.setDeviceData(WitSensorKey.Temperature, String(format: "%.2f", Double.parseDouble(regTemperature) / 100, 2));
         }
         
-        // 电量
+        // Battery level
+
         if (!StringUtils.IsNullOrEmpty(regPower)) {
             
             let regPowerValue:Int = Int(regPower ?? "0", radix: 10) ?? 0
@@ -191,7 +218,8 @@ class BWT901BLE5_0DataProcessor : IDataProcessor {
             deviceModel.setDeviceData(WitSensorKey.ElectricQuantityPercentage,  String(eqPercent));
             
             
-            // 计算电量百分比
+            // Calculate battery percentage
+
             // if (regPowerValue >= 830) {
             //     deviceModel.setDeviceData(WitSensorKey.ElectricQuantityPercentage, "100");
             // } else if (regPowerValue >= 750 && regPowerValue < 830) {
@@ -204,11 +232,13 @@ class BWT901BLE5_0DataProcessor : IDataProcessor {
             //     deviceModel.setDeviceData(WitSensorKey.ElectricQuantityPercentage, "0");
             // }
             
-            // 电量原始值
+            // Raw battery value
+
             deviceModel.setDeviceData(WitSensorKey.ElectricQuantity, String(regPowerValue) );
         }
         
-        // 四元数
+        // Quaternion
+
         if (!StringUtils.IsNullOrEmpty(regQ1)) {
             deviceModel.setDeviceData(WitSensorKey.Q0, String(format:"%.5f", Double.parseDouble(regQ1) / 32768.0));
         }
@@ -224,7 +254,8 @@ class BWT901BLE5_0DataProcessor : IDataProcessor {
         
     }
     
-    // 获得电流值
+    // Get the current value
+
     func getEqPercent(_ eq:Float) -> Int {
         var p:Int = 0;
         if(eq >= 3.96){
@@ -266,7 +297,8 @@ class BWT901BLE5_0DataProcessor : IDataProcessor {
         return p;
     }
     
-    // 匹配百分比
+    // Match percentage
+
     func Interp(_ a:Float,_ x:[Float],_ y:[Float]) -> Float {
         var v:Float = 0;
         let L:Int = x.count;
@@ -284,13 +316,15 @@ class BWT901BLE5_0DataProcessor : IDataProcessor {
     }
     
     func ReadMagType( deviceModel:DeviceModel) {
-        // 读取72磁场类型寄存器,后面解析磁场的时候要用到
+        // Read the 72 magnetic field type register, which will be used later when parsing the magnetic field
+
         //deviceModel.sendProtocolData(new byte[]{(byte) 0xff, (byte) 0xaa, 0x27, 0x72, 0x00});
     }
 }
 
 
-// 扩展double
+// Extend double
+
 extension Double {
     static func parseDouble(_ str:String) -> Double{
         return ((str as NSString).doubleValue)

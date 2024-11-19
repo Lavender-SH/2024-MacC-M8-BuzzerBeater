@@ -6,12 +6,13 @@
 //
 
 import SwiftUI
+import Combine
 
 struct BiasCheckView: View {
     @EnvironmentObject var bleDeviceManager : BleDeviceManager
-   
+    @StateObject  var biasCheckViewModel = BiasCheckViewModel()
+    
     let locationManager = LocationManager.shared
-//    let sailAngleDetect = SailAngleDetect.shared
     @EnvironmentObject var sailAngleDetect : SailAngleDetect
    
     @State private var biasCompass: Double = 0
@@ -36,12 +37,15 @@ struct BiasCheckView: View {
                 .padding(5)
             Button("Show SailAngle ") {
                 sailAngleDetect.isSailAngleDetect = true
+                
             } .font(Font.system (size:16))
-            .padding(5)
+                .disabled(!biasCheckViewModel.isButtonEnabled)
+                .padding(5)
             
             Button("Hide SailAngle ") {
                 sailAngleDetect.isSailAngleDetect = false
             } .font(Font.system (size:16))
+                .disabled(!sailAngleDetect.isSailAngleDetect)
             .padding(5)
         }
     }

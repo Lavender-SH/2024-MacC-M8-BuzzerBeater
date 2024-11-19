@@ -22,7 +22,9 @@ struct BoatView: View{
     @State private var angleStep : Angle = .degrees(1)
     
     @EnvironmentObject private var sailAngleFind : SailAngleFind
+#if os(watchOS)
     @EnvironmentObject private var sailAngleDetect : SailAngleDetect
+#endif
     // sigleton을 사용하면 화면 업데이트가 안됨 다시 @EnvironmentObject로 복귀
 //    let sailAngleFind = SailAngleFind.shared
     @State private var cancellable: AnyCancellable? = nil
@@ -91,8 +93,11 @@ struct BoatView: View{
                 path.addCurve(to: lb4, control1: lb2, control2: lb3)
                 
                     
+
             }.stroke(Color.yellow, lineWidth: 4)
           //   .animation(.spring, value: ly)   // 무슨 효과가 있다는건지..
+#if os(watchOS)
+
             if sailAngleDetect.isSailAngleDetect {
                 Path { path in
                     let lx =  sailLength * sin(mySailAngle.radians) + 0
@@ -112,7 +117,7 @@ struct BoatView: View{
                     .opacity(0.5)
                 //   .animation(.spring, value: ly)   // 무슨 효과가 있다는건지..
             }
-              
+#endif
         } .onAppear {
             updateSailAngle()
         }
@@ -123,12 +128,14 @@ struct BoatView: View{
                 }
             }
         }
+#if os(watchOS)
         .onChange(of: sailAngleDetect.sailAngleFromMast ) { oldValue , newValue in
             if abs( newValue - oldValue ) > 1 {
                 updateMySailAngle(newValue)
             }
             
         }
+#endif
     }
      
     
