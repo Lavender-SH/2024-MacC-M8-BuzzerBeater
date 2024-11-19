@@ -141,6 +141,9 @@ struct SessionPage: View {
                     sharedWorkoutManager.endToSaveHealthData()
                     
                     //CompassView.countdown = nil
+                    
+                    NotificationCenter.default.post(name: .resetCompassView, object: nil)
+                    
                 }) {
                     Image(systemName: "xmark")
                         .resizable()

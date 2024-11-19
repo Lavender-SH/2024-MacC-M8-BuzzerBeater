@@ -708,7 +708,8 @@ class WorkoutManager:  ObservableObject
         
     func stopStopwatch() {
         cancellables.removeAll()
-      
+        elapsedTime = 0
+        updateFormattedElapsedTime()
     }
     
     func pauseStopwatch() {
