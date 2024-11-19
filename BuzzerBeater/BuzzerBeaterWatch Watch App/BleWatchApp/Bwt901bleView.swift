@@ -18,12 +18,12 @@ struct Bwt901bleView: View{
     @ObservedObject var device: Bwt901ble
     
     // App context
-    @ObservedObject var viewModel: BleDeviceManager
+    @ObservedObject var bleDeviceManager: BleDeviceManager
     
     // MARK: Constructor
-    init(_ device: Bwt901ble, _ viewModel: BleDeviceManager) {
+    init(_ device: Bwt901ble, _ bleDeviceManager: BleDeviceManager) {
         self.device = device
-        self.viewModel = viewModel
+        self.bleDeviceManager = bleDeviceManager
     }
     
     // MARK: UI page
@@ -39,9 +39,9 @@ struct Bwt901bleView: View{
                 
             }.onChange(of: device.isOpen) { _, value in
                 if value {
-                    viewModel.openDevice(bwt901ble: device)
+                    bleDeviceManager.openDevice(bwt901ble: device)
                 }else{
-                    viewModel.closeDevice(bwt901ble: device)
+                    bleDeviceManager.closeDevice(bwt901ble: device)
                 }
             }
             .font(Font.system(size: 12))

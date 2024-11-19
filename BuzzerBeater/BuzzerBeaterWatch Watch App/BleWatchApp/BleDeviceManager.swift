@@ -35,6 +35,14 @@ class BleDeviceManager: ObservableObject ,IBluetoothEventObserver, IBwt901bleRec
     
     var cancellables: Set<AnyCancellable> = []
     
+    var canEnableButton: AnyPublisher<Bool, Never> {
+        Publishers.CombineLatest($enableScan, $isBlueToothConnected )
+                .map { enableScan, isBlueToothConnected in
+                    return enableScan && isBlueToothConnected  // Button is enabled only if both are true
+                }
+                .eraseToAnyPublisher()
+        }
+    
     init(){
         // Current scan status
         self.enableScan = self.bluetoothManager.isScaning
@@ -121,10 +129,12 @@ class BleDeviceManager: ObservableObject ,IBluetoothEventObserver, IBwt901bleRec
             
             // Monitor data
             bwt901ble?.registerListenKeyUpdateObserver(obj: self)
+            
             isBlueToothConnected = true
         }
         catch{
             print("Failed to open device")
+            isBlueToothConnected = true
         }
     }
     
@@ -240,7 +250,6 @@ class BleDeviceManager: ObservableObject ,IBluetoothEventObserver, IBwt901bleRec
         for device in deviceList {
             
             do {
-                
                 // Unlock register
                 try device.unlockReg()
                 
@@ -261,7 +270,6 @@ class BleDeviceManager: ObservableObject ,IBluetoothEventObserver, IBwt901bleRec
     func startFieldCalibration(){
         for device in deviceList {
             do {
-                
                 // Unlock register
                 try device.unlockReg()
                 
@@ -330,7 +338,7 @@ class BleDeviceManager: ObservableObject ,IBluetoothEventObserver, IBwt901bleRec
                 // save
                 try device.saveReg()
             }catch{
-                print("设置失败 Set failed")
+                print("Set failed")
             }
         }
     }
