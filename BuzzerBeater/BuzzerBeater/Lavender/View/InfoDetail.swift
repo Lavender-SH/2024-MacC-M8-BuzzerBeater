@@ -88,8 +88,7 @@ struct InfoDetail: View {
             
             Section(
                 header: Text("Navigation Details")
-                    .font(.title3)
-                    .bold()
+                    .font(.system(size: 20, weight: .bold, design: .rounded))
                     .foregroundColor(.white)
                     .textCase(nil)
             ) {
@@ -135,6 +134,7 @@ struct InfoDetail: View {
                     .font(.title3)
                     .bold()
                     .foregroundColor(.white)
+                    .fontDesign(.rounded)
                     .textCase(nil)
             ) {
                 if isDataLoaded {
@@ -146,6 +146,7 @@ struct InfoDetail: View {
                     VStack(alignment: .leading, spacing: 8){
                         Text("Average Speed: \(String(format: "%.2f", averageSpeed)) m/s")
                             .font(.headline)
+                            .fontDesign(.rounded)
                             .padding(.bottom, 8)
                             .foregroundStyle(.cyan)
                         Chart {
@@ -169,6 +170,7 @@ struct InfoDetail: View {
             Section(header: Text("Navigation Route")
                 .font(.title3)
                 .bold()
+                .fontDesign(.rounded)
                 .foregroundColor(.white)
                 .textCase(nil)) {
                     // Button to show the map in a modal view

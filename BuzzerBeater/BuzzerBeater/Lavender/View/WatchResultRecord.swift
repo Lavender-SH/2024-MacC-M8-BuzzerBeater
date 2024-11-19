@@ -48,7 +48,7 @@ struct WatchResultRecord: View {
             if isDataLoaded {
                 // 날짜 표시
                 Text(formattedDate(startDate))
-                    .font(.caption)
+                    .font(.system(size: 15, weight: .bold, design: .rounded))
                     .foregroundColor(.white)
                 
                 // 상자 그룹
@@ -68,23 +68,23 @@ struct WatchResultRecord: View {
                 // 시작 및 종료 시간
                 if let startDate = startDate, let endDate = endDate {
                     Text("\(formattedTime(startDate)) - \(formattedTime(endDate))")
-                        .font(.caption)
+                        .font(.system(size: 15, weight: .bold, design: .rounded))
                         .foregroundColor(.secondary)
                 }
                 
                 // 위치 정보
                 HStack(spacing: 2) {
                     Image(systemName: "location.fill")
-                        .font(.caption)
+                        .font(.system(size: 13, weight: .bold, design: .rounded))
                         .foregroundColor(.secondary)
                     Text(locationName)
-                        .font(.caption)
+                        .font(.system(size: 15, weight: .bold, design: .rounded))
                         .foregroundColor(.secondary)
                 }
             } else {
                 // 데이터 로딩 중 표시
                 ProgressView("Loading Data...")
-                    .font(.caption)
+                    .font(.system(size: 12, weight: .bold, design: .rounded))
             }
         }
         .padding(.vertical, 8)
@@ -342,13 +342,13 @@ struct InfoBox: View {
     var body: some View {
         VStack(spacing: 4) {
             Text(title)
-                .font(.footnote)
+                .font(.system(size: 14, weight: .bold, design: .rounded))
                 .foregroundColor(.white)
             Text(value)
-                .font(.headline)
+                .font(.system(size: 17, weight: .bold, design: .rounded))
                 .foregroundColor(valueColor)
         }
-        .frame(maxWidth: .infinity) // 상자가 균등하게 배치되도록
+        .frame(maxWidth: .infinity)
         .padding(5)
         .background(
             RoundedRectangle(cornerRadius: 8)
