@@ -9,6 +9,7 @@ import HealthKit
 import Foundation
 import SwiftUI
 import Combine
+import WatchKit
 
 
 struct metadataForRouteDataPoint: Equatable, Identifiable, Codable{
@@ -44,7 +45,7 @@ class WorkoutManager:  ObservableObject
     var isWorkoutActive: Bool = false
     var lastHeading: CLHeading?
     
-   
+
     var metadataForWorkout: [String: Any] = [:] // AppIdentifier, 날짜,
     var metadataForRoute: [String: Any] = [:]   // RouteIdentifer, timeStamp, WindDirection, WindSpeed
     var metadataForRouteDataPointArray : [metadataForRouteDataPoint] = []
@@ -63,6 +64,15 @@ class WorkoutManager:  ObservableObject
     private let timeIntervalForRoute = TimeInterval(10)
     private let timeIntervalForWind = TimeInterval(60*30)
     var maxSpeed : Double = 0
+    
+    var isSavingData = false
+    var timerForLocation: Timer?
+    var timerForWind: Timer?
+    private var pausedTime: TimeInterval = 0 // 일시정지 시간 누적
+    private var timer: Timer?
+    var elapsedTime: TimeInterval = 0
+    var formattedElapsedTime: String = "00:00:00"
+    private var isPaused: Bool = false // 일시정지 상태를 저장하는 변수
     
     deinit {
            cancellables.removeAll() // 모든 구독 해제
@@ -88,7 +98,8 @@ class WorkoutManager:  ObservableObject
             return }
         
         liveWorkoutBuilder = workoutSession.associatedWorkoutBuilder()
-        
+        liveWorkoutBuilder?.dataSource = HKLiveWorkoutDataSource(healthStore: healthStore,
+                                                                 workoutConfiguration: workoutConfiguration)
       
         guard let liveWorkoutBuilder = liveWorkoutBuilder else {
             print("liveWorkoutBuilder may be nil ")
@@ -113,6 +124,15 @@ class WorkoutManager:  ObservableObject
                 print("Error starting live workout collection: \(error?.localizedDescription ?? "Unknown error")")
             }
         }
+    }
+    func activateWaterLock() {
+   
+        DispatchQueue.main.async {
+            WKInterfaceDevice.current().enableWaterLock()
+        }
+     
+        print("Water lock is only available on watchOS.")
+      
     }
     
     func collectData(startDate: Date, endDate: Date,  metadataForWorkout: [String: Any]) {
@@ -518,6 +538,34 @@ class WorkoutManager:  ObservableObject
         
     }
     
+    func pauseSavingHealthData() {
+        guard startDate != nil else {
+            print("HealthStore is not started, cannot pause")
+            return
+        }
+        
+        // 일시정지 시간을 기록하고 `endDate`를 업데이트
+        endDate = Date()
+     
+        if let startDate = startDate, let endDate = endDate {
+            pausedTime += endDate.timeIntervalSince(startDate)
+        }
+        
+        print("-------------------- paused saving HealthStore --------------------")
+    }
+    
+    func resumeSavingHealthData() {
+        guard endDate != nil else {
+            print("HealthStore is not paused, cannot resume")
+            return
+        }
+        
+        // `startDate`를 재설정하고 `endDate`를 nil로 초기화하여 다시 시작할 준비를 함
+        startDate = Date()
+        endDate = nil
+        print("-------------------- resumed saving HealthStore --------------------")
+    }
+    
     func endToSaveHealthData(){
         let healthService = HealthService.shared
         let workoutManager = WorkoutManager.shared
@@ -636,6 +684,51 @@ class WorkoutManager:  ObservableObject
             completion(totalActiveEnergyBurned)
         }
         healthStore.execute(statisticsQuery)
+    }
+    // 스탑워치 시작 메서드
+    func startStopwatch() {
+        elapsedTime = 0
+        updateFormattedElapsedTime()
+        //            timer = Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { _ in
+        //                self.elapsedTime += 1
+        //                self.updateFormattedElapsedTime()
+        //            }
+        //
+        isPaused = false
+        Timer.publish(every: TimeInterval(1), on: .main, in: .common)
+            .autoconnect() // Timer가 자동으로 시작하도록 설정
+            .sink { [weak self] _ in
+                guard let self = self else { return }
+                if !isPaused {
+                    self.elapsedTime += 1
+                    self.updateFormattedElapsedTime()
+                }
+            } .store(in: &cancellables)
+    }
+        
+    func stopStopwatch() {
+        cancellables.removeAll()
+      
+    }
+    
+    func pauseStopwatch() {
+        // 타이머를 중지하고 isPaused 상태를 true로 설정
+        isPaused = true
+    }
+    
+    func resumeStopwatch() {
+        // 일시정지 상태일 때만 재개 가능
+        guard isPaused else { return }
+        
+      
+        isPaused = false
+    }
+    
+    private func updateFormattedElapsedTime() {
+        let hours = Int(elapsedTime) / 3600
+        let minutes = (Int(elapsedTime) % 3600) / 60
+        let seconds = Int(elapsedTime) % 60
+        formattedElapsedTime = String(format: "%02d:%02d:%02d", hours, minutes, seconds)
     }
 }
 

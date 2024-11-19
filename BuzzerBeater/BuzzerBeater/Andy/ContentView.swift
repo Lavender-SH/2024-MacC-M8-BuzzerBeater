@@ -17,34 +17,171 @@ struct ContentView: View {
     @EnvironmentObject private var sailingDataCollector : SailingDataCollector
     @EnvironmentObject private var bleDeviceManager: BleDeviceManager
     
+    @State private var selection = 2
+    private let totalTabs = 3 // 총 탭 수
+    
     var body: some View {
       
-            TabView {
+        TabView(selection:$selection) {
+            SessionPage()
+                .environmentObject(LocationManager.shared)
+                .environmentObject(WindDetector.shared)
+                .environmentObject(ApparentWind.shared)
+                .environmentObject(SailAngleFind.shared)
+                .environmentObject(SailingDataCollector.shared)
+                .tabItem {
+                    Image(systemName: "info.circle.fill")
+                    Text("Info")
+                }
+                .tag(1)
+            
+            CompassPage()
+                .tabItem {
+                    Image(systemName: "location.north.fill")
+                    Text("Compass")
+                }
+                .tag(2)
+            MapPage()
+                .tabItem {
+                    Image(systemName: "map.fill")
+                    Text("Map")
+                }
+                .tag(3)
+            
+//            InfoPage()
+//                .environmentObject(LocationManager.shared)
+//                .environmentObject(WindDetector.shared)
+//                .environmentObject(ApparentWind.shared)
+//                .environmentObject(SailAngleFind.shared)
+//                .environmentObject(SailingDataCollector.shared)
+//                .tabItem {
+//                    Image(systemName: "info.circle.fill")
+//                    Text("Info")
+//                }
+//                .tag(4)
+            BleView()
+                .environmentObject(BleDeviceManager.shared)
+                .tag(4)
+        }
+    }
+}
+struct SessionPage: View {
+    @EnvironmentObject  var locationManager : LocationManager
+    @EnvironmentObject  var windDetector : WindDetector
+    @EnvironmentObject  var apparentWind :ApparentWind
+    @EnvironmentObject  var sailAngleFind : SailAngleFind
+    @EnvironmentObject  var sailingDataCollector : SailingDataCollector
+    
+    @State  private var isSavingData = false
+    @State var isShowingWorkoutList = false
+    @State private var elapsedTime: TimeInterval = 0 // 스탑워치 시간
+    @State private var timer: Timer? // 타이머 인스턴스
+    @State private var isPaused = false // 일시정지 상태 변수
+    
+    
+    let sharedWorkoutManager = WorkoutManager.shared
+    
+    var body: some View {
+        VStack(alignment: .center) {
+            Text(sharedWorkoutManager.formattedElapsedTime)
+                .foregroundColor(.yellow)
+                .font(.system(size: 32))
+                .fontDesign(.rounded)
+                .multilineTextAlignment(.center)
+            
+            HStack {
+                Button(action: {
+                    sharedWorkoutManager.activateWaterLock()
+                    
+                    
+                }) {
+                    Image(systemName: "drop.fill")
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: 30, height: 30) // 아이콘 크기 설정
+                        .foregroundColor(WKInterfaceDevice.current().isWaterLockEnabled ? Color.white : Color(hex: "#02F5EA")) // 아이콘 색상
+                        .padding(10) // 아이콘 패딩
+                }
+                .buttonStyle(CustomButtonStyle(
+                    backgroundColor: WKInterfaceDevice.current().isWaterLockEnabled ? Color.black : Color(hex: "#01312E"),
+                    foregroundColor: .white
+                ))
+                .disabled( WKInterfaceDevice.current().isWaterLockEnabled)
                 
-                CompassPage()
-                    .tabItem {
-                        Image(systemName: "location.north.fill")
-                        Text("Compass")
-                    }
-                MapPage()
-                    .tabItem {
-                        Image(systemName: "map.fill")
-                        Text("Map")
-                    }
                 
-                InfoPage()
-                    .environmentObject(LocationManager.shared)
-                    .environmentObject(WindDetector.shared)
-                    .environmentObject(ApparentWind.shared)
-                    .environmentObject(SailAngleFind.shared)
-                    .environmentObject(SailingDataCollector.shared)
-                    .tabItem {
-                        Image(systemName: "info.circle.fill")
-                        Text("Info")
-                    }
-                BleView()
-                    .environmentObject(BleDeviceManager.shared)
+                Button(action: {
+                    isShowingWorkoutList.toggle()
+                    
+                }) {
+                    Image(systemName: "chart.bar.xaxis")
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: 30, height: 30) // 아이콘 크기 설정
+                        .foregroundColor(Color(hex: "#4567B7")) // 아이콘 색상
+                        .padding(10) // 아이콘 패딩
+                }
+                .buttonStyle(CustomButtonStyle(
+                    backgroundColor: Color(hex: "#374B73"),
+                    foregroundColor: .white
+                ))
+                
+                .sheet(isPresented: $isShowingWorkoutList) {
+                    WorkoutListView().disabled( WKInterfaceDevice.current().isWaterLockEnabled)
+                }
+                .disabled(sharedWorkoutManager.isSavingData)
             }
+            
+            HStack {
+                
+                Button(action: {
+                    sharedWorkoutManager.isSavingData = false
+
+                    sharedWorkoutManager.stopStopwatch()
+                    
+                    sharedWorkoutManager.endToSaveHealthData()
+                    
+                    //CompassView.countdown = nil
+                }) {
+                    Image(systemName: "xmark")
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: 30, height: 30)
+                        .foregroundColor(sharedWorkoutManager.isSavingData ? Color(hex: "#FF3B2E") : Color.white) // 아이콘 색상 설정
+                        .padding(10)
+                }
+                .buttonStyle(CustomButtonStyle(
+                    backgroundColor: sharedWorkoutManager.isSavingData ? Color(hex: "#330D0A") : Color.black,
+                    foregroundColor: .white
+                ))
+                .disabled(!sharedWorkoutManager.isSavingData)
+                
+                // Pause/Resume 버튼
+                Button(action: {
+                    isPaused.toggle()
+                    if isPaused {
+                        sharedWorkoutManager.pauseStopwatch() // 일시정지 기능
+                        sharedWorkoutManager.pauseSavingHealthData()
+                    } else {
+                        sharedWorkoutManager.resumeStopwatch() // 다시 시작 기능
+                        sharedWorkoutManager.resumeSavingHealthData()
+                    }
+                }) {
+                    Image(systemName: isPaused ? "play.fill" : "pause.fill") // 상태에 따라 아이콘 변경
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: 30, height: 30)
+                        .foregroundColor(sharedWorkoutManager.isSavingData ? Color(hex: "#FFD700") : Color.white) // 아이콘 색상 설정
+                        .padding(10)
+                }
+                .buttonStyle(CustomButtonStyle(
+                    backgroundColor: sharedWorkoutManager.isSavingData ? Color(hex: "#332E06") : Color.black,
+                    foregroundColor: .white
+                ))
+                .disabled(!sharedWorkoutManager.isSavingData) // isSavingData가 false일 때 비활성화
+            }
+        }
+        .padding(.top, 10)
+        .navigationTitle("Info")
         
     }
 }
@@ -201,6 +338,42 @@ struct InfoPage: View {
     
 
 }
+
+struct CustomButtonStyle: ButtonStyle {
+    var backgroundColor: Color
+    var foregroundColor: Color
+    
+    func makeBody(configuration: Configuration) -> some View {
+        configuration.label
+            .padding()
+            .background(backgroundColor)
+            .foregroundColor(foregroundColor)
+            .clipShape(Capsule())
+            .shadow(radius: 2)
+            .opacity(configuration.isPressed ? 0.8 : 1) // 누를 때만 살짝 투명해지도록
+    }
+}
+
+extension Color {
+    init(hex: String) {
+        let hex = hex.trimmingCharacters(in: CharacterSet.alphanumerics.inverted)
+        var int = UInt64()
+        Scanner(string: hex).scanHexInt64(&int)
+        
+        let r, g, b: Double
+        switch hex.count {
+        case 6: // RGB (24-bit)
+            r = Double((int >> 16) & 0xFF) / 255.0
+            g = Double((int >> 8) & 0xFF) / 255.0
+            b = Double(int & 0xFF) / 255.0
+        default:
+            r = 1.0; g = 1.0; b = 1.0 // Default to white if invalid hex
+        }
+        
+        self.init(red: r, green: g, blue: b)
+    }
+} //버튼 hex 코드 지정
+
 
 
 #Preview {
