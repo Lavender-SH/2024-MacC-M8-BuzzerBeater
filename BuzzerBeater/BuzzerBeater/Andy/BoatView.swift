@@ -91,7 +91,7 @@ struct BoatView: View{
                 path.addCurve(to: lb4, control1: lb2, control2: lb3)
                 
                     
-            }.stroke(Color.orange, lineWidth: 4)
+            }.stroke(Color.yellow, lineWidth: 4)
           //   .animation(.spring, value: ly)   // 무슨 효과가 있다는건지..
             if sailAngleDetect.isSailAngleDetect {
                 Path { path in
@@ -108,7 +108,7 @@ struct BoatView: View{
                     path.addCurve(to: lb4, control1: lb2, control2: lb3)
                     
                     
-                }.stroke(Color.orange, lineWidth: 4)
+                }.stroke(Color.yellow, lineWidth: 4)
                     .opacity(0.5)
                 //   .animation(.spring, value: ly)   // 무슨 효과가 있다는건지..
             }
