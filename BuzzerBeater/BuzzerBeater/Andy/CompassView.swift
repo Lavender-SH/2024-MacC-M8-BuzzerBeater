@@ -125,8 +125,7 @@ struct CompassView: View {
                                 //       .rotationEffect(Angle(degrees: Double(index) * 90), anchor: .center)
                                     .position(x: cx, y: cy)
                                     .offset(x: x, y: -y)
-                                    .font(.system(size: 12))
-                                    .fontWeight(.bold)
+                                    .font(.system(size: 12, weight: .bold, design: .rounded))
                                     .foregroundColor(index == 0 ? Color.red : colorScheme == .dark ? Color.white : Color.black)
                                 
                                 
@@ -165,10 +164,10 @@ struct CompassView: View {
                                     Image(systemName: sfSymbolName)
                                         .rotationEffect(Angle(degrees: finalRotation + 180), anchor: .center)
                                         .frame(width: 10, height: 10) // 크기 지정
-                                        .foregroundColor(.blue)
+                                        .foregroundColor(.cyan)
                                     
                                     Text("T")
-                                        .font(.system(size: 7).bold())
+                                        .font(.system(size: 7, weight: .bold, design: .rounded))
                                         .foregroundColor(.black)
                                         .rotationEffect(Angle(degrees: finalRotation + 180), anchor: .center)
                                         .offset(y: 0)
@@ -190,10 +189,10 @@ struct CompassView: View {
                                     Image(systemName: sfSymbolName)
                                         .rotationEffect(Angle(degrees: finalRotation + 180), anchor: .center)
                                         .frame(width: 10, height: 10) // 크기 지정
-                                        .foregroundColor(.red)
+                                        .foregroundColor(.white)
                                     
                                     Text("A")
-                                        .font(.system(size: 7).bold())
+                                        .font(.system(size: 7, weight: .bold, design: .rounded))
                                         .foregroundColor(.black)
                                         .rotationEffect(Angle(degrees: finalRotation + 180), anchor: .center)
                                         .offset(y: 0)
@@ -207,7 +206,7 @@ struct CompassView: View {
 #if os(watchOS)
                             if showBoatView {
                                 Text(String(format: "%+d°", Int(windCorrectionDetent)))
-                                    .font(.system(size: 12))
+                                    .font(.system(size: 12, weight: .bold, design: .rounded))
                                     .foregroundColor(.white)
                                     .padding(1)
                                     .background(Color.gray.opacity(0.3))
@@ -309,8 +308,9 @@ struct CompassView: View {
                                                     .foregroundColor(.cyan)
                                                 
                                                 Text("Start")
-                                                    .font(.system(size: 16))
+                                                    .font(.system(size: 17).bold())
                                                     .foregroundColor(.cyan)
+                                                    .fontDesign(.rounded)
                                             }
                                             .padding(17)
                                             
@@ -323,6 +323,7 @@ struct CompassView: View {
                                 if let countdown = countdown {
                                     Text("\(countdown)")
                                         .font(.system(size: 60, weight: .bold))
+                                        .fontDesign(.rounded)
                                         .foregroundColor(.cyan)
                                         .transition(.scale) // 애니메이션 효과
                                         .position(x: cx, y: cy)
@@ -339,33 +340,33 @@ struct CompassView: View {
             HStack {
                 VStack {
                     Text("SOG")
-                        .foregroundColor(.orange)
-                        .font(.system(size: 10).bold())
+                        .foregroundColor(.yellow)
+                        .font(.system(size: 10, weight: .bold, design: .rounded))
                         .multilineTextAlignment(.center)
                     Text("\(LocationManager.shared.speed > 0 ? LocationManager.shared.speed : 0.0, specifier: "%.1f")")
-                        .foregroundColor(.orange)
-                        .font(.system(size: 17).bold())
+                        .foregroundColor(.yellow)
+                        .font(.system(size: 17, weight: .bold, design: .rounded))
                         .multilineTextAlignment(.center)
-                    Text("m/s")
-                        .foregroundColor(.orange)
-                        .font(.system(size: 10).bold())
-                        .multilineTextAlignment(.center)
+//                    Text("m/s")
+//                        .foregroundColor(.orange)
+//                        .font(.system(size: 10).bold())
+//                        .multilineTextAlignment(.center)
                 }
                 Spacer()
                 
                 VStack {
                     Text("TWS")
-                        .foregroundColor(.blue)
-                        .font(.system(size: 10).bold())
+                        .foregroundColor(.cyan)
+                        .font(.system(size: 10, weight: .bold, design: .rounded))
                         .multilineTextAlignment(.center)
                     Text("\(WindDetector.shared.speed ?? 0, specifier: "%.1f")")
-                        .foregroundColor(.blue)
-                        .font(.system(size: 17).bold())
+                        .foregroundColor(.cyan)
+                        .font(.system(size: 17, weight: .bold, design: .rounded))
                         .multilineTextAlignment(.center)
-                    Text("m/s")
-                        .foregroundColor(.blue)
-                        .font(.system(size: 10).bold())
-                        .multilineTextAlignment(.center)
+//                    Text("m/s")
+//                        .foregroundColor(.blue)
+//                        .font(.system(size: 10).bold())
+//                        .multilineTextAlignment(.center)
                 }
             }
             .padding([.leading, .trailing], 5)
