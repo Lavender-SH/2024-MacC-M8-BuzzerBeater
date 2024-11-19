@@ -16,12 +16,10 @@ class BleDeviceManager: ObservableObject ,IBluetoothEventObserver, IBwt901bleRec
     
     static let shared = BleDeviceManager()
     // Get bluetooth manager
-    let bluetoothManager = WitBluetoothManager.shared
     
+    let bluetoothManager = WitBluetoothManager.shared
     var dataPublisher = PassthroughSubject<SIMD3<Double >, Never>()
-      
-     
-         
+        
     // Whether to scan the device
     @Published var enableScan = false
     
@@ -33,7 +31,7 @@ class BleDeviceManager: ObservableObject ,IBluetoothEventObserver, IBwt901bleRec
     @Published var deviceData: String = "device not connected"
     @Published var angles = SIMD3<Double>(x: 0.0, y: 0.0, z: 0.0)
     @Published var isBlueToothConnected: Bool = false
-    @Published var compassBias: Double = 0.0
+   
     
     var cancellables: Set<AnyCancellable> = []
     

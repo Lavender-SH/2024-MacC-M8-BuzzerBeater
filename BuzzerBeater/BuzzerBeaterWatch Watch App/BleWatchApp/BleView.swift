@@ -22,6 +22,7 @@ struct BleView: View {
                     .environmentObject(BleDeviceManager.shared)
                 
                 BiasCheckView()
+                    .environmentObject(BleDeviceManager.shared)
             }
             .padding()
         }
