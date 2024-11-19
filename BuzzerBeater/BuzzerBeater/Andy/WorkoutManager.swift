@@ -70,8 +70,8 @@ class WorkoutManager:  ObservableObject
     var timerForWind: Timer?
     private var pausedTime: TimeInterval = 0 // 일시정지 시간 누적
     private var timer: Timer?
-    var elapsedTime: TimeInterval = 0
-    var formattedElapsedTime: String = "00:00:00"
+    private var elapsedTime: TimeInterval = 0
+    @Published var formattedElapsedTime: String = "00:00:00"
     private var isPaused: Bool = false // 일시정지 상태를 저장하는 변수
     
     deinit {

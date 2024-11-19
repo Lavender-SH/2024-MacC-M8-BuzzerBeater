@@ -16,6 +16,7 @@ struct CompassView: View {
     @EnvironmentObject  var windDetector : WindDetector
     @EnvironmentObject  var apparentWind :ApparentWind
     @EnvironmentObject  var sailAngleFind : SailAngleFind
+    //var sharedWorkoutManager = WorkoutManager.shared
     
     // View에서는  Sigleton 썼더니 화면이 업데이트가 안되서 다시 원복.
     @State var showAlert : Bool = false
@@ -31,6 +32,14 @@ struct CompassView: View {
     
     var body: some View {
         VStack{
+            Text(sharedWorkoutManager.formattedElapsedTime)
+                .foregroundColor(.yellow)
+                .font(.system(size: 17))
+                .fontDesign(.rounded)
+                .multilineTextAlignment(.leading)
+                .padding([.leading], -90)
+                .padding(.top, -41)
+            
             VStack{
                 GeometryReader { geometry in
                     let r1 = geometry.size.width * 0.45
