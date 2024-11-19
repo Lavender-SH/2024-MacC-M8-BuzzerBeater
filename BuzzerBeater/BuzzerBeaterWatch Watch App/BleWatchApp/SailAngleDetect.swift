@@ -19,14 +19,31 @@ class SailAngleDetect : ObservableObject{
     @Published var isSailAngleDetect: Bool = false
     
     @Published var sailAngle: Double = 0
-    @Published var angles: simd_float3 = simd_float3(x: 0, y: 0, z: 0)
+    @Published var angles: SIMD3<Double> = SIMD3<Double>(x: 0, y: 0, z: 0)
     @Published var boatHeading : Double = 0
     @Published var deviceHeading : Double = 0
     @Published var biasCompass : Double  = 0
     
     @Published var sailAngleFromNorth : Double = 0
     @Published var sailAngleFromMast : Double = 0
+  
+    var cancellables : Set<AnyCancellable> = []
     
+    func startDetect() {
+        
+        bleDeviceManager.dataPublisher
+            .throttle(for: .milliseconds(200), scheduler: DispatchQueue.main, latest: true)
+            .sink { [weak self] bwt901ble in
+                guard let self = self else {
+                    print("self is nil in SailAngleDetect")
+                    return
+                }
+                // Process the received data here
+                self.angles = bwt901ble
+                self.calibateSailAngle()
+            }
+            .store(in: &cancellables)
+    }
     
     func calibateSailAngle(){
         
@@ -34,7 +51,7 @@ class SailAngleDetect : ObservableObject{
         DispatchQueue.main.async {
             self.boatHeading = boatHeading
         }
-        let angleZ = Double (self.angles.z) + self.biasCompass
+        let angleZ =  (self.angles.z) + self.biasCompass
         
         let sailAngleFromNorth = fmod (angleZ + 360 , 360)
         DispatchQueue.main.async{
