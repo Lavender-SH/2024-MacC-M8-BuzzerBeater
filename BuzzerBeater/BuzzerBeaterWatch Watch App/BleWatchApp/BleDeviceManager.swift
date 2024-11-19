@@ -16,9 +16,10 @@ class BleDeviceManager: ObservableObject ,IBluetoothEventObserver, IBwt901bleRec
     
     static let shared = BleDeviceManager()
     // Get bluetooth manager
-    let bluetoothManager = WitBluetoothManager.shared
     
-   
+    let bluetoothManager = WitBluetoothManager.shared
+    var dataPublisher = PassthroughSubject<SIMD3<Double >, Never>()
+        
     // Whether to scan the device
     @Published var enableScan = false
     
@@ -28,9 +29,9 @@ class BleDeviceManager: ObservableObject ,IBluetoothEventObserver, IBwt901bleRec
     
     // Device data to display
     @Published var deviceData: String = "device not connected"
-    @Published var angles = SIMD3<Float>(x: 0.0, y: 0, z: 0)
+    @Published var angles = SIMD3<Double>(x: 0.0, y: 0.0, z: 0.0)
     @Published var isBlueToothConnected: Bool = false
-    @Published var compassBias: Double = 0.0
+   
     
     var cancellables: Set<AnyCancellable> = []
     
@@ -39,7 +40,7 @@ class BleDeviceManager: ObservableObject ,IBluetoothEventObserver, IBwt901bleRec
         self.enableScan = self.bluetoothManager.isScaning
         
         // start auto refresh thread
-        startRefreshThread()
+   //     startRefreshThread()
     }
     deinit {
         cancellables.removeAll() // 모든 구독 해제
@@ -154,7 +155,10 @@ class BleDeviceManager: ObservableObject ,IBluetoothEventObserver, IBwt901bleRec
     func onRecord(_ bwt901ble: Bwt901ble) {
         
         let deviceData =  getDeviceDataToString(bwt901ble)
-        
+        self.angles  =  getDeviceAngleData(bwt901ble)
+       
+        dataPublisher.send(angles)
+ 
         //Prints to the console, where you can also log the data to your file
         print("onRecrod: \(deviceData)")
     }
@@ -215,23 +219,20 @@ class BleDeviceManager: ObservableObject ,IBluetoothEventObserver, IBwt901bleRec
         s  = "\(s)AngX:\(device.getDeviceData(WitSensorKey.AngleX) ?? "") °\n"
         s  = "\(s)AngY:\(device.getDeviceData(WitSensorKey.AngleY) ?? "") °\n"
         s  = "\(s)AngZ:\(device.getDeviceData(WitSensorKey.AngleZ) ?? "") °\n"
-        
-        getDeviceAngleData(device)
         return s
     }
-    
-    func getDeviceAngleData(_ device:Bwt901ble) {
-        var s = ""
-        s  = "\(s)name:\(device.name ?? "")\n"
-        s  = "\(s)mac:\(device.mac ?? "")\n"
-        DispatchQueue.main.async {
-            self.angles.x = Float(device.getDeviceData(WitSensorKey.AngleX) ?? "") ?? 0.0
-            self.angles.y = Float(device.getDeviceData(WitSensorKey.AngleY) ?? "") ?? 0.0
-            self.angles.z = Float(device.getDeviceData(WitSensorKey.AngleZ) ?? "") ?? 0.0
-        }
+ 
+
+    func getDeviceAngleData(_ device: Bwt901ble) -> SIMD3<Double> {
+        let angleX = Double (device.getDeviceData(WitSensorKey.AngleX) ?? "") ?? 0.0
+        let angleY = Double(device.getDeviceData(WitSensorKey.AngleY) ?? "") ?? 0.0
+        let angleZ = Double (device.getDeviceData(WitSensorKey.AngleZ) ?? "") ?? 0.0
         
+        return SIMD3<Double>(x: angleX, y: angleY, z: angleZ)
     }
-    
+
+       
+     
     
     
     // MARK: Addition calibration

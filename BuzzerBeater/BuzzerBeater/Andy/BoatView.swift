@@ -13,14 +13,17 @@ import Combine
 
 struct BoatView: View{
     @State private var sailAngle: Angle = .degrees(0)
+    @State private var mySailAngle: Angle = .degrees(0)
     @State private var newSailAngle : Angle = .degrees(0)
     @State private var previousSailAngle: Angle = .degrees(0)
     @State private var diffAngle : Angle = .degrees(0)
     @State private var duration : TimeInterval = 0
     @State private var currentSailAngle : Angle = .degrees(0)
     @State private var angleStep : Angle = .degrees(1)
+    
     @EnvironmentObject private var sailAngleFind : SailAngleFind
-// sigleton을 사용하면 화면 업데이트가 안됨 다시 @EnvironmentObject로 복귀
+    @EnvironmentObject private var sailAngleDetect : SailAngleDetect
+    // sigleton을 사용하면 화면 업데이트가 안됨 다시 @EnvironmentObject로 복귀
 //    let sailAngleFind = SailAngleFind.shared
     @State private var cancellable: AnyCancellable? = nil
     
@@ -72,10 +75,11 @@ struct BoatView: View{
             .stroke(Color.black, lineWidth: 3)
 #endif
   
-            let lx =  sailLength * sin(sailAngle.radians) + 0
-            let ly =  sailLength * cos(sailAngle.radians) - 20
             
             Path { path in
+                let lx =  sailLength * sin(sailAngle.radians) + 0
+                let ly =  sailLength * cos(sailAngle.radians) - 20
+                
                 let lb1 = mast
                 let lb2 = CGPoint(x : lx / 4 , y:  mast.y + ly / 4)
                 let lb3 = CGPoint(x:  lx / 2 , y:  mast.y + ly / 2)
@@ -89,20 +93,50 @@ struct BoatView: View{
                     
             }.stroke(Color.orange, lineWidth: 4)
           //   .animation(.spring, value: ly)   // 무슨 효과가 있다는건지..
+            if sailAngleDetect.isSailAngleDetect {
+                Path { path in
+                    let lx =  sailLength * sin(mySailAngle.radians) + 0
+                    let ly =  sailLength * cos(mySailAngle.radians) - 20
+                    
+                    let lb1 = mast
+                    let lb2 = CGPoint(x : lx / 4 , y:  mast.y + ly / 4)
+                    let lb3 = CGPoint(x:  lx / 2 , y:  mast.y + ly / 2)
+                    let lb4 = CGPoint(x : lx, y:  ly)
+                    let sailEnd = CGPoint(x: lx, y: ly)
+                    
+                    path.move(to: lb1)
+                    path.addCurve(to: lb4, control1: lb2, control2: lb3)
+                    
+                    
+                }.stroke(Color.orange, lineWidth: 4)
+                    .opacity(0.5)
+                //   .animation(.spring, value: ly)   // 무슨 효과가 있다는건지..
+            }
               
         } .onAppear {
             updateSailAngle()
         }
-        .onChange(of: sailAngleFind.sailAngle?.degrees ) { newValue , oldValue in
+        .onChange(of: sailAngleFind.sailAngle?.degrees ) { oldValue , newValue in
             if let newValue = newValue, let oldValue = oldValue {
                 if abs( newValue - oldValue ) > 1 {
                     updateSailAngle()
-                    
-                    
                 }
             }
         }
- }
+        .onChange(of: sailAngleDetect.sailAngleFromMast ) { oldValue , newValue in
+            if abs( newValue - oldValue ) > 1 {
+                updateMySailAngle(newValue)
+            }
+            
+        }
+    }
+     
+    
+    private func updateMySailAngle(_ value: Double) {
+        
+        mySailAngle = Angle(degrees: value)
+        
+    }
     private func updateSailAngle() {
         
         guard let newSailAngle = sailAngleFind.sailAngle else { return }
