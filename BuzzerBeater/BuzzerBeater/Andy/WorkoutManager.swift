@@ -71,18 +71,17 @@ class WorkoutManager:  ObservableObject
     var isSavingData = false
 //    var timerForLocation: Timer?
 //    var timerForWind: Timer?
+//  pausedTime is for resumeSaveToHealthData
     private var pausedTime: TimeInterval = 0 // 일시정지 시간 누적
     
 //    private var timer: Timer?
     var elapsedTime: TimeInterval = 0
-    
+
+// below variables are for Timer in the screen.
     private var isPaused: Bool = false // 일시정지 상태를 저장하는 변수
     var pauseStartDate: Date = Date()
     var pauseEndDate : Date  = Date()
- 
     var pausedElapsedTime: TimeInterval = 0
-    
-    
     @Published var  formattedElapsedTime: String = "00:00:00"
    // @Published var stopWatchEnabled : Bool = false
     
@@ -90,6 +89,8 @@ class WorkoutManager:  ObservableObject
            cancellables.removeAll() // 모든 구독 해제
            print("Workout deinitialized")
        }
+    
+    
     func startWorkout(startDate: Date)  {
         // 운동을 시작하기 전에 HKWorkoutBuilder를 초기화
         if isWorkoutActive  { return }
@@ -705,14 +706,15 @@ class WorkoutManager:  ObservableObject
     // 스탑워치 시작 메서드
     func startStopwatch() {
         elapsedTime = 0
-        pausedTime = 0
+        pausedElapsedTime = 0
+        isPaused = false
         updateFormattedElapsedTime()
         //            timer = Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { _ in
         //                self.elapsedTime += 1
         //                self.updateFormattedElapsedTime()
         //            }
         //
-        isPaused = false
+      
         
         //Andy added
   //      stopWatchEnabled = true
@@ -725,7 +727,6 @@ class WorkoutManager:  ObservableObject
                     let currentDate = Date()
                     self.elapsedTime = currentDate.timeIntervalSince(self.startDate ?? Date()) - self.pausedElapsedTime
                     self.updateFormattedElapsedTime()
-                    
                 }
             } .store(in: &cancellables)
     }
@@ -753,6 +754,9 @@ class WorkoutManager:  ObservableObject
         pauseEndDate = Date()
         pausedElapsedTime += pauseEndDate.timeIntervalSince(pauseStartDate)
     }
+    
+    
+    
     
     private func updateFormattedElapsedTime() {
 //        let hours = Int(elapsedTime) / 3600
