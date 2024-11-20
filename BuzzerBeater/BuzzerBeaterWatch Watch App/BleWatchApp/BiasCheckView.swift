@@ -39,13 +39,13 @@ struct BiasCheckView: View {
                 sailAngleDetect.isSailAngleDetect = true
                 
             } .font(Font.system (size:16))
-                .disabled(!biasCheckViewModel.isButtonEnabled)
+                .disabled(!biasCheckViewModel.startSailDetectButtonEnabled)
                 .padding(5)
             
             Button("Hide SailAngle ") {
                 sailAngleDetect.isSailAngleDetect = false
             } .font(Font.system (size:16))
-                .disabled(!sailAngleDetect.isSailAngleDetect)
+                .disabled(!biasCheckViewModel.endSailDetectButtonEnabled)
             .padding(5)
         }
     }

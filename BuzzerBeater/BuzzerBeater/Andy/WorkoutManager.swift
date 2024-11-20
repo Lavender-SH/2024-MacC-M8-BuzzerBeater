@@ -66,13 +66,15 @@ class WorkoutManager:  ObservableObject
     var maxSpeed : Double = 0
     
     var isSavingData = false
-    var timerForLocation: Timer?
-    var timerForWind: Timer?
+//    var timerForLocation: Timer?
+//    var timerForWind: Timer?
     private var pausedTime: TimeInterval = 0 // 일시정지 시간 누적
-    private var timer: Timer?
+//    private var timer: Timer?
     var elapsedTime: TimeInterval = 0
-    var formattedElapsedTime: String = "00:00:00"
     private var isPaused: Bool = false // 일시정지 상태를 저장하는 변수
+    
+    @Published var  formattedElapsedTime: String = "00:00:00"
+   // @Published var stopWatchEnabled : Bool = false
     
     deinit {
            cancellables.removeAll() // 모든 구독 해제
@@ -369,6 +371,9 @@ class WorkoutManager:  ObservableObject
  
     func startTimer() {
         print("startTimer started")
+        //Andy added
+  //      stopWatchEnabled = true
+        
         Publishers.CombineLatest(LocationManager.shared.locationPublisher, LocationManager.shared.headingPublisher)
             .filter { [weak self] newLocation, newHeading in
                 guard self != nil else {
@@ -582,6 +587,7 @@ class WorkoutManager:  ObservableObject
         metadataForWorkout = makeMetadataForWorkout(appIdentifier: "seastheDay")
         print("metadata in the endToSaveHealthData: \(metadataForWorkout)")
         
+       
         
         if let startDate = startDate, let endDate = endDate {
             workoutManager.collectData(startDate: startDate, endDate: endDate, metadataForWorkout: metadataForWorkout)
@@ -695,21 +701,29 @@ class WorkoutManager:  ObservableObject
         //            }
         //
         isPaused = false
-        Timer.publish(every: TimeInterval(1), on: .main, in: .common)
+        //Andy added
+  //      stopWatchEnabled = true
+        
+        Timer.publish(every: TimeInterval(0.2), on: .main, in: .common)
             .autoconnect() // Timer가 자동으로 시작하도록 설정
             .sink { [weak self] _ in
                 guard let self = self else { return }
                 if !isPaused {
-                    self.elapsedTime += 1
+                    let currentDate = Date()
+                    self.elapsedTime = currentDate.timeIntervalSince(self.startDate ?? Date())
                     self.updateFormattedElapsedTime()
+                    
                 }
             } .store(in: &cancellables)
     }
         
     func stopStopwatch() {
-        cancellables.removeAll()
-        elapsedTime = 0
-        updateFormattedElapsedTime()
+//        cancellables.removeAll()
+//        elapsedTime = 0
+//        updateFormattedElapsedTime()
+        //Andy added
+  //      stopWatchEnabled = true
+        
     }
     
     func pauseStopwatch() {
@@ -726,10 +740,15 @@ class WorkoutManager:  ObservableObject
     }
     
     private func updateFormattedElapsedTime() {
-        let hours = Int(elapsedTime) / 3600
-        let minutes = (Int(elapsedTime) % 3600) / 60
-        let seconds = Int(elapsedTime) % 60
-        formattedElapsedTime = String(format: "%02d:%02d:%02d", hours, minutes, seconds)
+//        let hours = Int(elapsedTime) / 3600
+//        let minutes = (Int(elapsedTime) % 3600) / 60
+//        let seconds = Int(elapsedTime) % 60
+//
+        let formatter = DateComponentsFormatter()
+        formatter.unitsStyle = .positional // HH:mm:ss 형식
+        formatter.allowedUnits = [.hour, .minute, .second] // 시, 분, 초 포함
+        formatter.zeroFormattingBehavior = .pad //
+        formattedElapsedTime = formatter.string(from: elapsedTime) ?? "00:00:00"
     }
 }
 

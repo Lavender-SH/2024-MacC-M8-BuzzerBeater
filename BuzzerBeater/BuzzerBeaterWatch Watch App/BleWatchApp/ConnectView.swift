@@ -32,6 +32,7 @@ struct ConnectView: View {
                         bleDeviceManager.scanDevices()
                     } else {
                         bleDeviceManager.stopScan()
+                        
                     }
                 }.padding(5)
                 
