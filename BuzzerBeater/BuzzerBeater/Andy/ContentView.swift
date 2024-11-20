@@ -30,7 +30,7 @@ struct ContentView: View {
                 .environmentObject(ApparentWind.shared)
                 .environmentObject(SailAngleFind.shared)
                 .environmentObject(SailingDataCollector.shared)
-                .environmentObject(sharedWorkoutManager)
+                //.environmentObject(sharedWorkoutManager)
                 .tabItem {
                     Image(systemName: "info.circle.fill")
                     Text("Info")
@@ -73,8 +73,8 @@ struct SessionPage: View {
     @EnvironmentObject  var apparentWind :ApparentWind
     @EnvironmentObject  var sailAngleFind : SailAngleFind
     @EnvironmentObject  var sailingDataCollector : SailingDataCollector
-    //var sharedWorkoutManager = WorkoutManager.shared
-    @EnvironmentObject var sharedWorkoutManager : WorkoutManager
+    var sharedWorkoutManager = WorkoutManager.shared
+    //@EnvironmentObject var sharedWorkoutManager : WorkoutManager
     @State private var isSavingData = false
     @State var isShowingWorkoutList = false
     @State private var elapsedTime: TimeInterval = 0 // 스탑워치 시간
