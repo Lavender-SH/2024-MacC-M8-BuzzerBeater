@@ -17,6 +17,7 @@ struct CompassView: View {
     @EnvironmentObject  var apparentWind :ApparentWind
     @EnvironmentObject  var sailAngleFind : SailAngleFind
     //var sharedWorkoutManager = WorkoutManager.shared
+    @EnvironmentObject var sharedWorkoutManager : WorkoutManager
     
     // View에서는  Sigleton 썼더니 화면이 업데이트가 안되서 다시 원복.
     @State var showAlert : Bool = false
@@ -27,8 +28,8 @@ struct CompassView: View {
     @State var isCrownIdle = true
     @State var showBoatView = false
     @State var countdown: Int? = nil
-    
-    let sharedWorkoutManager = WorkoutManager.shared
+    @State var testString : String = "00:00:00"
+    //let sharedWorkoutManager = WorkoutManager.shared
     
     var body: some View {
         VStack{
@@ -39,6 +40,11 @@ struct CompassView: View {
                 .multilineTextAlignment(.leading)
                 .padding([.leading], -90)
                 .padding(.top, -41)
+//                .onChange(of: sharedWorkoutManager.formattedElapsedTime) { _  , _ in
+//                    
+//                    self.testString = sharedWorkoutManager.formattedElapsedTime
+//                    
+//                }
             
             VStack{
                 GeometryReader { geometry in
@@ -406,7 +412,7 @@ struct CompassView: View {
             sharedWorkoutManager.isSavingData = true
             sharedWorkoutManager.startStopwatch()
             sharedWorkoutManager.startToSaveHealthStore()
-            sharedWorkoutManager.activateWaterLock()
+            //sharedWorkoutManager.activateWaterLock()
         }
         
         Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { timer in
