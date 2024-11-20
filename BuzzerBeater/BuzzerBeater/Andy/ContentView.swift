@@ -85,7 +85,7 @@ struct SessionPage: View {
     @State  private var isSavingData = false
     @State var isShowingWorkoutList = false
     @State private var elapsedTime: TimeInterval = 0 // 스탑워치 시간
-    @State private var timer: Timer? // 타이머 인스턴스
+//@State private var timer: Timer? // 타이머 인스턴스
     @State private var isPaused = false // 일시정지 상태 변수
     @State private var isMap = false
     
@@ -98,7 +98,8 @@ struct SessionPage: View {
                 .font(.system(size: 32))
                 .fontDesign(.rounded)
                 .multilineTextAlignment(.center)
-            
+
+   //         StopWatchView()
             HStack {
                 Button(action: {
                     sharedWorkoutManager.activateWaterLock()
@@ -204,6 +205,40 @@ struct SessionPage: View {
         
     }
 }
+
+
+//struct StopWatchView: View {
+//    let workoutManager = WorkoutManager.shared
+//    @State var currentTime = Date()
+//    @State var elapsedTime: TimeInterval = 0
+//    var body: some View{
+//        VStack{
+//            
+//            Text("\(formattedElapsedTime)")
+//                            .font(.largeTitle)
+//                            .padding()
+//        }.onReceive(Timer.publish(every: 0.1, on: .main, in: .default).autoconnect()) {
+//            timer in
+//            if workoutManager.stopWatchEnabled {
+//                self.currentTime = timer
+//                self.elapsedTime = self.currentTime.timeIntervalSince(self.workoutManager.startDate ?? Date())
+//            } else {
+//                self.currentTime = Date()
+//                self.elapsedTime = 0
+//            }
+//        }
+//      
+//    }
+//    
+//    
+//    private var formattedElapsedTime: String {
+//            let formatter = DateComponentsFormatter()
+//            formatter.unitsStyle = .positional // HH:mm:ss 형식
+//            formatter.allowedUnits = [.hour, .minute, .second] // 시, 분, 초 포함
+//            formatter.zeroFormattingBehavior = .pad // 00:00:00 형식 유지
+//            return formatter.string(from: elapsedTime) ?? "00:00:00"
+//        }
+//}
 
 struct CompassPage: View {
     
