@@ -66,9 +66,9 @@ class WorkoutManager: ObservableObject
     private let timeIntervalForWind = TimeInterval(60*30)
     
     deinit {
-           cancellables.removeAll() // 모든 구독 해제
-           print("WorkoutIOS deinitialized")
-       }
+        cancellables.removeAll() // 모든 구독 해제
+        print("WorkoutIOS deinitialized")
+    }
     func startWorkout(startDate: Date) {
         // 운동을 시작하기 전에 HKWorkoutBuilder를 초기화
         if isWorkoutActive  { return }
@@ -88,7 +88,7 @@ class WorkoutManager: ObservableObject
         //  IOS에서 workoutBuilder를 정확하게 사용하기 위함.. 없어도 동작함.
         
         let workoutActivity = HKWorkoutActivity(workoutConfiguration: workoutConfiguration, start: startDate, end:nil, metadata: nil)
-       
+        
         //
         workoutBuilder.beginCollection(withStart: startDate) { (success, error) in
             if success {
@@ -99,25 +99,25 @@ class WorkoutManager: ObservableObject
                     self.addHeartRateSample(heartRate: 77, date: Date())
                     
                 }
-//위에서 정의한  workoutActivity가 없어도 잘 돌아감. (헬쓰앱의 운동내역에 해당함)
-//                workoutBuilder.addWorkoutActivity(workoutActivity){ (success, error) in
-//                    guard error == nil else {
-//                        print("error is not nil. error: \(String(describing: error))")
-//                        return }
-//                    guard success == true else {
-//                        print("fail to addWorkoutActivity.")
-//                        return
-//                    }
-//                    
-//                    print("addWorkoutActivity is success.")
-//                }
+                //위에서 정의한  workoutActivity가 없어도 잘 돌아감. (헬쓰앱의 운동내역에 해당함)
+                //                workoutBuilder.addWorkoutActivity(workoutActivity){ (success, error) in
+                //                    guard error == nil else {
+                //                        print("error is not nil. error: \(String(describing: error))")
+                //                        return }
+                //                    guard success == true else {
+                //                        print("fail to addWorkoutActivity.")
+                //                        return
+                //                    }
+                //
+                //                    print("addWorkoutActivity is success.")
+                //                }
             } else {
                 print("Error starting workout collection: \(error?.localizedDescription ?? "Unknown error")")
             }
         }
     }
     
-    func collectData(startDate: Date, endDate: Date,  metadataForWorkout: [String: Any]) {
+    func collectData(startDate: Date, endDate: Date,  metadataForWorkout: [String: Any]) async  {
         // 데이터 수집 예시
         
         guard let workoutBuilder = workoutBuilder else {
@@ -146,7 +146,7 @@ class WorkoutManager: ObservableObject
                         }
                         // 추가 로직을 수행하거나 이 흐름을 종료
                     }
-               }
+                }
                 await withCheckedContinuation { continuation in
                     self.updateWorkoutActiveEnergyBurned(startDate: startDate, endDate: endDate){ (success, error) in
                         if success {
@@ -161,7 +161,7 @@ class WorkoutManager: ObservableObject
                         }
                         // 추가 로직을 수행하거나 이 흐름을 종료
                     }
-               }
+                }
                 
                 await withCheckedContinuation { continuation in
                     self.updateBasalEnergyBurned(startDate: startDate, endDate: endDate){ (success, error) in
@@ -184,31 +184,41 @@ class WorkoutManager: ObservableObject
         }
         
         // 내가 저장하고 가장 큰값을 가져오는데 원래는 직접계산해서 BuzzBeater가 데이터 소스로 입력해줘야함.
-        healthService.fetchTotalEnergyBurned(startDate: startDate, endDate: endDate){ totalEnergyBurnedQuantity in
+        await withCheckedContinuation { continuation in
             
-            if  let totalEnergyBurnedQuantity = totalEnergyBurnedQuantity{
-                let totalEnergyBurned = totalEnergyBurnedQuantity.doubleValue(for: .kilocalorie())
-                print("totaleEnergyBurned in the collectData :  \(totalEnergyBurnedQuantity)")
+            healthService.fetchTotalEnergyBurned(startDate: startDate, endDate: endDate){ totalEnergyBurnedQuantity in
                 
-            } else {
-                print("totaleEnergyBurned in the collectData is nil")
+                if  let totalEnergyBurnedQuantity = totalEnergyBurnedQuantity{
+                    let totalEnergyBurned = totalEnergyBurnedQuantity.doubleValue(for: .kilocalorie())
+                    print("totaleEnergyBurned in the collectData :  \(totalEnergyBurnedQuantity)")
+                    continuation.resume()
+                    
+                } else {
+                    print("totaleEnergyBurned in the collectData is nil")
+                    continuation.resume()
+                    
+                }
                 
             }
-            
         }
         
-        workoutBuilder.addMetadata(metadataForWorkout) { (success, error) in
-            if success {
-                print("metadataForWorkout : \(workoutBuilder.metadata)")
-            } else {
-                print("Error adding metadata: \(error?.localizedDescription ?? "Unknown error")")
-            }
+        await withCheckedContinuation { continuation in
             
+            workoutBuilder.addMetadata(metadataForWorkout) { (success, error) in
+                if success {
+                    print("metadataForWorkout : \(workoutBuilder.metadata)")
+                    continuation.resume()
+                } else {
+                    print("Error adding metadata: \(error?.localizedDescription ?? "Unknown error")")
+                    continuation.resume()
+                }
+            }
             // Regardless of success or failure, finish the workout
+            
             Task {
                 await self.finishWorkoutAsync(endDate: endDate, metadataForWorkout: self.metadataForWorkout)
             }
-        }
+       }
     }
     
     // async 버전으로 만들고  await 을사용해서 모든 비동기호출을 마치고 종료할수있도록 함
@@ -256,7 +266,8 @@ class WorkoutManager: ObservableObject
                         continuation.resume(throwing: error)
                     } else if let workout = workout {
                         
-                        self.workout = workout
+                        WorkoutManager.shared.workout = workout
+                        
                         if let totalDistance = workout.metadata?["TotalDistance"] as? Double {
                             let totalDistanceInt = Int(totalDistance)
                             
@@ -673,14 +684,14 @@ class WorkoutManager: ObservableObject
         
     }
     
-    func endToSaveHealthData(){
+    func endToSaveHealthData()  async throws{
         let workoutManager = WorkoutManager.shared
         
         self.endDate = Date()
         metadataForWorkout = makeMetadataForWorkout(appIdentifier: "seastheDay")
         print("metadata in the endToSaveHealthData: \(metadataForWorkout)")
         if let startDate = startDate, let endDate = endDate {
-            workoutManager.collectData(startDate: startDate, endDate: endDate, metadataForWorkout: metadataForWorkout)
+            await  workoutManager.collectData(startDate: startDate, endDate: endDate, metadataForWorkout: metadataForWorkout)
             print("collectData works successfully  in the endToSaveHealthData")
         }  else {
             print("startDate or endDate is nil")

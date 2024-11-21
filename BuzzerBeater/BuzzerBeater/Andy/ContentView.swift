@@ -17,6 +17,7 @@ struct ContentView: View {
     @EnvironmentObject private var sailingDataCollector : SailingDataCollector
     @EnvironmentObject private var bleDeviceManager: BleDeviceManager
     @State private var selection = 2
+
     private let totalTabs = 3 // 총 탭 수
     
     var body: some View {
@@ -84,12 +85,14 @@ struct SessionPage: View {
     
     @State  private var isSavingData = false
     @State var isShowingWorkoutList = false
+    @State var showingLastWorkoutSnapShot = false
     @State private var elapsedTime: TimeInterval = 0 // 스탑워치 시간
 //@State private var timer: Timer? // 타이머 인스턴스
     @State private var isPaused = false // 일시정지 상태 변수
     @State private var isMap = false
     
     let sharedWorkoutManager = WorkoutManager.shared
+    @State var workoutForView  : HKWorkout?
     
     var body: some View {
         VStack(alignment: .center) {
@@ -146,35 +149,60 @@ struct SessionPage: View {
                 
                 Button(action: {
                     sharedWorkoutManager.isSavingData = false
-
+                  
                     sharedWorkoutManager.stopStopwatch()
                     
-                    sharedWorkoutManager.endToSaveHealthData()
-                    
-                    //CompassView.countdown = nil
-                    
-                    NotificationCenter.default.post(name: .resetCompassView, object: nil)
-                    
-                    isShowingWorkoutList.toggle()
-                    
-                    isMap = false
+                    Task{
+                        
+                        // endTosaveHealthData aync 로 수정
+                        // 최소한으로 수정했고 추후 다시 정리해야함.
+                        await  sharedWorkoutManager.endToSaveHealthData()
+                        // 2초의 여유를 안줘도 될듯한데 일단 버퍼로써 2초를 추가로 제공
+                        
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+                            
+                            
+                            if  let  workoutForView = sharedWorkoutManager.workout {
+                                self.workoutForView = workoutForView
+                                print("workoutForView: in contentView \(String(describing: self.workoutForView))")
+                                sharedWorkoutManager.fetchLatestWorkout() { workout in
+                                    print("sharedWorkoutManager.fetchLatestWorkout  \(workout)")
+                                    self.workoutForView = workout
+                                }
+                                
+                                showingLastWorkoutSnapShot.toggle()
+                                
+                            }
+                            
+                        }
+                        //CompassView.countdown = nil
+                        
+                        NotificationCenter.default.post(name: .resetCompassView, object: nil)
+                        
+                        isMap = false
+                    }
                 }) {
                     Image(systemName: "xmark")
                         .resizable()
+                    
                         .scaledToFit()
                         .frame(width: 30, height: 30)
                         .foregroundColor(sharedWorkoutManager.isSavingData ? Color(hex: "#FF3B2E") : Color.white) // 아이콘 색상 설정
                         .padding(10)
                 }
+                .disabled(!sharedWorkoutManager.isSavingData)
                 .buttonStyle(CustomButtonStyle(
                     backgroundColor: sharedWorkoutManager.isSavingData ? Color(hex: "#330D0A") : Color.black,
                     foregroundColor: .white
                 ))
-                .sheet(isPresented: $isShowingWorkoutList) {
-                    WorkoutListView(isMap: $isMap)
+                .sheet(isPresented: $showingLastWorkoutSnapShot) {
+                    if let workout = self.workoutForView {
+                        NavigationView {
+                            LastWorkoutSnapShot(workout: workout)
+                               
+                        }
+                    }
                 }
-                .disabled(!sharedWorkoutManager.isSavingData)
-                
                 // Pause/Resume 버튼
                 Button(action: {
                     isPaused.toggle()
@@ -362,7 +390,9 @@ struct InfoPage: View {
                 
                 Button("종료") {
                     isSavingData = false
-                    sharedWorkoutManager.endToSaveHealthData()
+                    Task {
+                        await  sharedWorkoutManager.endToSaveHealthData()
+                    }
                   
                 }.padding()
                     .background(isSavingData ? Color.yellow : Color.gray) // 비활성화 시 회색으로 변경
@@ -381,7 +411,7 @@ struct InfoPage: View {
                 .cornerRadius(10)
                 
                 .sheet(isPresented: $isShowingWorkoutList) {
-                    //WorkoutListView()
+                  //WorkoutListView()
                 }
                 
             }
