@@ -51,54 +51,8 @@ struct CompassView: View {
                         
                         let center = CGPoint(x: cx, y: cy)
                         let r5 = geometry.size.width * 0.53
-                        let r6 = geometry.size.width * 0.55
-                        ZStack {
-                            Rectangle()
-//                                .fill(Color.clear)
-                                .fill(Color.gray.opacity(0.001))
-                                .frame(width: 50, height: 50)
-                            Image(systemName: "chevron.left")
-                                .resizable()
-                                .scaledToFit()
-                                .frame(width: 15, height: 15)
-                                .foregroundColor(.white)
-                                .opacity(0)
-                                .hidden()
-                        }
-                        .allowsHitTesting(true)
-                        .position(x: geometry.size.width * 0.13, y: geometry.size.height * 0.5)
-                        .gesture(
-                            LongPressGesture(minimumDuration: 0.1, maximumDistance: 3)
-                                .onEnded { value in
-                                    selection = 1
-                                }
-                        )
-                        
-                        ZStack {
-                            Rectangle()
-   //                             .fill(Color.clear)
-                                .fill(Color.gray.opacity(0.001))
-                                .frame(width: 50, height: 50)
-                                .zIndex(1)
-                            Image(systemName: "chevron.right")
-                                .resizable()
-                                .opacity(0)
-                                .scaledToFit()
-                                .frame(width: 15, height: 15)
-                                .foregroundColor(.white)
-                                .hidden()
-                        }
-                        .allowsHitTesting(true)
-                        .position(x: geometry.size.width * 0.87, y: geometry.size.height * 0.5)
-                        .gesture(
-                            LongPressGesture(minimumDuration: 0.1, maximumDistance: 3)
-                                .onEnded { value in
-                                    selection = 3
-                                }
-                        )
-                        
-                        
-                        
+
+                                      
                         
                         VStack(alignment: .center){
                             ZStack {

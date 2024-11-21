@@ -12,6 +12,8 @@
 		0273E9D22CE9E15C0043B886 /* Launch Screen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 0273E9D02CE9E15C0043B886 /* Launch Screen.storyboard */; };
 		0273EC5C2CEC7F530043B886 /* WatchResultRecord.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0273EC5B2CEC7F530043B886 /* WatchResultRecord.swift */; };
 		0273EC5D2CEC7F530043B886 /* WatchResultRecord.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0273EC5B2CEC7F530043B886 /* WatchResultRecord.swift */; };
+		0273ED232CEEC9D90043B886 /* ResultMap.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0273ED222CEEC9D90043B886 /* ResultMap.swift */; };
+		0273ED252CEF35D70043B886 /* ResultMap.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0273ED222CEEC9D90043B886 /* ResultMap.swift */; };
 		0297A25E2CC3E65D0024AEC9 /* BuzzerBeaterWatch Watch App.app in Embed Watch Content */ = {isa = PBXBuildFile; fileRef = 0297A2512CC3E65C0024AEC9 /* BuzzerBeaterWatch Watch App.app */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		0297A28E2CC51A740024AEC9 /* ApparentWind.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0297A27B2CC51A740024AEC9 /* ApparentWind.swift */; };
 		0297A28F2CC51A740024AEC9 /* BoatView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0297A27C2CC51A740024AEC9 /* BoatView.swift */; };
@@ -76,6 +78,7 @@
 		0273E9CA2CE9D2760043B886 /* Splash.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Splash.swift; sourceTree = "<group>"; };
 		0273E9D02CE9E15C0043B886 /* Launch Screen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = "Launch Screen.storyboard"; sourceTree = "<group>"; };
 		0273EC5B2CEC7F530043B886 /* WatchResultRecord.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchResultRecord.swift; sourceTree = "<group>"; };
+		0273ED222CEEC9D90043B886 /* ResultMap.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResultMap.swift; sourceTree = "<group>"; };
 		0297A2512CC3E65C0024AEC9 /* BuzzerBeaterWatch Watch App.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "BuzzerBeaterWatch Watch App.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		0297A2642CC3E6780024AEC9 /* WeatherKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WeatherKit.framework; path = Platforms/WatchOS.platform/Developer/SDKs/WatchOS11.0.sdk/System/Library/Frameworks/WeatherKit.framework; sourceTree = DEVELOPER_DIR; };
 		0297A27B2CC51A740024AEC9 /* ApparentWind.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ApparentWind.swift; sourceTree = "<group>"; };
@@ -239,6 +242,7 @@
 				EF7997552CDB692D004FF039 /* InfoDetail.swift */,
 				EF79975B2CDB7C34004FF039 /* InfoIcon.swift */,
 				0273EC5B2CEC7F530043B886 /* WatchResultRecord.swift */,
+				0273ED222CEEC9D90043B886 /* ResultMap.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -384,6 +388,7 @@
 				0297A2A02CC51A740024AEC9 /* ApparentWind.swift in Sources */,
 				CEF0D8632CCEFFF800243992 /* HealthService.swift in Sources */,
 				0297A2A12CC51A740024AEC9 /* SailAngleFind.swift in Sources */,
+				0273ED232CEEC9D90043B886 /* ResultMap.swift in Sources */,
 				0297A2A22CC51A740024AEC9 /* WindDetector.swift in Sources */,
 				0297A2A32CC51A740024AEC9 /* LocationManager.swift in Sources */,
 				0297A2A42CC51A740024AEC9 /* MapView.swift in Sources */,
@@ -401,6 +406,7 @@
 				0297A28E2CC51A740024AEC9 /* ApparentWind.swift in Sources */,
 				EF7997572CDB692D004FF039 /* InfoDetail.swift in Sources */,
 				CE1B72222CD299B00044895B /* WorkoutListView.swift in Sources */,
+				0273ED252CEF35D70043B886 /* ResultMap.swift in Sources */,
 				0273E9CC2CE9D2760043B886 /* Splash.swift in Sources */,
 				0297A28F2CC51A740024AEC9 /* BoatView.swift in Sources */,
 				EF7997592CDB7469004FF039 /* DateFormatter+Formats.swift in Sources */,
