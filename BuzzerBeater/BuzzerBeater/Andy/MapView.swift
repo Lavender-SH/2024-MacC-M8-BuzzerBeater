@@ -92,8 +92,8 @@ struct MapView: View {
                 ZStack {
                     Rectangle()
                     //.fill(Color.clear)
-                        .fill(Color.gray.opacity(0.001))
-                        .frame(width: 50, height: 50)
+                        .fill(Color.gray.opacity(0.5))
+                        .frame(width: 55, height: 80)
                         .zIndex(1)
                     Image(systemName: "chevron.left")
                         .resizable()
@@ -104,7 +104,7 @@ struct MapView: View {
                 .allowsHitTesting(true)
                 .position(x: geometry.size.width * 0.13, y: geometry.size.height * 0.5)
                 .gesture(
-                    LongPressGesture(minimumDuration: 0.1, maximumDistance: 3)
+                    LongPressGesture(minimumDuration: 0.01, maximumDistance: 3)
                         .onEnded { value in
                             selection = 2
                         }
@@ -114,8 +114,8 @@ struct MapView: View {
                 ZStack {
                     Rectangle()
                     //.fill(Color.clear)
-                        .fill(Color.gray.opacity(0.001))
-                        .frame(width: 50, height: 50)
+                        .fill(Color.gray.opacity(0.5))
+                        .frame(width: 55, height: 80)
                         .zIndex(1)
                     Image(systemName: "chevron.right")
                         .resizable()
@@ -126,7 +126,7 @@ struct MapView: View {
                 .allowsHitTesting(true)
                 .position(x: geometry.size.width * 0.87, y: geometry.size.height * 0.5)
                 .gesture(
-                    LongPressGesture(minimumDuration: 0.1, maximumDistance: 3)
+                    LongPressGesture(minimumDuration: 0.01, maximumDistance: 3)
                         .onEnded { value in
                             selection = 4
                         }

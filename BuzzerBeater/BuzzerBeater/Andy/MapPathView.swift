@@ -100,19 +100,30 @@ struct MapPathView: View {
                     //                    }.padding(.top, 50)
                     if isModal {
                         VStack {
-                            RoundedRectangle(cornerRadius: 3)
-                                .fill(Color.white)
-                                .frame(width: 150, height: 5)
-                                .padding(.top, 10)
+                            ZStack {
+                                Button(action: {
+                                    print("Button tapped!")
+                                }) {
+                                    Text("")
+                                }
+                                .frame(width: 300, height: 90)
+                                .background(Color.gray.opacity(0.01))
+                                
+                                RoundedRectangle(cornerRadius: 3)
+                                    .fill(Color.white)
+                                    .frame(width: 150, height: 5)
+                            }
+                            .padding(.top, -10)
                             
                             Spacer()
                         }
+
                     }
                 }
             }
             
             else {
-                Text("Sky is Blue and Water is Clear!!!")
+                //Text("Sky is Blue and Water is Clear!!!")
                 ProgressView()
             }
             

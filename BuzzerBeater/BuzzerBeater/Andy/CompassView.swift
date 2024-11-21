@@ -71,7 +71,7 @@ struct CompassView: View {
                                     //                        ? (colorScheme == .dark ? .white : .black) // Black in light mode, white in dark mode
                                     //                        : isTickMark ? .gray : .gray
                                     let lineColor: Color = index == 54 // First tick mark at 0 degrees is always red
-                                    ? .red
+                                    ? .white
                                     : (isMainDirection ? (colorScheme == .dark ? .white : .black) : .gray)
                                     
                                     // Draw lines for each 5-degree interval
