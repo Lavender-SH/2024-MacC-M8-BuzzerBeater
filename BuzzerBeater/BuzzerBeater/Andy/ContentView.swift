@@ -124,11 +124,11 @@ struct SessionPage: View {
                     isShowingWorkoutList.toggle()
                     isMap = true
                 }) {
-                    Image(systemName: "map") //chart.bar.xaxis
+                    Image(systemName: "chart.bar.xaxis") //chart.bar.xaxis
                         .resizable()
                         .scaledToFit()
                         .frame(width: 30, height: 30) // 아이콘 크기 설정
-                        .foregroundColor(Color(hex: "#4567B7")) // 아이콘 색상
+                        .foregroundColor(Color(hex: "4D98E3")) // 아이콘 색상
                         .padding(10) // 아이콘 패딩
                 }
                 .buttonStyle(CustomButtonStyle(
@@ -250,9 +250,8 @@ struct CompassPage: View {
                 .environmentObject(ApparentWind.shared)
                 .environmentObject(SailAngleFind.shared)
                 .environmentObject(SailingDataCollector.shared)
-                .frame(width: geometry.size.width * 0.8 , height: geometry.size.width * 0.8)
-                .position(x: geometry.size.width / 2, y: geometry.size.height / 2)
                 .padding(5)
+                .frame(width: geometry.size.width, height: geometry.size.height, alignment: .center)
                 //.navigationTitle("Compass")
         }
     }
