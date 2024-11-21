@@ -10,6 +10,7 @@ import MapKit
 import SwiftUI
 #if os(watchOS)
 struct MapView: View {
+    @Binding var selection: Int
     @EnvironmentObject var locationManager : LocationManager
     @EnvironmentObject var sailingDataCollector: SailingDataCollector
     @Environment(\.presentationMode) var presentationMode
@@ -23,6 +24,10 @@ struct MapView: View {
     @State private var position: MapCameraPosition = .automatic
     @State private var navigateTo: AnyView?
     
+    @State private var startDragPosition: CGPoint? = nil
+    @State private var pressedPosition: CGPoint = .zero
+    @State private var dragOffset: CGSize = .zero
+
     //
     //    let locationManager = LocationManager.shared
     //    let windDetector = WindDetector.shared
@@ -83,14 +88,12 @@ struct MapView: View {
                 }
                 
                 GeometryReader { geometry in
-                    Button(action: {
-                        
-                    }) {
+
                         ZStack {
                             Rectangle()
                                 //.fill(Color.clear)
                                 .fill(Color.gray.opacity(0.001))
-                                .frame(width: 50, height: 300)
+                                .frame(width: 50, height: 50)
                                 .zIndex(1)
                             Image(systemName: "chevron.left")
                                 .resizable()
@@ -98,28 +101,139 @@ struct MapView: View {
                                 .frame(width: 15, height: 15)
                                 .foregroundColor(.white)
                         }
-                    }
-                    .buttonStyle(.plain)
+                    .allowsHitTesting(true)
                     .position(x: geometry.size.width * 0.13, y: geometry.size.height * 0.5)
-                    
-                    Button(action: {
-    
-                    }) {
-                        ZStack {
-                            Rectangle()
-                                //.fill(Color.clear)
-                                .fill(Color.gray.opacity(0.001))
-                                .frame(width: 50, height: 100)
-                                .zIndex(1)
-                            Image(systemName: "chevron.right")
-                                .resizable()
-                                .scaledToFit()
-                                .frame(width: 15, height: 15)
-                                .foregroundColor(.white)
+                    .gesture(
+                        LongPressGesture(minimumDuration: 0.1, maximumDistance: 3)
+//                            .sequenced(before: DragGesture(minimumDistance: 3))
+//                            .onChanged { value in
+//                                
+//                                switch value {
+//                                case .first(true):
+//
+//                                    startDragPosition = nil // Reset start position
+//                                    print("isLongPressed")
+//                                case .second(true, let drag?):
+//                                    if startDragPosition == nil {
+//                                                     // 드래그의 시작 위치 설정
+//                                                     startDragPosition = drag.startLocation
+//                                                 }
+//                                    if let startDrag = startDragPosition {
+//                                        // Calculate the offset from the start position
+//                                        dragOffset = CGSize(
+//                                            width: drag.location.x - startDrag.x,
+//                                            height: drag.location.y - startDrag.y
+//                                        )
+//                                    }
+//                                    // Update pressed position for real-time feedback
+//                                    pressedPosition = drag.location
+//                                    print("isLongPressed .second dragOffset: \(dragOffset)")
+//                                    
+//                                default:
+//                                    break
+//                                }
+//                            }
+                            .onEnded { value in
+                                selection = 2
+//                                switch value {
+//                                case .second(true, let drag?):
+//                                    if let startDrag = startDragPosition {
+//                                        // Final drag offset calculation
+//                                        dragOffset = CGSize(
+//                                            width: drag.location.x - startDrag.x,
+//                                            height: drag.location.y - startDrag.y
+//                                        )
+//                                        print("isLongPressed .end dragOffset: \(dragOffset)")
+//                                    }
+//                                    // Reset the start position
+//                                    pressedPosition = drag.location
+//                                    let dragDistance = sqrt(pow(dragOffset.width, 2) +  pow(dragOffset.height, 2))
+//                                    
+//                                    if dragDistance > 3 {
+//                                        print("isLongPressed dragDistance > 3 and dragDistance \(dragDistance)")
+                                      
+//                                        print("move next bleWatchView")
+//                                    }
+//                                    startDragPosition = nil
+//                                    
+//                                default:
+//                                    break
+//                                }
                         }
+                        )
+                    
+                
+                    ZStack {
+                        Rectangle()
+                        //.fill(Color.clear)
+                            .fill(Color.gray.opacity(0.001))
+                            .frame(width: 50, height: 50)
+                            .zIndex(1)
+                        Image(systemName: "chevron.right")
+                            .resizable()
+                            .scaledToFit()
+                            .frame(width: 15, height: 15)
+                            .foregroundColor(.white)
                     }
-                    .buttonStyle(.plain)
+                    .allowsHitTesting(true)
                     .position(x: geometry.size.width * 0.87, y: geometry.size.height * 0.5)
+                    .gesture(
+                        LongPressGesture(minimumDuration: 0.1, maximumDistance: 3)
+//                            .sequenced(before: DragGesture(minimumDistance: 3))
+//                            .onChanged { value in
+//                                
+//                                switch value {
+//                                case .first(true):
+//
+//                                    startDragPosition = nil // Reset start position
+//                                    print("isLongPressed first")
+//                                case .second(true, let drag?):
+//                                    if startDragPosition == nil {
+//                                                     startDragPosition = drag.startLocation
+//                                                 }
+//                                    if let startDrag = startDragPosition {
+//                                        // Calculate the offset from the start position
+//                                        dragOffset = CGSize(
+//                                            width: drag.location.x - startDrag.x,
+//                                            height: drag.location.y - startDrag.y
+//                                        )
+//                                    }
+//                                    // Update pressed position for real-time feedback
+//                                    pressedPosition = drag.location
+//                                    print("isLongPressed .second dragOffset: \(dragOffset)")
+//                                    
+//                                default:
+//                                    break
+//                                }
+//                            }
+                            .onEnded { value in
+                                selection = 4
+////                                switch value {
+////                                case .second(true, let drag?):
+////                                    if let startDrag = startDragPosition {
+////                                        // Final drag offset calculation
+////                                        dragOffset = CGSize(
+////                                            width: drag.location.x - startDrag.x,
+////                                            height: drag.location.y - startDrag.y
+////                                        )
+////                                        print("isLongPressed .end dragOffset: \(dragOffset)")
+////                                    }
+////                                    // Reset the start position
+////                                    pressedPosition = drag.location
+////                                    let dragDistance = sqrt(pow(dragOffset.width, 2) +  pow(dragOffset.height, 2))
+////                                    
+////                                    if dragDistance > 3 {
+////                                        print("isLongPressed dragDistance > 3 and dragDistance \(dragDistance)")
+//                                        selection = 4
+//                                        print("move next bleWatchView")
+//                                    }
+//                                    startDragPosition = nil
+//                                    
+//                                default:
+//                                    break
+//                                }
+                            }
+                        )
                 }
             }
             

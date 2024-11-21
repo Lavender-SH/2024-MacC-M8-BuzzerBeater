@@ -40,7 +40,7 @@ struct ContentView: View {
                         //Text("Compass")
                     }
                     .tag(2)
-                MapPage()
+                MapPage(selection:$selection)
                     .tabItem {
                         Image(systemName: "map.fill")
                         //Text("Map")
@@ -259,12 +259,13 @@ struct CompassPage: View {
 }
 struct MapPage: View {
     @State var minOfWidthAndHeight : Double = 0
+    @Binding var selection: Int
     var body: some View {
         GeometryReader { geometry in
             VStack(alignment: .center) {
                 // MapView를 중앙에 배치
                 Spacer()
-                MapView()
+                MapView(selection: $selection)
                     .environmentObject(LocationManager.shared)
                     .environmentObject(SailingDataCollector.shared)
                     .frame(width: minOfWidthAndHeight * 1, height: minOfWidthAndHeight * 1) // 전체 크기로 설정
