@@ -20,14 +20,24 @@ struct WorkoutListView: View {
                     ProgressView("Loading Workouts...")
                 } else {
                     if isMap == true {
-                        List(viewModel.workouts , id:\.self ) { workout in
-                            NavigationLink(destination: MapPathView(workout: workout)) {
+//                        List(viewModel.workouts , id:\.self ) { workout in
+//                            NavigationLink(destination: MapPathView(workout: workout)) {
+//                                let textString = formattedDateTime(workout.startDate) + " " +
+//                                formattedDuration(workout.duration)
+//                                Text(textString)
+//                                
+//                            }
+//                        }
+                        
+                        List(viewModel.workouts , id: \.self) { workout in
+                            NavigationLink(destination: ResultMap(workout: workout)) {
                                 let textString = formattedDateTime(workout.startDate) + " " +
                                 formattedDuration(workout.duration)
                                 Text(textString)
-                                
                             }
                         }
+                        
+                        
                     } else {
                         
                         List(viewModel.workouts , id:\.self ) { workout in

@@ -56,14 +56,11 @@ struct CompassView: View {
                                 let degree = index * 5  // Multiply the index by 5 to get the degree (since 72 ticks = 360 degrees)
                                 let isMainDirection = degree % 90 == 0 // 90-degree intervals for main directions
                                 let isTickMark = degree % 30 == 0 // 30-degree intervals for larger tick marks
-                                let lineLength: CGFloat = isMainDirection ? 8 : isTickMark ? 3 : 3 // Adjust lengths for main directions, larger and smaller tick marks
+                                let lineLength: CGFloat = isMainDirection ? 8 : isTickMark ? 3 : 3 // Adjust 
                                 
-                                //                        let lineColor: Color = isMainDirection
-                                //                        ? (colorScheme == .dark ? .white : .black) // Black in light mode, white in dark mode
-                                //                        : isTickMark ? .gray : .gray
-                                let lineColor: Color = index == 54 // First tick mark at 0 degrees is always red
-                                ? .red
-                                : (isMainDirection ? (colorScheme == .dark ? .white : .black) : .gray)
+                                let lineColor: Color = isMainDirection
+                                        ? (colorScheme == .dark ? .white : .black) // White for main directions
+                                : .gray // Orange for all non-90-degree intervals
                                 
                                 // Draw lines for each 5-degree interval
                                 Path { path in

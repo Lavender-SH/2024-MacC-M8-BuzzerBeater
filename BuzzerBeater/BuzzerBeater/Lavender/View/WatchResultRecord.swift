@@ -44,12 +44,12 @@ struct WatchResultRecord: View {
     }
     
     var body: some View {
-        VStack(spacing: 8) { // 전체 줄 간격
+        VStack(spacing: 13) { // 전체 줄 간격
             if isDataLoaded {
                 // 날짜 표시
                 Text(formattedDate(startDate))
                     .font(.system(size: 15, weight: .bold, design: .rounded))
-                    .foregroundColor(.white)
+                    .foregroundColor(.secondary)
                 
                 // 상자 그룹
                 HStack(spacing: 8) {
@@ -88,7 +88,7 @@ struct WatchResultRecord: View {
             }
         }
         .padding(.vertical, 8)
-        .padding(.horizontal, 12)
+        .padding(.horizontal, 11)
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .onAppear {
             DispatchQueue.main.async {
@@ -342,10 +342,10 @@ struct InfoBox: View {
     var body: some View {
         VStack(spacing: 4) {
             Text(title)
-                .font(.system(size: 14, weight: .bold, design: .rounded))
+                .font(.system(size: 14, design: .rounded))
                 .foregroundColor(.white)
             Text(value)
-                .font(.system(size: 17, weight: .bold, design: .rounded))
+                .font(.system(size: 16, weight: .bold, design: .rounded))
                 .foregroundColor(valueColor)
         }
         .frame(maxWidth: .infinity)
