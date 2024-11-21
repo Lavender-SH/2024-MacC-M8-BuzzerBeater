@@ -40,6 +40,7 @@
 		CE1B72222CD299B00044895B /* WorkoutListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE1B72202CD299A30044895B /* WorkoutListView.swift */; };
 		CE1B72242CD299F60044895B /* WorkoutViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE1B72232CD299EB0044895B /* WorkoutViewModel.swift */; };
 		CE1B72252CD299F60044895B /* WorkoutViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE1B72232CD299EB0044895B /* WorkoutViewModel.swift */; };
+		CE1B9A7F2CEE471800F97803 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 0297A2882CC51A740024AEC9 /* Assets.xcassets */; };
 		CE5E09992CD8F576005DCB57 /* MapPathView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE5E09982CD8F563005DCB57 /* MapPathView.swift */; };
 		CE5E099A2CD8F576005DCB57 /* MapPathView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE5E09982CD8F563005DCB57 /* MapPathView.swift */; };
 		CEA9CBA82CD5F63F005F1814 /* WorkoutManagerIOS.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEA9CBA62CD5F63A005F1814 /* WorkoutManagerIOS.swift */; };
@@ -111,9 +112,22 @@
 		EFA4CD722CDB95E9003FBF78 /* TimeInterval+Formats.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TimeInterval+Formats.swift"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		CE1B9A802CEE474F00F97803 /* Exceptions for "BuzzerBeaterWatch Watch App" folder in "BuzzerBeaterWatch Watch App" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				BleWatchApp/Assets.xcassets,
+			);
+			target = 0297A2502CC3E65C0024AEC9 /* BuzzerBeaterWatch Watch App */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		0297A2522CC3E65C0024AEC9 /* BuzzerBeaterWatch Watch App */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				CE1B9A802CEE474F00F97803 /* Exceptions for "BuzzerBeaterWatch Watch App" folder in "BuzzerBeaterWatch Watch App" target */,
+			);
 			path = "BuzzerBeaterWatch Watch App";
 			sourceTree = "<group>";
 		};
@@ -333,6 +347,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				CE1B9A7F2CEE471800F97803 /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

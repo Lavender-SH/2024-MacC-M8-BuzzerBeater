@@ -71,7 +71,7 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
     let headingFilter  = 5.0
     let courseAngleFilter = 15.0
     let locationUpdateTimeInterval = 5
-    let boatSpeedBuffer = 0.3
+    let boatSpeedBuffer = 1.0
     
     override init() {
         super.init()
