@@ -34,7 +34,7 @@ struct ContentView: View {
                     }
                     .tag(1)
                 
-                CompassPage()
+                CompassPage(selection:$selection)
                     .tabItem {
                         Image(systemName: "location.north.fill")
                         //Text("Compass")
@@ -241,10 +241,10 @@ struct SessionPage: View {
 //}
 
 struct CompassPage: View {
-    
+    @Binding var selection: Int
     var body: some View {
         GeometryReader { geometry in
-            CompassView()
+            CompassView(selection: $selection)
                 .environmentObject(LocationManager.shared)
                 .environmentObject(WindDetector.shared)
                 .environmentObject(ApparentWind.shared)
