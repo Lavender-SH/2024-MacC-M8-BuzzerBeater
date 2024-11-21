@@ -51,7 +51,7 @@ struct CompassView: View {
                         
                         let center = CGPoint(x: cx, y: cy)
                         let r5 = geometry.size.width * 0.53
-
+                        let r6 = geometry.size.width * 0.55
                                       
                         
                         VStack(alignment: .center){
