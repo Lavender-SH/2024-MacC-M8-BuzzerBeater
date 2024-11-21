@@ -171,7 +171,7 @@ struct BoatView: View{
     
     
     private func startTimer() {
-        cancellable = Timer.publish(every: 0.01, on: .main, in: .common)
+        cancellable = Timer.publish(every: 0.2, on: .main, in: .common)
                .autoconnect()
                .sink { _ in
                  
