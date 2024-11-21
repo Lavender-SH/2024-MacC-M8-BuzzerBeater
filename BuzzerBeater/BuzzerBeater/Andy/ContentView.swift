@@ -19,7 +19,7 @@ struct ContentView: View {
     @EnvironmentObject var sharedWorkoutManager : WorkoutManager
     
     @State private var selection = 2
-    private let totalTabs = 4 // 총 탭 수
+    private let totalTabs = 3 // 총 탭 수
     
     var body: some View {
       
@@ -51,21 +51,6 @@ struct ContentView: View {
                     Text("Map")
                 }
                 .tag(3)
-            
-//            InfoPage()
-//                .environmentObject(LocationManager.shared)
-//                .environmentObject(WindDetector.shared)
-//                .environmentObject(ApparentWind.shared)
-//                .environmentObject(SailAngleFind.shared)
-//                .environmentObject(SailingDataCollector.shared)
-//                .tabItem {
-//                    Image(systemName: "info.circle.fill")
-//                    Text("Info")
-//                }
-//                .tag(4)
-            BleView()
-                .environmentObject(BleDeviceManager.shared)
-                .tag(4)
         }
     }
 }
@@ -80,6 +65,7 @@ struct SessionPage: View {
     @EnvironmentObject var sharedWorkoutManager : WorkoutManager
     @State private var isSavingData = false
     @State var isShowingWorkoutList = false
+    @State private var isSensorSetting = false
     @State private var elapsedTime: TimeInterval = 0 // 스탑워치 시간
     @State private var timer: Timer? // 타이머 인스턴스
     @State private var isPaused = false // 일시정지 상태 변수
@@ -89,11 +75,35 @@ struct SessionPage: View {
     
     var body: some View {
         VStack(alignment: .center) {
+            Button(action: {
+                isSensorSetting.toggle()
+                
+            }) {
+                Image(systemName: "sensor.fill")
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: 18, height: 18) // 아이콘 크기 설정
+                    .foregroundColor(Color.white) // 아이콘 색상
+                    .padding(0) // 아이콘 패딩
+            }
+            .buttonStyle(CustomButtonStyle(
+                backgroundColor: .blue,
+                foregroundColor: .blue
+            ))
+            
+            .sheet(isPresented: $isSensorSetting) {
+                BleView()
+            }
+            .padding([.leading], -85)
+            .padding(.top, 10)
+            //.disabled(sharedWorkoutManager.isSavingData)
+            
             Text(sharedWorkoutManager.formattedElapsedTime)
                 .foregroundColor(.yellow)
                 .font(.system(size: 32))
                 .fontDesign(.rounded)
                 .multilineTextAlignment(.center)
+                .padding(.top, -7)
             
             HStack {
                 Button(action: {
@@ -141,7 +151,7 @@ struct SessionPage: View {
                 
                 Button(action: {
                     sharedWorkoutManager.isSavingData = false
-
+                    
                     sharedWorkoutManager.stopStopwatch()
                     
                     sharedWorkoutManager.endToSaveHealthData()
@@ -191,7 +201,7 @@ struct SessionPage: View {
         }
         .padding(.top, 10)
         .navigationTitle("Info")
-        
+        .ignoresSafeArea(.all)
     }
 }
 
