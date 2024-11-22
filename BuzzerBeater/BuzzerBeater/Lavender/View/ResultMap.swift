@@ -9,18 +9,28 @@ import SwiftUI
 import HealthKit
 
 struct ResultMap: View {
-    var workout: HKWorkout // 전달받는 Workout 데이터
+    
+    let workoutManager = WorkoutManager.shared
+    @EnvironmentObject var mapPathViewModel  : MapPathViewModel
+    var workout: HKWorkout? // or the appropriate type for your workout data
+    let healthStore =  HealthService.shared.healthStore
+    let minDegree = 0.000025
+    let mapDisplayAreaPadding = 2.0
+    @State var  isDataLoaded: Bool = false
+    
     var body: some View {
         ScrollView {
             VStack(spacing: 16) {
                
                 // WatchResultRecord 추가
                 WatchResultRecord(workout: workout)
+                    .environmentObject( mapPathViewModel)
                     .padding(.horizontal)
                 
                 
                 // MapPathView 추가
                 MapPathView(workout: workout, isModal: false)
+                    .environmentObject( mapPathViewModel)
                     .frame(height: 200)
                     .cornerRadius(12)
                     .padding(.horizontal)
@@ -34,4 +44,5 @@ struct ResultMap: View {
 
 #Preview {
     ResultMap(workout: WatchResultRecord_Previews.createDummyWorkout())
+        .environmentObject(MapPathViewModel())
 }

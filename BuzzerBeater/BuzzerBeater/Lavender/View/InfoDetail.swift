@@ -3,7 +3,8 @@
 //  BuzzerBeater
 //
 //  Created by 이승현 on 11/13/24.
-//
+//  revised by Andy .task {}
+//   MapPathView( workout: workout, isModal: true).environmentObject(mapPathViewModel)
 
 import Foundation
 import SwiftUI

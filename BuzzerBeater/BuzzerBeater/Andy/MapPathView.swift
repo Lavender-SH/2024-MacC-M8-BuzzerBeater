@@ -9,7 +9,6 @@ import MapKit
 import SwiftUI
 import HealthKit
 
-
 struct MapPathView: View {
     
     let workoutManager = WorkoutManager.shared
@@ -19,6 +18,7 @@ struct MapPathView: View {
     let minDegree = 0.000025
     let mapDisplayAreaPadding = 2.0
     @State var  isDataLoaded: Bool = false
+
     
    var isModal: Bool
     
@@ -36,25 +36,24 @@ struct MapPathView: View {
                 ZStack(alignment: .top) {
                     
                     Map(position: $mapPathViewModel.position, interactionModes: [.all] ){
-//                        if mapPathViewModel.coordinates.count >= 2 {
-//                            // 예시: CLLocation 객체를 포함한 coordinates 배열의 경우
-//                            let maxVelocity = mapPathViewModel.velocities.max() ?? 10.0
-//                            let minVelocity = mapPathViewModel.velocities.min() ?? 0.0
-//
-//                            ForEach(0..<mapPathViewModel.coordinates.count - 1, id: \.self) { index in
-//                                let start = mapPathViewModel.coordinates[index]
-//                                let end = mapPathViewModel.coordinates[index + 1]
-//                                let velocity = ( mapPathViewModel.velocities[index] + mapPathViewModel.velocities[index + 1] ) / 2.0
-//                                let color = calculateColor(for: velocity, minVelocity: minVelocity, maxVelocity: maxVelocity)
-//                                
-//                                MapPolyline(coordinates: [start, end])
-//                                    .stroke(color, lineWidth: 5)
-//                            }
-//                        }
+                        //                        if mapPathViewModel.coordinates.count >= 2 {
+                        //                            // 예시: CLLocation 객체를 포함한 coordinates 배열의 경우
+                        //                            let maxVelocity = mapPathViewModel.velocities.max() ?? 10.0
+                        //                            let minVelocity = mapPathViewModel.velocities.min() ?? 0.0
+                        //
+                        //                            ForEach(0..<mapPathViewModel.coordinates.count - 1, id: \.self) { index in
+                        //                                let start = mapPathViewModel.coordinates[index]
+                        //                                let end = mapPathViewModel.coordinates[index + 1]
+                        //                                let velocity = ( mapPathViewModel.velocities[index] + mapPathViewModel.velocities[index + 1] ) / 2.0
+                        //                                let color = calculateColor(for: velocity, minVelocity: minVelocity, maxVelocity: maxVelocity)
+                        //                                
+                        //                                MapPolyline(coordinates: [start, end])
+                        //                                    .stroke(color, lineWidth: 5)
+                        //                            }
+                        //                        }
                         
                         MapPolyline(coordinates: mapPathViewModel.coordinates)
                             .stroke(Color.cyan, lineWidth: 4)
-                        
                     }
                     .mapControls{
                         VStack{
@@ -161,7 +160,7 @@ struct MapPathView: View {
         }
     }
     
-  
+
     
     func formattedDuration(_ duration: TimeInterval) -> String {
         let hours = Int(duration) / 3600

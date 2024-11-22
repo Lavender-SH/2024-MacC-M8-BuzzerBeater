@@ -11,7 +11,7 @@ struct WorkoutListView: View {
     @StateObject var viewModel = WorkoutViewModel()
     @State private var isLoading = true
     @Binding var isMap: Bool
-    
+    @StateObject var mapPathViewModel = MapPathViewModel()
     var body: some View {
         NavigationView {
             VStack {
@@ -28,9 +28,10 @@ struct WorkoutListView: View {
 //                                
 //                            }
 //                        }
-                        
+                        //isMap ==true ? ResultMap : WatchResultMap
                         List(viewModel.workouts , id: \.self) { workout in
-                            NavigationLink(destination: ResultMap(workout: workout)) {
+                            NavigationLink(destination: ResultMap(workout: workout)
+                                .environmentObject(mapPathViewModel)) {
                                 let textString = formattedDateTime(workout.startDate) + " " +
                                 formattedDuration(workout.duration)
                                 Text(textString)
@@ -41,7 +42,8 @@ struct WorkoutListView: View {
                     } else {
                         
                         List(viewModel.workouts , id:\.self ) { workout in
-                            NavigationLink(destination: WatchResultRecord(workout: workout)) {
+                            NavigationLink(destination: WatchResultRecord(workout: workout)
+                                .environmentObject(mapPathViewModel)) {
                                 let textString = formattedDateTime(workout.startDate) + " " +
                                 formattedDuration(workout.duration)
                                 Text(textString)

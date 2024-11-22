@@ -15,7 +15,7 @@ class MapPathViewModel: ObservableObject {
    
     let healthStore =  HealthService.shared.healthStore
     let workoutManager = WorkoutManager.shared
-    @Published private var region: MKCoordinateRegion?
+    @Published  var region: MKCoordinateRegion?
     
     @Published var routePoints: [CLLocation] = []
     @Published var coordinates: [CLLocationCoordinate2D] = []
@@ -36,21 +36,7 @@ class MapPathViewModel: ObservableObject {
     let minDegree = 0.000025
     let mapDisplayAreaPadding = 2.0
     
-//    init(workout :HKWorkout?) {
-//        if (self.workout != workout || self.workout == nil)  && workout != nil {
-//            print("reload workout data in the MapPathViewModel parm:\(workout) self: \(self.workout)")
-//            Task {
-//                if let workout = workout {
-//                    self.workout = workout
-//                    await loadWorkoutData(workout:workout)
-//                    self.isDataLoaded = true // loadWorkout에서 처리 하긴하지만...중복
-//                }
-//            }
-//        } else {
-//            print("workout is nil or isDataLoaded is true in the MapPathViewModel")
-//        }
-//    }
-    
+   
     public func getRouteFrom(workout: HKWorkout, completion: @escaping (_ success: Bool, _ error: Error?) -> Void) {
         // Create a predicate for objects associated with the workout
         let runningObjectQuery = HKQuery.predicateForObjects(from: workout)

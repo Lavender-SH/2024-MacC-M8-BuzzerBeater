@@ -30,7 +30,6 @@
 		0297A29F2CC51A740024AEC9 /* BoatView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0297A27C2CC51A740024AEC9 /* BoatView.swift */; };
 		0297A2A02CC51A740024AEC9 /* ApparentWind.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0297A27B2CC51A740024AEC9 /* ApparentWind.swift */; };
 		0297A2A12CC51A740024AEC9 /* SailAngleFind.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0297A2812CC51A740024AEC9 /* SailAngleFind.swift */; };
-		0297A2A22CC51A740024AEC9 /* WindDetector.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0297A2832CC51A740024AEC9 /* WindDetector.swift */; };
 		0297A2A32CC51A740024AEC9 /* LocationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0297A27F2CC51A740024AEC9 /* LocationManager.swift */; };
 		0297A2A42CC51A740024AEC9 /* MapView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0297A2802CC51A740024AEC9 /* MapView.swift */; };
 		CE1B721E2CD27B030044895B /* WorkoutManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE1B721D2CD27AFB0044895B /* WorkoutManager.swift */; };
@@ -39,6 +38,7 @@
 		CE1B72252CD299F60044895B /* WorkoutViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE1B72232CD299EB0044895B /* WorkoutViewModel.swift */; };
 		CE1B9A7F2CEE471800F97803 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 0297A2882CC51A740024AEC9 /* Assets.xcassets */; };
 		CE22341C2CF0ABD9004C9E59 /* InfoDetail.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF7997552CDB692D004FF039 /* InfoDetail.swift */; };
+		CE22341D2CF0CBF9004C9E59 /* WindDetector.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0297A2832CC51A740024AEC9 /* WindDetector.swift */; };
 		CE5E09992CD8F576005DCB57 /* MapPathView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE5E09982CD8F563005DCB57 /* MapPathView.swift */; };
 		CE5E099A2CD8F576005DCB57 /* MapPathView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE5E09982CD8F563005DCB57 /* MapPathView.swift */; };
 		CE7B6A312CF076A6004068D1 /* MapPathViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE7B6A302CF076A6004068D1 /* MapPathViewModel.swift */; };
@@ -164,6 +164,7 @@
 		0297A2842CC51A740024AEC9 /* Andy */ = {
 			isa = PBXGroup;
 			children = (
+				CEC131D52CEF5A670084BC99 /* LastWorkoutSnapShot.swift */,
 				0297A27E2CC51A740024AEC9 /* ContentView.swift */,
 				CE1B721D2CD27AFB0044895B /* WorkoutManager.swift */,
 				CEA9CBA62CD5F63A005F1814 /* WorkoutManagerIOS.swift */,
@@ -245,7 +246,6 @@
 				EF7997552CDB692D004FF039 /* InfoDetail.swift */,
 				EF79975B2CDB7C34004FF039 /* InfoIcon.swift */,
 				0273EC5B2CEC7F530043B886 /* WatchResultRecord.swift */,
-				CEC131D52CEF5A670084BC99 /* LastWorkoutSnapShot.swift */,
 				0273ED222CEEC9D90043B886 /* ResultMap.swift */,
 			);
 			path = View;
@@ -392,10 +392,10 @@
 				0297A29E2CC51A740024AEC9 /* CompassView.swift in Sources */,
 				0297A29F2CC51A740024AEC9 /* BoatView.swift in Sources */,
 				0297A2A02CC51A740024AEC9 /* ApparentWind.swift in Sources */,
+				CE22341D2CF0CBF9004C9E59 /* WindDetector.swift in Sources */,
 				CEF0D8632CCEFFF800243992 /* HealthService.swift in Sources */,
 				0297A2A12CC51A740024AEC9 /* SailAngleFind.swift in Sources */,
 				0273ED232CEEC9D90043B886 /* ResultMap.swift in Sources */,
-				0297A2A22CC51A740024AEC9 /* WindDetector.swift in Sources */,
 				0297A2A32CC51A740024AEC9 /* LocationManager.swift in Sources */,
 				0297A2A42CC51A740024AEC9 /* MapView.swift in Sources */,
 			);
