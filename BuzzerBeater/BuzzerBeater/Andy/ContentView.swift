@@ -60,22 +60,23 @@ struct ContentView: View {
                 //                    Text("Info")
                 //                }
                 //                .tag(4)
-              
-//                 BleView()
-//                     .environmentObject(BleDeviceManager.shared)
-//                     .tag(4)
-//             }
-              
-//            .navigationDestination(isPresented: $showWatchResultRecord) {
-//                            if let latestWorkout = WorkoutManager.shared.workout {
-//                                WatchResultRecord(workout: latestWorkout)
-//                            } else {
-//                                Text("No recent workout data available.")
-//                                    .font(.headline)
-//                                    .foregroundColor(.red)
-//                            }
-//            }
-
+                
+                //                 BleView()
+                //                     .environmentObject(BleDeviceManager.shared)
+                //                     .tag(4)
+                //             }
+                
+                //            .navigationDestination(isPresented: $showWatchResultRecord) {
+                //                            if let latestWorkout = WorkoutManager.shared.workout {
+                //                                WatchResultRecord(workout: latestWorkout)
+                //                            } else {
+                //                                Text("No recent workout data available.")
+                //                                    .font(.headline)
+                //                                    .foregroundColor(.red)
+                //                            }
+                //            }
+                
+            }
         }
     }
 }
@@ -97,7 +98,7 @@ struct SessionPage: View {
     @State private var isPaused = false // 일시정지 상태 변수
     @State private var isMap = false
     
-    let sharedWorkoutManager = WorkoutManager.shared
+    //let sharedWorkoutManager = WorkoutManager.shared
     @State var workoutForView  : HKWorkout?
     
     var body: some View {

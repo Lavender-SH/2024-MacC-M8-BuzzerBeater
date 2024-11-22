@@ -49,7 +49,7 @@ struct CompassView: View {
                 .fontDesign(.rounded)
                 .multilineTextAlignment(.leading)
                 .padding([.leading], -90)
-                .padding(.top, -41)
+                .padding(.top, -30)
 //                .onChange(of: sharedWorkoutManager.formattedElapsedTime) { _  , _ in
 //                    
 //                    self.testString = sharedWorkoutManager.formattedElapsedTime
@@ -58,17 +58,28 @@ struct CompassView: View {
                 
                 VStack{
                     GeometryReader { geometry in
-                        let r1 = geometry.size.width * 0.45
-                        let r2 = geometry.size.width * 0.50
-                        let r3 = geometry.size.width * 0.32
-                        let r4 = geometry.size.width * 0.38
-                        let cx = geometry.size.width * 0.50
-                        let cy = geometry.size.height * 0.50
-                        
-                        let center = CGPoint(x: cx, y: cy)
-                        let r5 = geometry.size.width * 0.53
-                        let r6 = geometry.size.width * 0.55
+//                        let r1 = geometry.size.width * 0.45
+//                        let r2 = geometry.size.width * 0.50
+//                        let r3 = geometry.size.width * 0.32
+//                        let r4 = geometry.size.width * 0.38
+//                        let cx = geometry.size.width * 0.50
+//                        let cy = geometry.size.height * 0.50
+//                        
+//                        let center = CGPoint(x: cx, y: cy)
+//                        let r5 = geometry.size.width * 0.53
+//                        let r6 = geometry.size.width * 0.55
                                       
+                        let scaleFactor: CGFloat = 0.84 // 축소 비율 (기존 크기의 80%)
+                            let r1 = geometry.size.width * 0.45 * scaleFactor
+                            let r2 = geometry.size.width * 0.50 * scaleFactor
+                            let r3 = geometry.size.width * 0.32 * scaleFactor
+                            let r4 = geometry.size.width * 0.38 * scaleFactor
+                            let cx = geometry.size.width * 0.50
+                            let cy = geometry.size.height * 0.50
+                            let r5 = geometry.size.width * 0.53 * scaleFactor
+                            let r6 = geometry.size.width * 0.55 * scaleFactor
+                            let center = CGPoint(x: cx, y: cy)
+                        
                         
                         VStack(alignment: .center){
                             ZStack {
@@ -394,8 +405,9 @@ struct CompassView: View {
                         //                        .multilineTextAlignment(.center)
                     }
                 }.allowsHitTesting(false)
-                    .padding([.leading, .trailing], 5)
-                    .padding(.bottom, -20)
+                    .padding([.leading, .trailing], 20)
+                    .padding(.bottom, -50)
+                    
                 
                 
                 

@@ -81,7 +81,6 @@ class WorkoutManager:  ObservableObject
     var pauseStartDate: Date = Date()
     var pauseEndDate : Date  = Date()
     var pausedElapsedTime: TimeInterval = 0
-    @Published var  formattedElapsedTime: String = "00:00:00"
    // @Published var stopWatchEnabled : Bool = false
     
     deinit {
