@@ -134,7 +134,9 @@ struct MapPathView: View {
             // 다음 시점의 프라세스에 영향을 줄것인가에 대한 고민.
             DispatchQueue.main.async{
                 Task {
-                    await loadWorkoutData()
+                    if !self.isDataLoaded {
+                        await loadWorkoutData()
+                    }
                 }
                 
                 self.totalDistance = workout.metadata?["TotalDistance"]  as? Double ?? 0.0

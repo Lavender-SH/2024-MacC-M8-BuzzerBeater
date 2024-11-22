@@ -45,7 +45,6 @@
 		CE5E099A2CD8F576005DCB57 /* MapPathView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE5E09982CD8F563005DCB57 /* MapPathView.swift */; };
 		CEA9CBA82CD5F63F005F1814 /* WorkoutManagerIOS.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEA9CBA62CD5F63A005F1814 /* WorkoutManagerIOS.swift */; };
 		CEC131D62CEF5A750084BC99 /* LastWorkoutSnapShot.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEC131D52CEF5A670084BC99 /* LastWorkoutSnapShot.swift */; };
-		CEC131D72CEF5A750084BC99 /* LastWorkoutSnapShot.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEC131D52CEF5A670084BC99 /* LastWorkoutSnapShot.swift */; };
 		CEF0D8622CCEFFF800243992 /* HealthService.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEF0D8612CCEFFDD00243992 /* HealthService.swift */; };
 		CEF0D8632CCEFFF800243992 /* HealthService.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEF0D8612CCEFFDD00243992 /* HealthService.swift */; };
 		EF79974D2CDB660A004FF039 /* Date+startOfDay.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF79974C2CDB65F6004FF039 /* Date+startOfDay.swift */; };
@@ -408,7 +407,6 @@
 				EF7997512CDB6881004FF039 /* InfoRow.swift in Sources */,
 				CE5E09992CD8F576005DCB57 /* MapPathView.swift in Sources */,
 				EF79974E2CDB660A004FF039 /* Date+startOfDay.swift in Sources */,
-				CEC131D72CEF5A750084BC99 /* LastWorkoutSnapShot.swift in Sources */,
 				0297A28E2CC51A740024AEC9 /* ApparentWind.swift in Sources */,
 				EF7997572CDB692D004FF039 /* InfoDetail.swift in Sources */,
 				CE1B72222CD299B00044895B /* WorkoutListView.swift in Sources */,

@@ -181,20 +181,23 @@ struct InfoDetail: View {
                         isMapModalPresented = true // Present modal when tapped
                     }) {
                         MapPathView(workout: workout, isModal: false)
-                            .frame(height: 250)
+                            .frame(height: 250) 
                     }
                     .buttonStyle(PlainButtonStyle()) // Disable default button styling
                 }
         }
         .padding(.top, -1)
         .sheet(isPresented: $isMapModalPresented) {
+           
             MapPathView(workout: workout, isModal: true)
                 .edgesIgnoringSafeArea(.all)
         }
         .onAppear {
             DispatchQueue.main.async {
                 Task {
-                    await loadWorkoutData()
+                    if !self.isDataLoaded {
+                        await loadWorkoutData()
+                    }
                 }
                 
                 self.totalDistance = workout.metadata?["TotalDistance"] as? Double ?? 0.0

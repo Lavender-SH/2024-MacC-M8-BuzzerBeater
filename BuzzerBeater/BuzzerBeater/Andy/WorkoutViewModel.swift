@@ -21,7 +21,10 @@ class WorkoutViewModel: NSObject, ObservableObject {
     
     func fetchWorkout(appIdentifier: String) async {
         self.workouts.removeAll()
-        
+//        if !workouts.isEmpty {
+//            print("already have workouts ")
+//            return
+//        }
         let workoutType = HKWorkoutType.workoutType()
         let predicate = HKQuery.predicateForWorkouts(with: .sailing)
         let appIdentifierPredicate = HKQuery.predicateForObjects(withMetadataKey: "AppIdentifier", operatorType: .equalTo, value: appIdentifier)
@@ -51,11 +54,11 @@ class WorkoutViewModel: NSObject, ObservableObject {
                 
                 for workout in results {
                     Task{
-                        await self?.fetchWorkoutRoute(for: workout)
-                        
+                        await self?.fetchWorkoutRoute(for: workout)          
                     }
-                    
                 }
+                
+                
                 continuation.resume() // 모든 작업이 완료된 후에 종료 알림
             }
             
