@@ -92,7 +92,7 @@ struct MapView: View {
                 ZStack {
                     Rectangle()
                     //.fill(Color.clear)
-                        .fill(Color.gray.opacity(0.5))
+                        .fill(Color.gray.opacity(0.01))
                         .frame(width: 55, height: 80)
                         .zIndex(1)
                     Image(systemName: "chevron.left")
@@ -111,26 +111,26 @@ struct MapView: View {
                 )
                 
                 
-                ZStack {
-                    Rectangle()
-                    //.fill(Color.clear)
-                        .fill(Color.gray.opacity(0.5))
-                        .frame(width: 55, height: 80)
-                        .zIndex(1)
-                    Image(systemName: "chevron.right")
-                        .resizable()
-                        .scaledToFit()
-                        .frame(width: 15, height: 15)
-                        .foregroundColor(.white)
-                }
-                .allowsHitTesting(true)
-                .position(x: geometry.size.width * 0.87, y: geometry.size.height * 0.5)
-                .gesture(
-                    LongPressGesture(minimumDuration: 0.01, maximumDistance: 3)
-                        .onEnded { value in
-                            selection = 4
-                        }
-                )
+//                ZStack {
+//                    Rectangle()
+//                    //.fill(Color.clear)
+//                        .fill(Color.gray.opacity(0.01))
+//                        .frame(width: 55, height: 80)
+//                        .zIndex(1)
+//                    Image(systemName: "chevron.right")
+//                        .resizable()
+//                        .scaledToFit()
+//                        .frame(width: 15, height: 15)
+//                        .foregroundColor(.white)
+//                }
+//                .allowsHitTesting(true)
+//                .position(x: geometry.size.width * 0.87, y: geometry.size.height * 0.5)
+//                .gesture(
+//                    LongPressGesture(minimumDuration: 0.01, maximumDistance: 3)
+//                        .onEnded { value in
+//                            selection = 4
+//                        }
+//                )
             }
         }
     }
