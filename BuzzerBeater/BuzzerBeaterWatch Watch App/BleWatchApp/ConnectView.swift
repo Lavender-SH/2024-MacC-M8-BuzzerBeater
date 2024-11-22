@@ -26,7 +26,7 @@ struct ConnectView: View {
         ZStack(alignment: .leading) {
             VStack{
                 Toggle(isOn: $bleDeviceManager.enableScan){
-                    Text("Turn on device scanning :")
+                    Text("Find Sensor")
                 }.onChange(of: bleDeviceManager.enableScan) {_, value in
                     if value {
                         bleDeviceManager.scanDevices()

@@ -121,7 +121,9 @@ struct SessionPage: View {
                 ))
                 
                 .sheet(isPresented: $isSensorSetting) {
+                     NavigationView {
                     BleView()
+                    }
                 }
                 .padding([.leading], -70)
                 .padding(.top, 2)
