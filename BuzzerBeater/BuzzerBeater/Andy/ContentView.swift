@@ -110,17 +110,19 @@ struct SessionPage: View {
                 Image(systemName: "sensor.fill")
                     .resizable()
                     .scaledToFit()
-                    .frame(width: 18, height: 18) // 아이콘 크기 설정
+                    .frame(width: 16, height: 16) // 아이콘 크기 설정
                     .foregroundColor(Color.white) // 아이콘 색상
-                    .padding(0) // 아이콘 패딩
+                    .padding(-1) // 아이콘 패딩
             }
             .buttonStyle(CustomButtonStyle(
-                backgroundColor: .blue,
-                foregroundColor: .blue
+                backgroundColor: Color(hex: "#4D98E3"),
+                foregroundColor: Color(hex: "#4D98E3")
             ))
             
             .sheet(isPresented: $isSensorSetting) {
-                BleView()
+                NavigationView {
+                    BleView()
+                }
             }
             .padding([.leading], -85)
             .padding(.top, 10)
