@@ -101,9 +101,22 @@ struct SessionPage: View {
     //let sharedWorkoutManager = WorkoutManager.shared
     @State var workoutForView  : HKWorkout?
     
+    var spacingForDevice: CGFloat {
+            let screenBounds = WKInterfaceDevice.current().screenBounds
+            // 기기의 높이를 기준으로 간격 설정
+            switch screenBounds.height {
+            case ..<200: // 작은 화면
+                return 5
+            case 200..<300: // 중간 화면
+                return 12
+            default: // 큰 화면 (예: 애플워치 울트라)
+                return 20
+            }
+        }
+    
     var body: some View {
             
-        VStack(alignment: .center) {
+        VStack(alignment: .center, spacing: spacingForDevice) {
                 Button(action: {
                     isSensorSetting.toggle()
                     
