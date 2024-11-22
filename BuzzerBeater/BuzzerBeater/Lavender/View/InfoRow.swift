@@ -13,6 +13,8 @@ struct InfoRow: View {
     @State private var isLoading = true
     @State private var savedScrollPosition: Int? = nil
     @Namespace private var scrollNamespace
+    @State private var isHelpModalPresented = false
+    @State private var isEmailModalPresented = false
     
     var body: some View {
         NavigationStack {
@@ -42,17 +44,22 @@ struct InfoRow: View {
                                                             .font(.system(size: 20, weight: .bold, design: .rounded))
                                                             .foregroundColor(.white)
                                                         
-                                                        let totalDistance = workout.metadata?["TotalDistance"] as? Double ?? 0.0
-                                                        Text("\(formattedDistance(totalDistance))")
-                                                            .font(.system(size: 20, weight: .bold, design: .rounded))
-                                                            .foregroundColor(.cyan)
-                                                        
                                                         HStack {
+                                                            let totalDistance = workout.metadata?["TotalDistance"] as? Double ?? 0.0
+                                                            Text("\(formattedDistance(totalDistance))")
+                                                                .font(.system(size: 20, weight: .bold, design: .rounded))
+                                                                .foregroundColor(.cyan)
+                                                                .padding(.top, 5)
+                                                                .padding(.bottom, 1)
                                                             Spacer()
+                                                            
                                                             Text(DateFormatter.yearMonthDay.string(from: workout.startDate))
                                                                 .font(.system(size: 12, weight: .bold, design: .rounded))
                                                                 .foregroundColor(.secondary)
+                                                                .padding(.top, 5)
+                                                                .padding(.bottom, 1)
                                                         }
+                                                        
                                                     }
                                                 }
                                             }
@@ -85,15 +92,34 @@ struct InfoRow: View {
                 isLoading = false
             }
             .navigationTitle("Navigation Record")
-//            .toolbar {
-//                ToolbarItem(placement: .automatic) {
-//                    Text("Navigation Record")
-//                        .font(.system(size: 24, weight: .bold, design: .rounded))
-//                        .foregroundColor(.white)
-//                        .padding(10)
-//                        .background(Capsule().fill(Color.blue))
-//                }
-//            }
+            .toolbar {
+                ToolbarItemGroup(placement: .navigationBarTrailing) {
+                    Button(action: {
+                        isEmailModalPresented.toggle()
+                        //print("Mailbox button tapped")
+                    }) {
+                        Image(systemName: "envelope.circle")
+                            .resizable()
+                            .frame(width: 35, height: 35)
+                            .foregroundColor(.cyan)
+                    }
+                    
+                    Button {
+                        isHelpModalPresented.toggle()
+                    } label: {
+                        Image(systemName: "info.circle")
+                            .resizable()
+                            .frame(width: 35, height: 35)
+                            .foregroundColor(.cyan)
+                    }
+                }
+            }
+            .sheet(isPresented: $isEmailModalPresented) {
+                EmailView()
+            }
+            .sheet(isPresented: $isHelpModalPresented) {
+                HelpModalView()
+            }
         }
     }
     
@@ -123,3 +149,4 @@ struct InfoRow: View {
         }
     }
 }
+

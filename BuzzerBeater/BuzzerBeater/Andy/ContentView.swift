@@ -86,7 +86,7 @@ struct SessionPage: View {
     @EnvironmentObject  var apparentWind :ApparentWind
     @EnvironmentObject  var sailAngleFind : SailAngleFind
     @EnvironmentObject  var sailingDataCollector : SailingDataCollector
-
+    
     //var sharedWorkoutManager = WorkoutManager.shared
     @EnvironmentObject var sharedWorkoutManager : WorkoutManager
     @State private var isSavingData = false
@@ -94,176 +94,193 @@ struct SessionPage: View {
     @State private var isSensorSetting = false
     @State var showingLastWorkoutSnapShot = false
     @State private var elapsedTime: TimeInterval = 0 // 스탑워치 시간
-//@State private var timer: Timer? // 타이머 인스턴스
+    //@State private var timer: Timer? // 타이머 인스턴스
     @State private var isPaused = false // 일시정지 상태 변수
     @State private var isMap = false
     
     //let sharedWorkoutManager = WorkoutManager.shared
     @State var workoutForView  : HKWorkout?
     
-    var body: some View {
-        VStack(alignment: .center) {
-            Button(action: {
-                isSensorSetting.toggle()
-                
-            }) {
-                Image(systemName: "sensor.fill")
-                    .resizable()
-                    .scaledToFit()
-                    .frame(width: 18, height: 18) // 아이콘 크기 설정
-                    .foregroundColor(Color.white) // 아이콘 색상
-                    .padding(0) // 아이콘 패딩
-            }
-            .buttonStyle(CustomButtonStyle(
-                backgroundColor: .blue,
-                foregroundColor: .blue
-            ))
-            
-            .sheet(isPresented: $isSensorSetting) {
-                BleView()
-            }
-            .padding([.leading], -85)
-            .padding(.top, 10)
-            //.disabled(sharedWorkoutManager.isSavingData)
-            
-            Text(sharedWorkoutManager.formattedElapsedTime)
-                .foregroundColor(.yellow)
-                .font(.system(size: 32))
-                .fontDesign(.rounded)
-                .multilineTextAlignment(.center)
-                .padding(.top, -7)
-            
-   //         StopWatchView()
-
-            HStack {
-                Button(action: {
-                    sharedWorkoutManager.activateWaterLock()
-                    
-                    
-                }) {
-                    Image(systemName: "drop.fill")
-                        .resizable()
-                        .scaledToFit()
-                        .frame(width: 30, height: 30) // 아이콘 크기 설정
-                        .foregroundColor(WKInterfaceDevice.current().isWaterLockEnabled ? Color.white : Color(hex: "#02F5EA")) // 아이콘 색상
-                        .padding(10) // 아이콘 패딩
-                }
-                .buttonStyle(CustomButtonStyle(
-                    backgroundColor: WKInterfaceDevice.current().isWaterLockEnabled ? Color.black : Color(hex: "#01312E"),
-                    foregroundColor: .white
-                ))
-                .disabled( WKInterfaceDevice.current().isWaterLockEnabled)
-                
-                
-                Button(action: {
-                    isShowingWorkoutList.toggle()
-                    isMap = true
-                }) {
-                    Image(systemName: "chart.bar.xaxis") //chart.bar.xaxis
-                        .resizable()
-                        .scaledToFit()
-                        .frame(width: 30, height: 30) // 아이콘 크기 설정
-                        .foregroundColor(Color(hex: "4D98E3")) // 아이콘 색상
-                        .padding(10) // 아이콘 패딩
-                }
-                .buttonStyle(CustomButtonStyle(
-                    backgroundColor: Color(hex: "#374B73"),
-                    foregroundColor: .white
-                ))
-                
-                .sheet(isPresented: $isShowingWorkoutList) {
-                    WorkoutListView(isMap: $isMap).disabled( WKInterfaceDevice.current().isWaterLockEnabled)
-                }
-                .disabled(sharedWorkoutManager.isSavingData)
-            }
-            
-            HStack {
-                
-                Button(action: {
-                    sharedWorkoutManager.isSavingData = false
-                    sharedWorkoutManager.stopStopwatch()
-                    
-                    Task{
-                        
-                        // endTosaveHealthData aync 로 수정
-                        // 최소한으로 수정했고 추후 다시 정리해야함.
-                        await  sharedWorkoutManager.endToSaveHealthData()
-                        // 2초의 여유를 안줘도 될듯한데 일단 버퍼로써 2초를 추가로 제공
-                        
-                        DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
-                            
-                            
-                            if  let  workoutForView = sharedWorkoutManager.workout {
-                                self.workoutForView = workoutForView
-                                print("workoutForView: in contentView \(String(describing: self.workoutForView))")
-                                sharedWorkoutManager.fetchLatestWorkout() { workout in
-                                    print("sharedWorkoutManager.fetchLatestWorkout  \(workout)")
-                                    self.workoutForView = workout
-                                }
-                                
-                                showingLastWorkoutSnapShot.toggle()
-                                
-                            }
-                            
-                        }
-                        //CompassView.countdown = nil
-                        
-                        NotificationCenter.default.post(name: .resetCompassView, object: nil)
-                        
-                        isMap = false
-                    }
-                }) {
-                    Image(systemName: "xmark")
-                        .resizable()
-                    
-                        .scaledToFit()
-                        .frame(width: 30, height: 30)
-                        .foregroundColor(sharedWorkoutManager.isSavingData ? Color(hex: "#FF3B2E") : Color.white) // 아이콘 색상 설정
-                        .padding(10)
-                }
-                .disabled(!sharedWorkoutManager.isSavingData)
-                .buttonStyle(CustomButtonStyle(
-                    backgroundColor: sharedWorkoutManager.isSavingData ? Color(hex: "#330D0A") : Color.black,
-                    foregroundColor: .white
-                ))
-                .sheet(isPresented: $showingLastWorkoutSnapShot) {
-                    if let workout = self.workoutForView {
-                        NavigationView {
-                            LastWorkoutSnapShot(workout: workout)
-                               
-                        }
-                    }
-                }
-                // Pause/Resume 버튼
-                Button(action: {
-                    isPaused.toggle()
-                    if isPaused {
-                        sharedWorkoutManager.pauseStopwatch() // 일시정지 기능
-                        sharedWorkoutManager.pauseSavingHealthData()
-                    } else {
-                        sharedWorkoutManager.resumeStopwatch() // 다시 시작 기능
-                        sharedWorkoutManager.resumeSavingHealthData()
-                    }
-                }) {
-                    Image(systemName: isPaused ? "play.fill" : "pause.fill") // 상태에 따라 아이콘 변경
-                        .resizable()
-                        .scaledToFit()
-                        .frame(width: 30, height: 30)
-                        .foregroundColor(sharedWorkoutManager.isSavingData ? Color(hex: "#FFD700") : Color.white) // 아이콘 색상 설정
-                        .padding(10)
-                }
-                .buttonStyle(CustomButtonStyle(
-                    backgroundColor: sharedWorkoutManager.isSavingData ? Color(hex: "#332E06") : Color.black,
-                    foregroundColor: .white
-                ))
-                .disabled(!sharedWorkoutManager.isSavingData) // isSavingData가 false일 때 비활성화
+    var spacingForDevice: CGFloat {
+            let screenBounds = WKInterfaceDevice.current().screenBounds
+            // 기기의 높이를 기준으로 간격 설정
+            switch screenBounds.height {
+            case ..<200: // 작은 화면
+                return 5
+            case 200..<300: // 중간 화면
+                return 12
+            default: // 큰 화면 (예: 애플워치 울트라)
+                return 20
             }
         }
-        .padding(.top, 10)
-        .ignoresSafeArea(.all)
-        //.navigationTitle("Info")
-        
-    }
+    
+    var body: some View {
+            
+        VStack(alignment: .center, spacing: spacingForDevice) {
+                Button(action: {
+                    isSensorSetting.toggle()
+                    
+                }) {
+                    Image(systemName: "sensor.fill")
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: 18, height: 18) // 아이콘 크기 설정
+                        .foregroundColor(Color.white) // 아이콘 색상
+                        .padding(0) // 아이콘 패딩
+                }
+                .buttonStyle(CustomButtonStyle(
+                    backgroundColor: .blue.opacity(0.3),
+                    foregroundColor: .blue.opacity(0.3)
+                ))
+                
+                .sheet(isPresented: $isSensorSetting) {
+                     NavigationView {
+                    BleView()
+                    }
+                }
+                .padding([.leading], -70)
+                .padding(.top, -1)
+                //.disabled(sharedWorkoutManager.isSavingData)
+                
+                Text(sharedWorkoutManager.formattedElapsedTime)
+                    .foregroundColor(.yellow)
+                    .font(.system(size: 30))
+                    .fontDesign(.rounded)
+                    .multilineTextAlignment(.center)
+                    .padding(.top, -9)
+                
+                //         StopWatchView()
+                
+                HStack(spacing: 15) {
+                    Button(action: {
+                        sharedWorkoutManager.activateWaterLock()
+                        
+                        
+                    }) {
+                        Image(systemName: "drop.fill")
+                            .resizable()
+                            .scaledToFit()
+                            .frame(width: 25, height: 25) // 아이콘 크기 설정
+                            .foregroundColor(WKInterfaceDevice.current().isWaterLockEnabled ? Color.white : Color(hex: "#02F5EA")) // 아이콘 색상
+                            .padding(7) // 아이콘 패딩
+                    }
+                    .buttonStyle(CustomButtonStyle(
+                        backgroundColor: WKInterfaceDevice.current().isWaterLockEnabled ? Color.black : Color(hex: "#01312E"),
+                        foregroundColor: .white
+                    ))
+                    .disabled( WKInterfaceDevice.current().isWaterLockEnabled)
+                    
+                    
+                    Button(action: {
+                        isShowingWorkoutList.toggle()
+                        isMap = true
+                    }) {
+                        Image(systemName: "chart.bar.xaxis") //chart.bar.xaxis
+                            .resizable()
+                            .scaledToFit()
+                            .frame(width: 25, height: 25) // 아이콘 크기 설정
+                            .foregroundColor(Color(hex: "4D98E3")) // 아이콘 색상
+                            .padding(7) // 아이콘 패딩
+                    }
+                    .buttonStyle(CustomButtonStyle(
+                        backgroundColor: Color(hex: "#374B73"),
+                        foregroundColor: .white
+                    ))
+                    
+                    .sheet(isPresented: $isShowingWorkoutList) {
+                        WorkoutListView(isMap: $isMap).disabled( WKInterfaceDevice.current().isWaterLockEnabled)
+                    }
+                    .disabled(sharedWorkoutManager.isSavingData)
+                }
+                
+                HStack(spacing: 15) {
+                    
+                    Button(action: {
+                        sharedWorkoutManager.isSavingData = false
+                        sharedWorkoutManager.stopStopwatch()
+                        
+                        Task{
+                            
+                            // endTosaveHealthData aync 로 수정
+                            // 최소한으로 수정했고 추후 다시 정리해야함.
+                            await  sharedWorkoutManager.endToSaveHealthData()
+                            // 2초의 여유를 안줘도 될듯한데 일단 버퍼로써 2초를 추가로 제공
+                            
+                            DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+                                
+                                
+                                if  let  workoutForView = sharedWorkoutManager.workout {
+                                    self.workoutForView = workoutForView
+                                    print("workoutForView: in contentView \(String(describing: self.workoutForView))")
+                                    sharedWorkoutManager.fetchLatestWorkout() { workout in
+                                        print("sharedWorkoutManager.fetchLatestWorkout  \(workout)")
+                                        self.workoutForView = workout
+                                    }
+                                    
+                                    showingLastWorkoutSnapShot.toggle()
+                                    
+                                }
+                                
+                            }
+                            //CompassView.countdown = nil
+                            
+                            NotificationCenter.default.post(name: .resetCompassView, object: nil)
+                            
+                            isMap = false
+                        }
+                    }) {
+                        Image(systemName: "xmark")
+                            .resizable()
+                        
+                            .scaledToFit()
+                            .frame(width: 25, height: 25)
+                            .foregroundColor(sharedWorkoutManager.isSavingData ? Color(hex: "#FF3B2E") : Color.white) // 아이콘 색상 설정
+                            .padding(7)
+                    }
+                    .disabled(!sharedWorkoutManager.isSavingData)
+                    .buttonStyle(CustomButtonStyle(
+                        backgroundColor: sharedWorkoutManager.isSavingData ? Color(hex: "#330D0A") : Color.black,
+                        foregroundColor: .white
+                    ))
+                    .sheet(isPresented: $showingLastWorkoutSnapShot) {
+                        if let workout = self.workoutForView {
+                            NavigationView {
+                                LastWorkoutSnapShot(workout: workout)
+                                
+                            }
+                        }
+                    }
+                    // Pause/Resume 버튼
+                    Button(action: {
+                        isPaused.toggle()
+                        if isPaused {
+                            sharedWorkoutManager.pauseStopwatch() // 일시정지 기능
+                            sharedWorkoutManager.pauseSavingHealthData()
+                        } else {
+                            sharedWorkoutManager.resumeStopwatch() // 다시 시작 기능
+                            sharedWorkoutManager.resumeSavingHealthData()
+                        }
+                    }) {
+                        Image(systemName: isPaused ? "play.fill" : "pause.fill") // 상태에 따라 아이콘 변경
+                            .resizable()
+                            .scaledToFit()
+                            .frame(width: 25, height: 25)
+                            .foregroundColor(sharedWorkoutManager.isSavingData ? Color(hex: "#FFD700") : Color.white) // 아이콘 색상 설정
+                            .padding(7)
+                    }
+                    .buttonStyle(CustomButtonStyle(
+                        backgroundColor: sharedWorkoutManager.isSavingData ? Color(hex: "#332E06") : Color.black,
+                        foregroundColor: .white
+                    ))
+                    .disabled(!sharedWorkoutManager.isSavingData) // isSavingData가 false일 때 비활성화
+                }
+            }
+            .padding(.top, 10)
+            .ignoresSafeArea(.all)
+            //.navigationTitle("Info")
+            
+        }
+    
 }
 
 

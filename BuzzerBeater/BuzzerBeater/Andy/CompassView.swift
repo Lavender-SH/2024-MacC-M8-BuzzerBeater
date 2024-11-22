@@ -48,7 +48,7 @@ struct CompassView: View {
                 .font(.system(size: 17))
                 .fontDesign(.rounded)
                 .multilineTextAlignment(.leading)
-                .padding([.leading], -90)
+                .padding([.leading], -75)
                 .padding(.top, -30)
 //                .onChange(of: sharedWorkoutManager.formattedElapsedTime) { _  , _ in
 //                    
@@ -72,12 +72,12 @@ struct CompassView: View {
                         let scaleFactor: CGFloat = 0.84 // 축소 비율 (기존 크기의 80%)
                             let r1 = geometry.size.width * 0.45 * scaleFactor
                             let r2 = geometry.size.width * 0.50 * scaleFactor
-                            let r3 = geometry.size.width * 0.32 * scaleFactor
-                            let r4 = geometry.size.width * 0.38 * scaleFactor
+                            let r3 = geometry.size.width * 0.28 * scaleFactor //동서남북
+                            let r4 = geometry.size.width * 0.35 * scaleFactor //나침반의 점
                             let cx = geometry.size.width * 0.50
                             let cy = geometry.size.height * 0.50
-                            let r5 = geometry.size.width * 0.53 * scaleFactor
-                            let r6 = geometry.size.width * 0.55 * scaleFactor
+                            //let r5 = geometry.size.width * 0.53 * scaleFactor
+                            let r6 = geometry.size.width * 0.57 * scaleFactor //나침반의 화살표
                             let center = CGPoint(x: cx, y: cy)
                         
                         
@@ -340,11 +340,11 @@ struct CompassView: View {
                                                 
                                                 VStack {
                                                     Image(systemName: "figure.sailing")
-                                                        .font(.system(size: 40))
+                                                        .font(.system(size: 40 * scaleFactor))
                                                         .foregroundColor(.cyan)
                                                     
                                                     Text("Start")
-                                                        .font(.system(size: 17).bold())
+                                                        .font(.system(size: 17 * scaleFactor).bold())
                                                         .foregroundColor(.cyan)
                                                         .fontDesign(.rounded)
                                                 }
@@ -375,6 +375,7 @@ struct CompassView: View {
                 
                 HStack {
                     VStack {
+                        
                         Text("SOG")
                             .foregroundColor(.yellow)
                             .font(.system(size: 10, weight: .bold, design: .rounded))

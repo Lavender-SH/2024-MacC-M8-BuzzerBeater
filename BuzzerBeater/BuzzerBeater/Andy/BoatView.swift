@@ -30,112 +30,115 @@ struct BoatView: View{
     @State private var cancellable: AnyCancellable? = nil
     
     var body: some View {
-        // 여기서는 수학좌표계 사용하지 않고  frame 좌표계를 이용했음..간단한 도형이라..
+        GeometryReader { geometry in
+            // 여기서는 수학좌표계 사용하지 않고  frame 좌표계를 이용했음..간단한 도형이라..
 #if os(watchOS)
-        let scaleFactor = 0.8
+            //let scaleFactor = 0.7
+            let scaleFactor = geometry.size.width / 250.0
 #else
-        let scaleFactor = 1.0
+            let scaleFactor = 1.0
 #endif
-        
-        let lb1 = CGPoint(x:  0 * scaleFactor, y: -50 * scaleFactor)
-        let lb2 = CGPoint(x : -22 * scaleFactor, y: -30 * scaleFactor)
-        let lb3 = CGPoint(x:  -20 * scaleFactor, y:25 * scaleFactor)
-        let lb4 = CGPoint(x : -18 * scaleFactor, y: 48 * scaleFactor)
-        
-        let rb1 = CGPoint(x: 0 * scaleFactor, y: -50 * scaleFactor)
-        let rb2 = CGPoint(x : 22 * scaleFactor, y: -30 * scaleFactor)
-        let rb3 = CGPoint(x:  20 * scaleFactor, y: 25 * scaleFactor)
-        let rb4 = CGPoint(x : 18 * scaleFactor, y: 48 * scaleFactor)
-        
-        let mast = CGPoint(x: 0 * scaleFactor, y: -20 * scaleFactor)
-        
-        let sailLength  = 70 * scaleFactor
-        
-
-        ZStack {
             
-            Path { path in
-                path.move(to: lb1)
-                path.addCurve(to: lb4, control1: lb2, control2: lb3)
-                
-                
-                path.addLine(to: rb4)
-                
-                
-                path.addCurve(to: rb1, control1: rb3, control2: rb2)
-                
-                path.closeSubpath()
-                
-    
-                
-            }
-#if os(watchOS)
-  //          .stroke(Color.white, lineWidth: 3)
-            .fill(.gray)
-            .opacity(0.5)
-#else
-            .stroke(Color.black, lineWidth: 3)
-#endif
-  
+            let lb1 = CGPoint(x:  0 * scaleFactor, y: -50 * scaleFactor)
+            let lb2 = CGPoint(x : -22 * scaleFactor, y: -30 * scaleFactor)
+            let lb3 = CGPoint(x:  -20 * scaleFactor, y:25 * scaleFactor)
+            let lb4 = CGPoint(x : -18 * scaleFactor, y: 48 * scaleFactor)
             
-            Path { path in
-                let lx =  sailLength * sin(sailAngle.radians) + 0
-                let ly =  sailLength * cos(sailAngle.radians) - 20
+            let rb1 = CGPoint(x: 0 * scaleFactor, y: -50 * scaleFactor)
+            let rb2 = CGPoint(x : 22 * scaleFactor, y: -30 * scaleFactor)
+            let rb3 = CGPoint(x:  20 * scaleFactor, y: 25 * scaleFactor)
+            let rb4 = CGPoint(x : 18 * scaleFactor, y: 48 * scaleFactor)
+            
+            let mast = CGPoint(x: 0 * scaleFactor, y: -20 * scaleFactor)
+            
+            let sailLength  = 70 * scaleFactor
+            
+            
+            ZStack {
                 
-                let lb1 = mast
-                let lb2 = CGPoint(x : lx / 4 , y:  mast.y + ly / 4)
-                let lb3 = CGPoint(x:  lx / 2 , y:  mast.y + ly / 2)
-                let lb4 = CGPoint(x : lx, y:  ly)
-                let sailEnd = CGPoint(x: lx, y: ly)
-//                path.move(to: sailEnd)
-//                path.addLine(to: mast)
-                path.move(to: lb1)
-                path.addCurve(to: lb4, control1: lb2, control2: lb3)
-                
-                    
-
-            }.stroke(Color.yellow, lineWidth: 4)
-          //   .animation(.spring, value: ly)   // 무슨 효과가 있다는건지..
-#if os(watchOS)
-
-            if sailAngleDetect.isSailAngleDetect {
                 Path { path in
-                    let lx =  sailLength * sin(mySailAngle.radians) + 0
-                    let ly =  sailLength * cos(mySailAngle.radians) - 20
+                    path.move(to: lb1)
+                    path.addCurve(to: lb4, control1: lb2, control2: lb3)
+                    
+                    
+                    path.addLine(to: rb4)
+                    
+                    
+                    path.addCurve(to: rb1, control1: rb3, control2: rb2)
+                    
+                    path.closeSubpath()
+                    
+                    
+                    
+                }
+#if os(watchOS)
+                //          .stroke(Color.white, lineWidth: 3)
+                .fill(.gray)
+                .opacity(0.5)
+#else
+                .stroke(Color.black, lineWidth: 3)
+#endif
+                
+                
+                Path { path in
+                    let lx =  sailLength * sin(sailAngle.radians) + 0
+                    let ly =  sailLength * cos(sailAngle.radians) - 20
                     
                     let lb1 = mast
                     let lb2 = CGPoint(x : lx / 4 , y:  mast.y + ly / 4)
                     let lb3 = CGPoint(x:  lx / 2 , y:  mast.y + ly / 2)
                     let lb4 = CGPoint(x : lx, y:  ly)
                     let sailEnd = CGPoint(x: lx, y: ly)
-                    
+                    //                path.move(to: sailEnd)
+                    //                path.addLine(to: mast)
                     path.move(to: lb1)
                     path.addCurve(to: lb4, control1: lb2, control2: lb3)
                     
                     
+                    
                 }.stroke(Color.yellow, lineWidth: 4)
-                    .opacity(0.5)
                 //   .animation(.spring, value: ly)   // 무슨 효과가 있다는건지..
-            }
+#if os(watchOS)
+                
+                if sailAngleDetect.isSailAngleDetect {
+                    Path { path in
+                        let lx =  sailLength * sin(mySailAngle.radians) + 0
+                        let ly =  sailLength * cos(mySailAngle.radians) - 20
+                        
+                        let lb1 = mast
+                        let lb2 = CGPoint(x : lx / 4 , y:  mast.y + ly / 4)
+                        let lb3 = CGPoint(x:  lx / 2 , y:  mast.y + ly / 2)
+                        let lb4 = CGPoint(x : lx, y:  ly)
+                        let sailEnd = CGPoint(x: lx, y: ly)
+                        
+                        path.move(to: lb1)
+                        path.addCurve(to: lb4, control1: lb2, control2: lb3)
+                        
+                        
+                    }.stroke(Color.yellow, lineWidth: 4)
+                        .opacity(0.5)
+                    //   .animation(.spring, value: ly)   // 무슨 효과가 있다는건지..
+                }
 #endif
-        } .onAppear {
-            updateSailAngle()
-        }
-        .onChange(of: sailAngleFind.sailAngle?.degrees ) { oldValue , newValue in
-            if let newValue = newValue, let oldValue = oldValue {
-                if abs( newValue - oldValue ) > 1 {
-                    updateSailAngle()
+            } .onAppear {
+                updateSailAngle()
+            }
+            .onChange(of: sailAngleFind.sailAngle?.degrees ) { oldValue , newValue in
+                if let newValue = newValue, let oldValue = oldValue {
+                    if abs( newValue - oldValue ) > 1 {
+                        updateSailAngle()
+                    }
                 }
             }
-        }
 #if os(watchOS)
-        .onChange(of: sailAngleDetect.sailAngleFromMast ) { oldValue , newValue in
-            if abs( newValue - oldValue ) > 1 {
-                updateMySailAngle(newValue)
+            .onChange(of: sailAngleDetect.sailAngleFromMast ) { oldValue , newValue in
+                if abs( newValue - oldValue ) > 1 {
+                    updateMySailAngle(newValue)
+                }
+                
             }
-            
-        }
 #endif
+        }
     }
      
     
