@@ -126,7 +126,7 @@ struct SessionPage: View {
                     }
                 }
                 .padding([.leading], -70)
-                .padding(.top, 2)
+                .padding(.top, -1)
                 //.disabled(sharedWorkoutManager.isSavingData)
                 
                 Text(sharedWorkoutManager.formattedElapsedTime)
@@ -134,7 +134,7 @@ struct SessionPage: View {
                     .font(.system(size: 30))
                     .fontDesign(.rounded)
                     .multilineTextAlignment(.center)
-                    .padding(.top, -7)
+                    .padding(.top, -9)
                 
                 //         StopWatchView()
                 
@@ -147,7 +147,7 @@ struct SessionPage: View {
                         Image(systemName: "drop.fill")
                             .resizable()
                             .scaledToFit()
-                            .frame(width: 23, height: 23) // 아이콘 크기 설정
+                            .frame(width: 25, height: 25) // 아이콘 크기 설정
                             .foregroundColor(WKInterfaceDevice.current().isWaterLockEnabled ? Color.white : Color(hex: "#02F5EA")) // 아이콘 색상
                             .padding(7) // 아이콘 패딩
                     }
@@ -165,7 +165,7 @@ struct SessionPage: View {
                         Image(systemName: "chart.bar.xaxis") //chart.bar.xaxis
                             .resizable()
                             .scaledToFit()
-                            .frame(width: 23, height: 23) // 아이콘 크기 설정
+                            .frame(width: 25, height: 25) // 아이콘 크기 설정
                             .foregroundColor(Color(hex: "4D98E3")) // 아이콘 색상
                             .padding(7) // 아이콘 패딩
                     }
@@ -220,7 +220,7 @@ struct SessionPage: View {
                             .resizable()
                         
                             .scaledToFit()
-                            .frame(width: 23, height: 23)
+                            .frame(width: 25, height: 25)
                             .foregroundColor(sharedWorkoutManager.isSavingData ? Color(hex: "#FF3B2E") : Color.white) // 아이콘 색상 설정
                             .padding(7)
                     }
@@ -251,7 +251,7 @@ struct SessionPage: View {
                         Image(systemName: isPaused ? "play.fill" : "pause.fill") // 상태에 따라 아이콘 변경
                             .resizable()
                             .scaledToFit()
-                            .frame(width: 23, height: 23)
+                            .frame(width: 25, height: 25)
                             .foregroundColor(sharedWorkoutManager.isSavingData ? Color(hex: "#FFD700") : Color.white) // 아이콘 색상 설정
                             .padding(7)
                     }
