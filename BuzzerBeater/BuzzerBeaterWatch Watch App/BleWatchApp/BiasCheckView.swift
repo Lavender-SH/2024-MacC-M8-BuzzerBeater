@@ -45,7 +45,7 @@ struct BiasCheckView: View {
                                 }
                             }
                         }
-                        .font(Font.system(size: 16))
+                        .font(Font.system(size: 11))
                         .padding(5)
                     }
                     // 토스트 메시지
@@ -67,7 +67,7 @@ struct BiasCheckView: View {
                 Button(sailAngleDetect.isSailAngleDetect ? "Hide Sail" : "Show Sail") {
                     sailAngleDetect.isSailAngleDetect.toggle() // 상태를 토글
                 }
-                .font(Font.system(size: 16))
+                .font(Font.system(size: 12))
                 .disabled(sailAngleDetect.isSailAngleDetect
                           ? !biasCheckViewModel.endSailDetectButtonEnabled
                           : !biasCheckViewModel.startSailDetectButtonEnabled)
