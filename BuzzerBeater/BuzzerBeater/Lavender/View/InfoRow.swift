@@ -14,6 +14,7 @@ struct InfoRow: View {
     @State private var savedScrollPosition: Int? = nil
     @Namespace private var scrollNamespace
     @State private var isHelpModalPresented = false
+    @State private var isEmailModalPresented = false
     
     var body: some View {
         NavigationStack {
@@ -92,7 +93,17 @@ struct InfoRow: View {
             }
             .navigationTitle("Navigation Record")
             .toolbar {
-                ToolbarItem(placement: .navigationBarTrailing) {
+                ToolbarItemGroup(placement: .navigationBarTrailing) {
+                    Button(action: {
+                        isEmailModalPresented.toggle()
+                        //print("Mailbox button tapped")
+                    }) {
+                        Image(systemName: "envelope.circle")
+                            .resizable()
+                            .frame(width: 35, height: 35)
+                            .foregroundColor(.cyan)
+                    }
+                    
                     Button {
                         isHelpModalPresented.toggle()
                     } label: {
@@ -102,6 +113,9 @@ struct InfoRow: View {
                             .foregroundColor(.cyan)
                     }
                 }
+            }
+            .sheet(isPresented: $isEmailModalPresented) {
+                EmailView()
             }
             .sheet(isPresented: $isHelpModalPresented) {
                 HelpModalView()
