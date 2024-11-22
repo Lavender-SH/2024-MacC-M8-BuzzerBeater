@@ -17,7 +17,7 @@ struct InfoDetail: View {
     @Environment(\.presentationMode) var presentationMode
     @State private var isMapModalPresented = false
     let workoutManager = WorkoutManager.shared
-    
+    @State private var isHelpModalPresented = false
     var workout: HKWorkout
     let healthStore =  HealthService.shared.healthStore
     let minDegree = 0.000025
@@ -239,9 +239,23 @@ struct InfoDetail: View {
                     .font(.headline)
                     .foregroundColor(.white)
             }
+            ToolbarItem(placement: .navigationBarTrailing) {
+                    Button {
+                        isHelpModalPresented.toggle() // Toggle the modal state
+                    } label: {
+                        Image(systemName: "info.circle")
+                            .resizable()
+                            .frame(width: 35, height: 35)
+                            .foregroundColor(.cyan)
+                    }
+                }
+            }
+            .sheet(isPresented: $isHelpModalPresented) {
+                HelpModalView()
         }
 #endif
     }
+    
     
     
     
