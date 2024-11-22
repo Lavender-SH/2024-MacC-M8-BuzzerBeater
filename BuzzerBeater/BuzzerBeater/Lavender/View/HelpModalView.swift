@@ -134,7 +134,7 @@ struct HelpModalView: View {
                 }
                 .padding(.bottom, 10)
             }
-            .frame(width: UIScreen.main.bounds.width * 0.95, height: UIScreen.main.bounds.height * 0.95)
+       //     .frame(width: main.bounds.width * 0.95, height: main.bounds.height * 0.95)
             .background(Color.black.opacity(0.1))
             .cornerRadius(20)
             .shadow(radius: 10)

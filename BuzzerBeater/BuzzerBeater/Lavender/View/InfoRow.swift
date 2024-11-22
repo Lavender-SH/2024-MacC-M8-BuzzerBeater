@@ -92,34 +92,34 @@ struct InfoRow: View {
                 isLoading = false
             }
             .navigationTitle("Navigation Record")
-            .toolbar {
-                ToolbarItemGroup(placement: .navigationBarTrailing) {
-                    Button(action: {
-                        isEmailModalPresented.toggle()
-                        //print("Mailbox button tapped")
-                    }) {
-                        Image(systemName: "envelope.circle")
-                            .resizable()
-                            .frame(width: 35, height: 35)
-                            .foregroundColor(.cyan)
-                    }
-                    
-                    Button {
-                        isHelpModalPresented.toggle()
-                    } label: {
-                        Image(systemName: "info.circle")
-                            .resizable()
-                            .frame(width: 35, height: 35)
-                            .foregroundColor(.cyan)
-                    }
-                }
-            }
-            .sheet(isPresented: $isEmailModalPresented) {
-                EmailView()
-            }
-            .sheet(isPresented: $isHelpModalPresented) {
-                HelpModalView()
-            }
+//            .toolbar {
+//                ToolbarItemGroup(placement: .navigationBarTrailing) {
+//                    Button(action: {
+//                        isEmailModalPresented.toggle()
+//                        //print("Mailbox button tapped")
+//                    }) {
+//                        Image(systemName: "envelope.circle")
+//                            .resizable()
+//                            .frame(width: 35, height: 35)
+//                            .foregroundColor(.cyan)
+//                    }
+//                    
+//                    Button {
+//                        isHelpModalPresented.toggle()
+//                    } label: {
+//                        Image(systemName: "info.circle")
+//                            .resizable()
+//                            .frame(width: 35, height: 35)
+//                            .foregroundColor(.cyan)
+//                    }
+//                }
+//            }
+//            .sheet(isPresented: $isEmailModalPresented) {
+//                EmailView()
+//            }
+//            .sheet(isPresented: $isHelpModalPresented) {
+//                HelpModalView()
+//            }
         }
     }
     
