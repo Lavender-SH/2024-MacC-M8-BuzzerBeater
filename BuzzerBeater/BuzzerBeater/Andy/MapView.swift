@@ -92,7 +92,8 @@ struct MapView: View {
                 ZStack {
                     Rectangle()
                     //.fill(Color.clear)
-                        .fill(Color.gray.opacity(0.01))
+                        .fill(Color.gray.opacity(0.001))
+
                         .frame(width: 55, height: 80)
                         .zIndex(1)
                     Image(systemName: "chevron.left")
@@ -111,6 +112,7 @@ struct MapView: View {
                 )
                 
                 
+
 //                ZStack {
 //                    Rectangle()
 //                    //.fill(Color.clear)
@@ -131,6 +133,7 @@ struct MapView: View {
 //                            selection = 4
 //                        }
 //                )
+
             }
         }
     }

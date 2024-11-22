@@ -7,17 +7,21 @@ struct BuzzerBeaterApp: App {
     @State private var isSplashView = true
     init() {
         // 앱 시작 시 LocationManager와 HealthKit 서비스 등을 초기화합니다.
-        _ = LocationManager.shared
+#if os(watchOS)
         _ = WindDetector.shared
         _ = ApparentWind.shared
         _ = SailAngleFind.shared
         _ = SailingDataCollector.shared
-        _ = HealthService.shared
         
+        
+#elseif os(iOS)
+        _ = LocationManager.shared
+        _ = HealthService.shared
+#endif
     }
     
     var body: some Scene {
-            WindowGroup {
+        WindowGroup {
                 if isSplashView {
                     LaunchScreenView()
                         .ignoresSafeArea()
@@ -28,7 +32,7 @@ struct BuzzerBeaterApp: App {
                             }
                         }
                 } else {
-                    #if os(watchOS)
+#if os(watchOS)
                     ContentView()
                         .environmentObject(LocationManager.shared)
                         .environmentObject(WindDetector.shared)
@@ -37,9 +41,9 @@ struct BuzzerBeaterApp: App {
                         .environmentObject(SailingDataCollector.shared)
                         .environmentObject(HealthService.shared)
                         .environmentObject(BleDeviceManager.shared)
-                    #elseif os(iOS)
+#elseif os(iOS)
                     InfoRow()
-                    #endif
+#endif
                 }
             }
         }

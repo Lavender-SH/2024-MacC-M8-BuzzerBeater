@@ -52,11 +52,11 @@ class WorkoutViewModel: NSObject, ObservableObject {
                     print("fetchWorkout workouts: \(self.workouts)")
                 }
                 
-                for workout in results {
-                    Task{
-                        await self?.fetchWorkoutRoute(for: workout)          
-                    }
-                }
+//                for workout in results {
+//                    Task{
+//                        await self?.fetchWorkoutRoute(for: workout)          
+//                    }
+//                }
                 
                 
                 continuation.resume() // 모든 작업이 완료된 후에 종료 알림

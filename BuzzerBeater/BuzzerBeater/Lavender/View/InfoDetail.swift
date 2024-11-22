@@ -3,7 +3,8 @@
 //  BuzzerBeater
 //
 //  Created by 이승현 on 11/13/24.
-//
+//  revised by Andy .task {}
+//   MapPathView( workout: workout, isModal: true).environmentObject(mapPathViewModel)
 
 import Foundation
 import SwiftUI
@@ -17,18 +18,16 @@ struct InfoDetail: View {
     @Environment(\.presentationMode) var presentationMode
     @State private var isMapModalPresented = false
     let workoutManager = WorkoutManager.shared
+    var workout: HKWorkout?
     @State private var isHelpModalPresented = false
-    var workout: HKWorkout
+
+
     let healthStore =  HealthService.shared.healthStore
     let minDegree = 0.000025
     let mapDisplayAreaPadding = 2.0
     @State private var region: MKCoordinateRegion?
     
-    @State var routePoints: [CLLocation] = []
-    @State var coordinates: [CLLocationCoordinate2D] = []
-    @State var velocities: [CLLocationSpeed] = []
-    @State var position: MapCameraPosition = .automatic
-    
+   
     @State var activeEnergyBurned: Double = 0
     @State var isDataLoaded : Bool = false
     
@@ -41,7 +40,10 @@ struct InfoDetail: View {
     @State var endDate: Date?
     @State var locationName: String = "Loading location..."
     
+    @StateObject var mapPathViewModel = MapPathViewModel()
+    
     init(workout: HKWorkout) {
+   
         self.workout = workout
         
     }
@@ -52,7 +54,6 @@ struct InfoDetail: View {
     ]
     
     var body: some View {
-        
         List {
             Section {
                 HStack(spacing: 20) {
@@ -81,6 +82,14 @@ struct InfoDetail: View {
                                 .font(.system(size: 18).bold())
                                 .fontDesign(.rounded)
                                 .foregroundColor(.secondary)
+                                .onAppear{
+                                
+
+                                    let coordinate = CLLocationCoordinate2D(latitude: 36.017470189362115, longitude: 129.32224097538742)
+                                    let location = CLLocation(latitude: coordinate.latitude, longitude: coordinate.longitude)
+
+                                    fetchLocationName(for: mapPathViewModel.routePoints.first ?? location )
+                                }
                         }
                     }
                 }
@@ -95,32 +104,32 @@ struct InfoDetail: View {
                     .foregroundColor(.white)
                     .textCase(nil)
             ) {
-                if isDataLoaded {
+                if mapPathViewModel.isDataLoaded {
                     LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], alignment: .leading, spacing: 16) {
                         VStack(alignment: .leading, spacing: 8) {
                             Text("Sailing Time")
-                            Text(formattedDuration(duration))
+                            Text(formattedDuration(mapPathViewModel.duration))
                                 .font(.title)
                                 .foregroundColor(.yellow)
                                 .fontDesign(.rounded)
                         }
                         VStack(alignment: .leading, spacing: 8) {
                             Text("Sailing Distance")
-                            Text("\(formattedDistance(totalDistance))")
+                            Text("\(formattedDistance(mapPathViewModel.totalDistance))")
                                 .font(.title)
                                 .foregroundColor(.cyan)
                                 .fontDesign(.rounded)
                         }
                         VStack(alignment: .leading, spacing: 8) {
                             Text("Calories")
-                            Text("\(formattedEnergyBurned(totalEnergyBurned))")
+                            Text("\(formattedEnergyBurned(mapPathViewModel.totalEnergyBurned))")
                                 .font(.title)
                                 .foregroundColor(.cyan)
                                 .fontDesign(.rounded)
                         }
                         VStack(alignment: .leading, spacing: 8) {
                             Text("Highest Speed")
-                            Text("\(formattedMaxSpeed(velocities.max() ?? 0)) m/s")
+                            Text("\(formattedMaxSpeed(mapPathViewModel.velocities.max() ?? 0)) m/s")
                                 .font(.title)
                                 .foregroundColor(.cyan)
                                 .fontDesign(.rounded)
@@ -140,11 +149,12 @@ struct InfoDetail: View {
                     .fontDesign(.rounded)
                     .textCase(nil)
             ) {
-                if isDataLoaded {
-                    let startTime = routePoints.first?.timestamp ?? Date()
-                    let endTime = routePoints.last?.timestamp ?? Date()
+                if mapPathViewModel.isDataLoaded {
+                    let startTime = mapPathViewModel.routePoints.first?.timestamp ?? Date()
+                    let endTime = mapPathViewModel.routePoints.last?.timestamp ?? Date()
                     let totalDurationInSeconds = endTime.timeIntervalSince(startTime)
-                    let averageSpeed = velocities.reduce(0, +) / Double(velocities.count)
+                    
+                    let averageSpeed = mapPathViewModel.velocities.reduce(0, +) / Double(mapPathViewModel.velocities.count)
                     
                     VStack(alignment: .leading, spacing: 8){
                         Text("Average Speed: \(String(format: "%.2f", averageSpeed)) m/s")
@@ -153,8 +163,10 @@ struct InfoDetail: View {
                             .padding(.bottom, 8)
                             .foregroundStyle(.cyan)
                         Chart {
-                            ForEach(Array(velocities.enumerated()), id: \.offset) { index, speed in
-                                let timeInSeconds = routePoints[index].timestamp.timeIntervalSince(startTime)
+                         
+
+                            ForEach(Array(mapPathViewModel.velocities.enumerated()) , id: \.offset) { index, speed in
+                                let timeInSeconds = mapPathViewModel.routePoints[index].timestamp.timeIntervalSince(startTime)
                                 LineMark(
                                     x: .value("Time (sec)", timeInSeconds),
                                     y: .value("Speed", speed)
@@ -180,51 +192,41 @@ struct InfoDetail: View {
                     Button(action: {
                         isMapModalPresented = true // Present modal when tapped
                     }) {
-                        MapPathView(workout: workout, isModal: false)
-                            .frame(height: 250) 
+                        MapPathView( workout: workout, isModal: false)
+                            .environmentObject(mapPathViewModel)
+                            .frame(height: 250)
                     }
                     .buttonStyle(PlainButtonStyle()) // Disable default button styling
                 }
         }
         .padding(.top, -1)
         .sheet(isPresented: $isMapModalPresented) {
-           
-            MapPathView(workout: workout, isModal: true)
+            MapPathView( workout: workout, isModal: true)
+                .environmentObject(mapPathViewModel)
                 .edgesIgnoringSafeArea(.all)
-        }
-        .onAppear {
-            DispatchQueue.main.async {
-                Task {
-                    if !self.isDataLoaded {
-                        await loadWorkoutData()
-                    }
+       }
+        .task{
+            if mapPathViewModel.workout != self.workout {
+                print("mapPathViewModel will load data in the InfoDetail \n workout: \(String(describing: self.workout))    \n mapPathViewModel.workout:\(String(describing: mapPathViewModel.workout))" )
+                if let workout = self.workout {
+                    await  mapPathViewModel.loadWorkoutData(workout: workout)
+                    self.mapPathViewModel.workout = self.workout //중복이지만 다시 작성
+                    print("mapPathViewModel after loadWorkoutData in the InfoDetail  \(mapPathViewModel.workout) \(mapPathViewModel.isDataLoaded)")
+                    isDataLoaded = true
                 }
-                
-                self.totalDistance = workout.metadata?["TotalDistance"] as? Double ?? 0.0
-                self.duration = workout.metadata?["Duration"] as? Double ?? 0.0
-                self.totalEnergyBurned = workout.metadata?["TotalEnergyBurned"] as? Double ?? 0.0
-                self.maxSpeed = workout.metadata?["MaxSpeed"] as? Double ?? 0.0
-                self.startDate = workout.startDate
-                self.endDate = workout.endDate
-                
-                self.workoutManager.fetchActiveEnergyBurned(startDate: workout.startDate, endDate: workout.endDate) { activeEnergyBurned in
-                    if let activeEnergyBurned = activeEnergyBurned {
-                        self.activeEnergyBurned = activeEnergyBurned.doubleValue(for: .kilocalorie())
-                    }
+                else {
+                    print("self.workout in the in the InfoDetail  is nil")
+                    isDataLoaded = true
                 }
-                
-                self.workoutManager.fetchTotalEnergyBurned(for: workout) { totalEnergyBurned in
-                    if let totalEnergyBurned = totalEnergyBurned {
-                        self.totalEnergyBurned = totalEnergyBurned.doubleValue(for: .kilocalorie())
-                    }
-                }
-                
-                self.duration = workout.endDate.timeIntervalSince(workout.startDate)
+            } else {
+                isDataLoaded = true
+                print("mapPathViewModel will not load data in the InfoDetail  \n workout: \(String(describing: self.workout)) \n    mapPathViewModel.workout:\(String(describing: mapPathViewModel.workout))" )
             }
+            
         }
         .preferredColorScheme(.dark)
         .navigationBarBackButtonHidden(true)
-#if os(iOS)
+#if !os(watchOS)
         .toolbar {
             ToolbarItem(placement: .navigationBarLeading) {
                 Button(action: {
@@ -255,127 +257,126 @@ struct InfoDetail: View {
         }
 #endif
     }
+   
     
+//     func loadWorkoutData() async  {
+//         getRouteFrom(workout: workout) { success, error in
+//             if success {
+//                 DispatchQueue.main.async {
+//                     self.coordinates = self.routePoints.map { $0.coordinate }
+//                     self.velocities = self.routePoints.map { $0.speed }
+//                     self.isDataLoaded = true
+//                     if let firstLocation = routePoints.first {
+//                         fetchLocationName(for: firstLocation)
+//                     }
+//                     print("velocities:\(self.velocities.count), coordinates \(self.coordinates.count), routePoints \(self.routePoints.count) in the getRouteFrom, 지역이름\(locationName)")
+//                 }
+//             } else {
+//                 DispatchQueue.main.async {
+//                     self.isDataLoaded = true
+//                     print("loadWorkoutData error \(error?.localizedDescription ?? "unknown error")")
+//                 }
+//             }
+//         }
+//     }
     
-    
-    
-    func loadWorkoutData() async  {
-        getRouteFrom(workout: workout) { success, error in
-            if success {
-                DispatchQueue.main.async {
-                    self.coordinates = self.routePoints.map { $0.coordinate }
-                    self.velocities = self.routePoints.map { $0.speed }
-                    self.isDataLoaded = true
-                    if let firstLocation = routePoints.first {
-                        fetchLocationName(for: firstLocation)
-                    }
-                    print("velocities:\(self.velocities.count), coordinates \(self.coordinates.count), routePoints \(self.routePoints.count) in the getRouteFrom, 지역이름\(locationName)")
-                }
-            } else {
-                DispatchQueue.main.async {
-                    self.isDataLoaded = true
-                    print("loadWorkoutData error \(error?.localizedDescription ?? "unknown error")")
-                }
-            }
-        }
-    }
-    
-    public func getRouteFrom(workout: HKWorkout, completion: @escaping (_ success: Bool, _ error: Error?) -> Void) {
-        // Create a predicate for objects associated with the workout
-        let runningObjectQuery = HKQuery.predicateForObjects(from: workout)
+//     public func getRouteFrom(workout: HKWorkout, completion: @escaping (_ success: Bool, _ error: Error?) -> Void) {
+//         // Create a predicate for objects associated with the workout
+//         let runningObjectQuery = HKQuery.predicateForObjects(from: workout)
         
-        // 1. `routeQuery`: Retrieve all workout route samples associated with the workout.
-        let routeQuery = HKAnchoredObjectQuery(type: HKSeriesType.workoutRoute(), predicate: runningObjectQuery, anchor: nil, limit: HKObjectQueryNoLimit) { (routeQuery, samples, deletedObjects, anchor, error) in
+//         // 1. `routeQuery`: Retrieve all workout route samples associated with the workout.
+//         let routeQuery = HKAnchoredObjectQuery(type: HKSeriesType.workoutRoute(), predicate: runningObjectQuery, anchor: nil, limit: HKObjectQueryNoLimit) { (routeQuery, samples, deletedObjects, anchor, error) in
             
-            // 오류가 발생하면 completion에 전달하고 함수 종료
-            if let error = error {
-                print("The initial query failed with error: \(error.localizedDescription)")
-                completion(false, error)
-                return
-            }
+//             // 오류가 발생하면 completion에 전달하고 함수 종료
+//             if let error = error {
+//                 print("The initial query failed with error: \(error.localizedDescription)")
+//                 completion(false, error)
+//                 return
+//             }
             
-            // Route가 없으면 completion에 false 전달하고 함수 종료
-            guard let route = samples?.first as? HKWorkoutRoute else {
-                print("No route samples found.")
-                completion(false, nil)
-                return
-            }
+//             // Route가 없으면 completion에 false 전달하고 함수 종료
+//             guard let route = samples?.first as? HKWorkoutRoute else {
+//                 print("No route samples found.")
+//                 completion(false, nil)
+//                 return
+//             }
             
-            // 2. `routeLocationsQuery`: Retrieve locations from the specific workout route.
-            let routeLocationsQuery = HKWorkoutRouteQuery(route: route) { (routeLocationsQuery, locations, done, error) in
+//             // 2. `routeLocationsQuery`: Retrieve locations from the specific workout route.
+//             let routeLocationsQuery = HKWorkoutRouteQuery(route: route) { (routeLocationsQuery, locations, done, error) in
                 
-                // 오류 발생 시 completion에 전달하고 함수 종료
-                if let error = error {
-                    print("Error retrieving locations: \(error.localizedDescription)")
-                    completion(false, error)
-                    return
-                }
+//                 // 오류 발생 시 completion에 전달하고 함수 종료
+//                 if let error = error {
+//                     print("Error retrieving locations: \(error.localizedDescription)")
+//                     completion(false, error)
+//                     return
+//                 }
                 
-                // 위치 데이터가 비어 있는 경우 completion 호출 후 종료
-                guard let locations = locations else {
-                    print("No locations found in route.")
-                    completion(false, nil)
-                    return
-                }
+//                 // 위치 데이터가 비어 있는 경우 completion 호출 후 종료
+//                 guard let locations = locations else {
+//                     print("No locations found in route.")
+//                     completion(false, nil)
+//                     return
+//                 }
                 
-                print("Locations count: \(locations.count)")
+//                 print("Locations count: \(locations.count)")
                 
-                // 위치 데이터를 저장하고 후속 작업을 수행
-                DispatchQueue.main.async {
-                    self.routePoints.append(contentsOf: locations)
-                    self.getMetric()  // 필요에 따라 정의된 메트릭 계산 함수 호출
-                }
+//                 // 위치 데이터를 저장하고 후속 작업을 수행
+//                 DispatchQueue.main.async {
+//                     self.routePoints.append(contentsOf: locations)
+//                     self.getMetric()  // 필요에 따라 정의된 메트릭 계산 함수 호출
+//                 }
                 
-                // 위치 데이터의 마지막 청크가 도착했을 때, 쿼리 정지 및 성공 콜백
-                if done {
-                    DispatchQueue.main.async {
-                        self.healthStore.stop(routeLocationsQuery)
-                        completion(true, nil)
-                    }
-                }
-            }
+//                 // 위치 데이터의 마지막 청크가 도착했을 때, 쿼리 정지 및 성공 콜백
+//                 if done {
+//                     DispatchQueue.main.async {
+//                         self.healthStore.stop(routeLocationsQuery)
+//                         completion(true, nil)
+//                     }
+//                 }
+//             }
             
-            // routeLocationsQuery 실행
-            self.healthStore.execute(routeLocationsQuery)
-        }
+//             // routeLocationsQuery 실행
+//             self.healthStore.execute(routeLocationsQuery)
+//         }
         
-        // `routeQuery`가 업데이트되었을 때 처리
-        routeQuery.updateHandler = { (routeQuery, samples, deleted, anchor, error) in
-            if let error = error {
-                print("Update query failed with error: \(error.localizedDescription)")
-                return
-            }
-            // 필요 시 업데이트를 처리할 수 있습니다.
-        }
+//         // `routeQuery`가 업데이트되었을 때 처리
+//         routeQuery.updateHandler = { (routeQuery, samples, deleted, anchor, error) in
+//             if let error = error {
+//                 print("Update query failed with error: \(error.localizedDescription)")
+//                 return
+//             }
+//             // 필요 시 업데이트를 처리할 수 있습니다.
+//         }
         
-        // routeQuery 실행
-        healthStore.execute(routeQuery)
-    }
-    func getMetric(){
-        let latitudes = routePoints.map { $0.coordinate.latitude }
-        let longitudes = routePoints.map { $0.coordinate.longitude }
+//         // routeQuery 실행
+//         healthStore.execute(routeQuery)
+//     }
+//     func getMetric(){
+//         let latitudes = routePoints.map { $0.coordinate.latitude }
+//         let longitudes = routePoints.map { $0.coordinate.longitude }
         
-        // Calculate the map region's boundaries
-        guard let maxLat = latitudes.max(), let minLat = latitudes.min(),
-              let maxLong = longitudes.max(), let minLong = longitudes.min() else {
-            print("mapSpan error will happen!!!")
-            return
-        }
-        let mapCenter = CLLocationCoordinate2D(latitude: (minLat + maxLat) / 2, longitude: (minLong + maxLong) / 2)
-        let mapSpan = MKCoordinateSpan(latitudeDelta: max((maxLat - minLat) * mapDisplayAreaPadding , self.minDegree), longitudeDelta: max((maxLong - minLong) * mapDisplayAreaPadding , self.minDegree))
+//         // Calculate the map region's boundaries
+//         guard let maxLat = latitudes.max(), let minLat = latitudes.min(),
+//               let maxLong = longitudes.max(), let minLong = longitudes.min() else {
+//             print("mapSpan error will happen!!!")
+//             return
+//         }
+//         let mapCenter = CLLocationCoordinate2D(latitude: (minLat + maxLat) / 2, longitude: (minLong + maxLong) / 2)
+//         let mapSpan = MKCoordinateSpan(latitudeDelta: max((maxLat - minLat) * mapDisplayAreaPadding , self.minDegree), longitudeDelta: max((maxLong - minLong) * mapDisplayAreaPadding , self.minDegree))
         
-        print("mapspan in MapPathView: \(mapSpan)")
-        // Update the map region and plot the route on the main thread
-        DispatchQueue.main.async {
-            self.region = MKCoordinateRegion(center: mapCenter, span: mapSpan)
-            // Stop the route locations query now that we're done
-            if let region = self.region {
-                self.position = .region(region)
-            }
-        }
-    }
+//         print("mapspan in MapPathView: \(mapSpan)")
+//         // Update the map region and plot the route on the main thread
+//         DispatchQueue.main.async {
+//             self.region = MKCoordinateRegion(center: mapCenter, span: mapSpan)
+//             // Stop the route locations query now that we're done
+//             if let region = self.region {
+//                 self.position = .region(region)
+//             }
+//         }
+//     }
     
     
+
     func formattedDuration(_ duration: TimeInterval) -> String {
         let hours = Int(duration) / 3600
         let minutes = (Int(duration) % 3600) / 60
@@ -432,7 +433,5 @@ struct InfoDetail: View {
             }
         }
     }
-    
-    
     
 }
