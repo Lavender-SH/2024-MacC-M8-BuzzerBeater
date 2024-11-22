@@ -10,14 +10,14 @@ import HealthKit
 
 struct ResultMap: View {
     var workout: HKWorkout // 전달받는 Workout 데이터
-    
     var body: some View {
         ScrollView {
             VStack(spacing: 16) {
-                
+               
                 // WatchResultRecord 추가
                 WatchResultRecord(workout: workout)
                     .padding(.horizontal)
+                
                 
                 // MapPathView 추가
                 MapPathView(workout: workout, isModal: false)
