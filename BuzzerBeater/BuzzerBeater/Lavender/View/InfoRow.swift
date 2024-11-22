@@ -7,7 +7,7 @@
 
 import SwiftUI
 import HealthKit
-
+#if os(iOS)
 struct InfoRow: View {
     @StateObject private var viewModel = WorkoutViewModel()
     @State private var isLoading = true
@@ -114,9 +114,11 @@ struct InfoRow: View {
                     }
                 }
             }
+            
             .sheet(isPresented: $isEmailModalPresented) {
                 EmailView()
             }
+      
             .sheet(isPresented: $isHelpModalPresented) {
                 HelpModalView()
             }
@@ -150,3 +152,4 @@ struct InfoRow: View {
     }
 }
 
+#endif
