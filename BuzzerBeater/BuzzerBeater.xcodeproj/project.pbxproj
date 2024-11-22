@@ -16,6 +16,7 @@
 		0273ED252CEF35D70043B886 /* ResultMap.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0273ED222CEEC9D90043B886 /* ResultMap.swift */; };
 		0273EF112CF0AB170043B886 /* HelpModalView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0273EF102CF0AB170043B886 /* HelpModalView.swift */; };
 		0273EF122CF0AB170043B886 /* HelpModalView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0273EF102CF0AB170043B886 /* HelpModalView.swift */; };
+		0273F03D2CF0E16D0043B886 /* EmailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0273F03C2CF0E16D0043B886 /* EmailView.swift */; };
 		0297A25E2CC3E65D0024AEC9 /* BuzzerBeaterWatch Watch App.app in Embed Watch Content */ = {isa = PBXBuildFile; fileRef = 0297A2512CC3E65C0024AEC9 /* BuzzerBeaterWatch Watch App.app */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		0297A28E2CC51A740024AEC9 /* ApparentWind.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0297A27B2CC51A740024AEC9 /* ApparentWind.swift */; };
 		0297A28F2CC51A740024AEC9 /* BoatView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0297A27C2CC51A740024AEC9 /* BoatView.swift */; };
@@ -83,6 +84,7 @@
 		0273EC5B2CEC7F530043B886 /* WatchResultRecord.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchResultRecord.swift; sourceTree = "<group>"; };
 		0273ED222CEEC9D90043B886 /* ResultMap.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResultMap.swift; sourceTree = "<group>"; };
 		0273EF102CF0AB170043B886 /* HelpModalView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HelpModalView.swift; sourceTree = "<group>"; };
+		0273F03C2CF0E16D0043B886 /* EmailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmailView.swift; sourceTree = "<group>"; };
 		0297A2512CC3E65C0024AEC9 /* BuzzerBeaterWatch Watch App.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "BuzzerBeaterWatch Watch App.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		0297A2642CC3E6780024AEC9 /* WeatherKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WeatherKit.framework; path = Platforms/WatchOS.platform/Developer/SDKs/WatchOS11.0.sdk/System/Library/Frameworks/WeatherKit.framework; sourceTree = DEVELOPER_DIR; };
 		0297A27B2CC51A740024AEC9 /* ApparentWind.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ApparentWind.swift; sourceTree = "<group>"; };
@@ -243,13 +245,14 @@
 			children = (
 				0273E9CA2CE9D2760043B886 /* Splash.swift */,
 				0273E9D02CE9E15C0043B886 /* Launch Screen.storyboard */,
+				EF79975B2CDB7C34004FF039 /* InfoIcon.swift */,
 				EF79974F2CDB686A004FF039 /* InfoRow.swift */,
 				EF7997552CDB692D004FF039 /* InfoDetail.swift */,
-				EF79975B2CDB7C34004FF039 /* InfoIcon.swift */,
 				0273EC5B2CEC7F530043B886 /* WatchResultRecord.swift */,
 				CEC131D52CEF5A670084BC99 /* LastWorkoutSnapShot.swift */,
 				0273ED222CEEC9D90043B886 /* ResultMap.swift */,
 				0273EF102CF0AB170043B886 /* HelpModalView.swift */,
+				0273F03C2CF0E16D0043B886 /* EmailView.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -413,6 +416,7 @@
 				0273EF112CF0AB170043B886 /* HelpModalView.swift in Sources */,
 				CE5E09992CD8F576005DCB57 /* MapPathView.swift in Sources */,
 				EF79974E2CDB660A004FF039 /* Date+startOfDay.swift in Sources */,
+				0273F03D2CF0E16D0043B886 /* EmailView.swift in Sources */,
 				0297A28E2CC51A740024AEC9 /* ApparentWind.swift in Sources */,
 				EF7997572CDB692D004FF039 /* InfoDetail.swift in Sources */,
 				CE1B72222CD299B00044895B /* WorkoutListView.swift in Sources */,
@@ -693,7 +697,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.0;
+				MARKETING_VERSION = 1.0.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.lavender.buzzbeater;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -746,7 +750,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.0;
+				MARKETING_VERSION = 1.0.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.lavender.buzzbeater;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
