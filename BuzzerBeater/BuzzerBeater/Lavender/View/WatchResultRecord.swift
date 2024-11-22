@@ -62,7 +62,7 @@ struct WatchResultRecord: View {
                     // Calories 상자
                     InfoBox(title: "Calories", value: "\(formattedEnergyBurned(totalEnergyBurned))", valueColor: .cyan)
                     // Max Speed 상자
-                    InfoBox(title: "Max Speed", value: "\(formattedMaxSpeed(velocities.max() ?? 0)) m/s", valueColor: .cyan)
+                    InfoBox(title: "Max Speed", value: "\(formattedMaxSpeed(self.maxSpeed)) m/s", valueColor: .cyan)
                 }
                 
                 // 시작 및 종료 시간

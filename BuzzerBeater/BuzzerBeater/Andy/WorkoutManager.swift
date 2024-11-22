@@ -95,11 +95,12 @@ class WorkoutManager:  ObservableObject
         // 운동을 시작하기 전에 HKWorkoutBuilder를 초기화
         if isWorkoutActive  { return }
         isWorkoutActive = true
+        isSavingData = true
         let workoutConfiguration = HKWorkoutConfiguration()
         workoutConfiguration.activityType = .sailing
         workoutConfiguration.locationType = .outdoor
         
-        
+     
         do {
             workoutSession = try  HKWorkoutSession(healthStore: healthStore, configuration: workoutConfiguration)
         } catch {
@@ -148,7 +149,7 @@ class WorkoutManager:  ObservableObject
       
     }
     
-    func collectData(startDate: Date, endDate: Date,  metadataForWorkout: [String: Any]) {
+    func collectData(startDate: Date, endDate: Date,  metadataForWorkout: [String: Any] )  async{
         // 데이터 수집 예시
         
         guard let liveWorkoutBuilder = self.liveWorkoutBuilder,
@@ -166,47 +167,51 @@ class WorkoutManager:  ObservableObject
         
         // updateWorkoutDistance should be proceesed before workoutBuilder.finishWorkout
         
-        Task{
-            if let startDate = self.startDate, let endDate = self.endDate {
-                await withCheckedContinuation { continuation in
-                    self.updateWorkoutDistance(startDate: startDate, endDate: endDate, self.totalDistance) { (success, error) in
-                        if success {
-                            print("Completion: Distance update was successful.")
-                            continuation.resume()
-                        } else if let error = error {
-                            print("Completion: Error encountered - \(error)")
-                            continuation.resume()
-                        } else {
-                            print("Completion: Unknown error occurred.")
-                            continuation.resume()
-                        }
-                        // 추가 로직을 수행하거나 이 흐름을 종료
+        
+        if let startDate = self.startDate, let endDate = self.endDate {
+            await withCheckedContinuation { continuation in
+                self.updateWorkoutDistance(startDate: startDate, endDate: endDate, self.totalDistance) { (success, error) in
+                    if success {
+                        print("Completion: Distance update was successful.")
+                        
+                        continuation.resume()
+                    } else if let error = error {
+                        print("Completion: Error encountered - \(error)")
+                        continuation.resume()
+                    } else {
+                        print("Completion: Unknown error occurred.")
+                        continuation.resume()
                     }
+                    // 추가 로직을 수행하거나 이 흐름을 종료
                 }
-                
-                
-            } else {
-                print("startDate or endDate is nil")
-            }
-        }
-      
-
-        liveWorkoutBuilder.addMetadata(metadataForWorkout) { (success, error) in
-            if success {
-                print("metadataForWorkout : \(liveWorkoutBuilder.metadata)")
-            } else {
-                print("Error adding metadata: \(error?.localizedDescription ?? "Unknown error")")
             }
             
-            // Regardless of success or failure, finish the workout
-            Task {
-                await self.finishWorkoutAsync(endDate: endDate, metadataForWorkout: self.metadataForWorkout)
+            
+        } else {
+            print("startDate or endDate is nil")
+        }
+        
+        
+        await  withCheckedContinuation { continuation in
+            liveWorkoutBuilder.addMetadata(metadataForWorkout) { (success, error) in
+                if success {
+                    continuation.resume()
+                    print("metadataForWorkout : \(liveWorkoutBuilder.metadata)")
+                } else {
+                    continuation.resume()
+                    print("Error adding metadata: \(error?.localizedDescription ?? "Unknown error")")
+                }
             }
         }
-    
+        // Regardless of success or failure, finish the workout
+        
+        await self.finishWorkoutAsync(endDate: endDate, metadataForWorkout: self.metadataForWorkout)
+        
+        
+        
     }
     
-   
+    
     
     // async 버전으로 만들고  await 을사용해서 모든 비동기호출을 마치고 종료할수있도록 함
     // try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, Error>)
@@ -229,7 +234,8 @@ class WorkoutManager:  ObservableObject
         }
         DispatchQueue.main.async {
             self.isWorkoutActive = false
-        
+            self.isSavingData = false
+            
         }
         guard let liveWorkoutBuilder = self.liveWorkoutBuilder,
               let workoutSession = self.workoutSession else {
@@ -263,10 +269,15 @@ class WorkoutManager:  ObservableObject
                         continuation.resume(throwing: error)
                     } else if let workout = workout {
                         self.workout = workout
+                        //very very very very very
+                        
+                        WorkoutManager.shared.workout = workout
+                        
+                        print("WorkoutManager.shared.workout in the finishWorkoutAsync \(WorkoutManager.shared.workout)")
                         DispatchQueue.main.async{
                             print("workout in the finishWorkoutAsync: \(workout)")
                             print("lastActivity in the finishWorkoutAsync: \(String(describing: workout.workoutActivities.last))")
-                            print("Preparing to finish route with workout: \(workout)  " )
+                            
                             if let metadata = workout.metadata {
                                 for (key, value) in metadata {
                                     print("\(key): \(value)")
@@ -283,20 +294,21 @@ class WorkoutManager:  ObservableObject
                 }
             }
             
-            Task {
-              //  self.printWorkoutActivityType(workout: workout)
-                self.metadataForRoute = self.makeMetadataForRoute(
-                    routeIdentifier: "seastheDayroute",
-                    metadataForRouteDataPointArray: self.metadataForRouteDataPointArray
-                )
-                let routeResult = await self.finishRoute(workout: workout, metadataForRoute: self.metadataForRoute)
-                switch routeResult {
-                case .success(let route):
-                    print("Successfully finished route. Workout UUID: \(workout.uuid), Route UUID: \(route.uuid)")
-                case .failure(let error):
-                    print("Failed to finish route with error: \(error.localizedDescription)")
-                }
+            
+            
+            //  self.printWorkoutActivityType(workout: workout)
+            self.metadataForRoute = self.makeMetadataForRoute(
+                routeIdentifier: "seastheDayroute",
+                metadataForRouteDataPointArray: self.metadataForRouteDataPointArray
+            )
+            let routeResult = await self.finishRoute(workout: workout, metadataForRoute: self.metadataForRoute)
+            switch routeResult {
+            case .success(let route):
+                print("Successfully finished route. Workout finishWorkoutAsync \(workout.uuid), Route UUID: \(route.uuid)")
+            case .failure(let error):
+                print("Failed to finish route with error: \(error.localizedDescription)")
             }
+            
             
         } catch {
             print("An error occurred while finishing the workout: \(error.localizedDescription)")
@@ -583,7 +595,7 @@ class WorkoutManager:  ObservableObject
         print("-------------------- resumed saving HealthStore --------------------")
     }
     
-    func endToSaveHealthData(){
+    func endToSaveHealthData() async {
         let healthService = HealthService.shared
         let workoutManager = WorkoutManager.shared
         //       [String: Any]이지만 데이타가 긴경우 JsonString으로 변환 [String: String]
@@ -602,7 +614,11 @@ class WorkoutManager:  ObservableObject
        
         
         if let startDate = startDate, let endDate = endDate {
-            workoutManager.collectData(startDate: startDate, endDate: endDate, metadataForWorkout: metadataForWorkout)
+            do {
+                try  await  workoutManager.collectData(startDate: startDate, endDate: endDate, metadataForWorkout: metadataForWorkout)
+            } catch {
+                print(error)
+            }
             print("collectData works successfully  in the endToSaveHealthData")
         }  else {
             print("startDate or endDate is nil")
@@ -703,7 +719,40 @@ class WorkoutManager:  ObservableObject
         }
         healthStore.execute(statisticsQuery)
     }
+    
+    
+
+
+    func fetchLatestWorkout(completion: @escaping (HKWorkout?) -> Void) {
+      
+        // 워크아웃 타입 정의
+        let workoutType = HKObjectType.workoutType()
+        
+        // 쿼리 설정: 워크아웃 시작 시간으로 내림차순 정렬
+        let sortDescriptor = NSSortDescriptor(key: HKSampleSortIdentifierEndDate, ascending: false)
+        let workoutQuery = HKSampleQuery(sampleType: workoutType, predicate: nil, limit: 1, sortDescriptors: [sortDescriptor]) { (query, results, error) in
+            if let error = error {
+                print("Error fetching workouts: \(error.localizedDescription)")
+                completion(nil)
+                return
+            }
+            
+            // 가장 최근의 워크아웃을 반환
+            if let latestWorkout = results?.first as? HKWorkout {
+                print("fechLatestWorkout Success: \(latestWorkout)")
+                completion(latestWorkout)
+            } else {
+                print("fetchLatestWorkout fail")
+                completion(nil)
+            }
+        }
+        
+        // 쿼리 실행
+        healthStore.execute(workoutQuery)
+    }
+
     // 스탑워치 시작 메서드
+    
     func startStopwatch() {
         elapsedTime = 0
         pausedElapsedTime = 0
