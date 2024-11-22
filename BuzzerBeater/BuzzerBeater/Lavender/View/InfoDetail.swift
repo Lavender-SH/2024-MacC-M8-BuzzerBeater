@@ -181,7 +181,7 @@ struct InfoDetail: View {
                         isMapModalPresented = true // Present modal when tapped
                     }) {
                         MapPathView(workout: workout, isModal: false)
-                            .frame(height: 250) as! MapPathView
+                            .frame(height: 250) 
                     }
                     .buttonStyle(PlainButtonStyle()) // Disable default button styling
                 }
