@@ -10,6 +10,7 @@ import MapKit
 import SwiftUI
 #if os(watchOS)
 struct MapView: View {
+    @Binding var selection: Int
     @EnvironmentObject var locationManager : LocationManager
     @EnvironmentObject var sailingDataCollector: SailingDataCollector
     @Environment(\.presentationMode) var presentationMode
@@ -23,6 +24,10 @@ struct MapView: View {
     @State private var position: MapCameraPosition = .automatic
     @State private var navigateTo: AnyView?
     
+    @State private var startDragPosition: CGPoint? = nil
+    @State private var pressedPosition: CGPoint = .zero
+    @State private var dragOffset: CGSize = .zero
+    
     //
     //    let locationManager = LocationManager.shared
     //    let windDetector = WindDetector.shared
@@ -35,95 +40,99 @@ struct MapView: View {
     
     var body: some View {
         
-            ZStack {
-                //        Map(position: $cameraPosition, interactionModes: [.all]){
-                //                    .stroke(Color.blue, lineWidth: 2)
-                //
-                //            }
-                Map(position: $position, interactionModes: [.all]) {
-                    if !coordinates.isEmpty {
-                        MapPolyline(coordinates: coordinates)
-                            .stroke(Color.blue, lineWidth: 2)
-                    }
-                }
-                .ignoresSafeArea(.all)
-                .onAppear {
-                    position = .userLocation(followsHeading: true, fallback: MapCameraPosition.region(MKCoordinateRegion(
-                        center: CLLocationCoordinate2D(latitude: LocationManager.shared.latitude, longitude: LocationManager.shared.longitude),
-                        span: MKCoordinateSpan(latitudeDelta: mapShowingDegree, longitudeDelta: mapShowingDegree)
-                    )))
-                    updateCameraPosition(with: locationManager.lastLocation)  //<= 이것도 .automatic과 중복됨
-                    
-                    updateCoordinates() // 초기 좌표 업데이트
-                }
-                //            .onChange(of: locationManager.lastLocation) { newValue, oldValue in
-                //                // 1분단위로 SailingData를 저장하는데 locationManager를 사용할 필요가 있는가?
-                //                if newValue != oldValue {
-                //                    updateCameraPosition(with : newValue) // 카메라 위치 업데이트
-                //                    updateCoordinates() //좌표 업데이트
-                //                }
-                //                print("sailing data array changed : \(coordinates.count)")
-                //            }
-                .onChange(of : sailingDataCollector.sailingDataPointsArray) { newValue, oldValue in
-                    if newValue != oldValue {
-                        //                    let location = CLLocation(latitude: sailingDataCollector.sailingDataArray.last?.latitude ?? 36.01737499212958, longitude:sailingDataCollector.sailingDataArray.last?.longitude ?? 129.32226514081427 )
-                        //                    updateCameraPosition(with : location)
-                        
-                        updateCoordinates() //좌표 업데이트
-                        print("sailingDataCollector.sailingdata array changed : \(coordinates.count)")
-                    }
-                }
-                .mapControls{
-                    
-                    MapUserLocationButton()
-                    MapCompass()
-#if !os(watchOS)
-                    MapScaleView()
-#endif
-                }
-                
-                GeometryReader { geometry in
-                    Button(action: {
-                        
-                    }) {
-                        ZStack {
-                            Rectangle()
-                                //.fill(Color.clear)
-                                .fill(Color.gray.opacity(0.001))
-                                .frame(width: 50, height: 300)
-                                .zIndex(1)
-                            Image(systemName: "chevron.left")
-                                .resizable()
-                                .scaledToFit()
-                                .frame(width: 15, height: 15)
-                                .foregroundColor(.white)
-                        }
-                    }
-                    .buttonStyle(.plain)
-                    .position(x: geometry.size.width * 0.13, y: geometry.size.height * 0.5)
-                    
-                    Button(action: {
-    
-                    }) {
-                        ZStack {
-                            Rectangle()
-                                //.fill(Color.clear)
-                                .fill(Color.gray.opacity(0.001))
-                                .frame(width: 50, height: 100)
-                                .zIndex(1)
-                            Image(systemName: "chevron.right")
-                                .resizable()
-                                .scaledToFit()
-                                .frame(width: 15, height: 15)
-                                .foregroundColor(.white)
-                        }
-                    }
-                    .buttonStyle(.plain)
-                    .position(x: geometry.size.width * 0.87, y: geometry.size.height * 0.5)
+        ZStack {
+            //        Map(position: $cameraPosition, interactionModes: [.all]){
+            //                    .stroke(Color.blue, lineWidth: 2)
+            //
+            //            }
+            Map(position: $position, interactionModes: [.all]) {
+                if !coordinates.isEmpty {
+                    MapPolyline(coordinates: coordinates)
+                        .stroke(Color.blue, lineWidth: 2)
                 }
             }
+            .ignoresSafeArea(.all)
+            .onAppear {
+                position = .userLocation(followsHeading: true, fallback: MapCameraPosition.region(MKCoordinateRegion(
+                    center: CLLocationCoordinate2D(latitude: LocationManager.shared.latitude, longitude: LocationManager.shared.longitude),
+                    span: MKCoordinateSpan(latitudeDelta: mapShowingDegree, longitudeDelta: mapShowingDegree)
+                )))
+                updateCameraPosition(with: locationManager.lastLocation)  //<= 이것도 .automatic과 중복됨
+                
+                updateCoordinates() // 초기 좌표 업데이트
+            }
+            //            .onChange(of: locationManager.lastLocation) { newValue, oldValue in
+            //                // 1분단위로 SailingData를 저장하는데 locationManager를 사용할 필요가 있는가?
+            //                if newValue != oldValue {
+            //                    updateCameraPosition(with : newValue) // 카메라 위치 업데이트
+            //                    updateCoordinates() //좌표 업데이트
+            //                }
+            //                print("sailing data array changed : \(coordinates.count)")
+            //            }
+            .onChange(of : sailingDataCollector.sailingDataPointsArray) { newValue, oldValue in
+                if newValue != oldValue {
+                    //                    let location = CLLocation(latitude: sailingDataCollector.sailingDataArray.last?.latitude ?? 36.01737499212958, longitude:sailingDataCollector.sailingDataArray.last?.longitude ?? 129.32226514081427 )
+                    //                    updateCameraPosition(with : location)
+                    
+                    updateCoordinates() //좌표 업데이트
+                    print("sailingDataCollector.sailingdata array changed : \(coordinates.count)")
+                }
+            }
+            .mapControls{
+                
+                MapUserLocationButton()
+                MapCompass()
+#if !os(watchOS)
+                MapScaleView()
+#endif
+            }
             
-        
+            GeometryReader { geometry in
+                
+                ZStack {
+                    Rectangle()
+                    //.fill(Color.clear)
+                        .fill(Color.gray.opacity(0.5))
+                        .frame(width: 55, height: 80)
+                        .zIndex(1)
+                    Image(systemName: "chevron.left")
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: 15, height: 15)
+                        .foregroundColor(.white)
+                }
+                .allowsHitTesting(true)
+                .position(x: geometry.size.width * 0.13, y: geometry.size.height * 0.5)
+                .gesture(
+                    LongPressGesture(minimumDuration: 0.01, maximumDistance: 3)
+                        .onEnded { value in
+                            selection = 2
+                        }
+                )
+                
+                
+                ZStack {
+                    Rectangle()
+                    //.fill(Color.clear)
+                        .fill(Color.gray.opacity(0.5))
+                        .frame(width: 55, height: 80)
+                        .zIndex(1)
+                    Image(systemName: "chevron.right")
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: 15, height: 15)
+                        .foregroundColor(.white)
+                }
+                .allowsHitTesting(true)
+                .position(x: geometry.size.width * 0.87, y: geometry.size.height * 0.5)
+                .gesture(
+                    LongPressGesture(minimumDuration: 0.01, maximumDistance: 3)
+                        .onEnded { value in
+                            selection = 4
+                        }
+                )
+            }
+        }
     }
     // updateCameraPosition 이 필요가 없음 왜냐면  case .automatic = position  이니까.
     private func updateCameraPosition(with location : CLLocation? = nil) {

@@ -17,7 +17,7 @@ import simd
 struct ConnectView: View {
     
     // App context
-    @EnvironmentObject var viewModel: BleDeviceManager  
+    @EnvironmentObject var bleDeviceManager: BleDeviceManager
     
     // MARK: Constructor
   
@@ -25,25 +25,26 @@ struct ConnectView: View {
     var body: some View {
         ZStack(alignment: .leading) {
             VStack{
-                Toggle(isOn: $viewModel.enableScan){
+                Toggle(isOn: $bleDeviceManager.enableScan){
                     Text("Turn on device scanning :")
-                }.onChange(of: viewModel.enableScan) {_, value in
+                }.onChange(of: bleDeviceManager.enableScan) {_, value in
                     if value {
-                        viewModel.scanDevices()
+                        bleDeviceManager.scanDevices()
                     } else {
-                        viewModel.stopScan()
+                        bleDeviceManager.stopScan()
+                        
                     }
                 }.padding(5)
                 
                 // 왜 List는 안될까???
-//                List(self.viewModel.deviceList , id: \.id ) { device in
+//                List(self.bleDeviceManager.deviceList , id: \.id ) { device in
 //                    Text("device.name: \(String(describing: device.name))")
 //                    Bwt901bleView(device, viewModel)
 //                }
 
 
-                ForEach (self.viewModel.deviceList) { device in
-                    Bwt901bleView(device, viewModel)
+                ForEach (self.bleDeviceManager.deviceList) { device in
+                    Bwt901bleView(device, bleDeviceManager)
 
                 }
 

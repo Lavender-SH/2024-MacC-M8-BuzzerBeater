@@ -222,7 +222,7 @@ extension WitBluetoothManager : CBCentralManagerDelegate{
     public func centralManager(_ central: CBCentralManager, didFailToConnect peripheral: CBPeripheral, error: Error?) {
         
         // 这里可以发通知出去告诉设备连接界面连接失败
-        // You can send a notification here to inform the device connection interface that the connection failed
+        // Here, a notification can be sent to inform the device connection screen of the connection failure
 
     }
     

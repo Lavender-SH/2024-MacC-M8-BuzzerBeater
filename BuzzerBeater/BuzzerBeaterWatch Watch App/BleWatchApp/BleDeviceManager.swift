@@ -16,9 +16,10 @@ class BleDeviceManager: ObservableObject ,IBluetoothEventObserver, IBwt901bleRec
     
     static let shared = BleDeviceManager()
     // Get bluetooth manager
-    let bluetoothManager = WitBluetoothManager.shared
     
-   
+    let bluetoothManager = WitBluetoothManager.shared
+    var dataPublisher = PassthroughSubject<SIMD3<Double >, Never>()
+        
     // Whether to scan the device
     @Published var enableScan = false
     
@@ -28,18 +29,26 @@ class BleDeviceManager: ObservableObject ,IBluetoothEventObserver, IBwt901bleRec
     
     // Device data to display
     @Published var deviceData: String = "device not connected"
-    @Published var angles = SIMD3<Float>(x: 0.0, y: 0, z: 0)
+    @Published var angles = SIMD3<Double>(x: 0.0, y: 0.0, z: 0.0)
     @Published var isBlueToothConnected: Bool = false
-    @Published var compassBias: Double = 0.0
+   
     
     var cancellables: Set<AnyCancellable> = []
+    
+    var canEnableButton: AnyPublisher<Bool, Never> {
+        Publishers.CombineLatest($enableScan, $isBlueToothConnected )
+                .map { enableScan, isBlueToothConnected in
+                    return enableScan && isBlueToothConnected  // Button is enabled only if both are true
+                }
+                .eraseToAnyPublisher()
+        }
     
     init(){
         // Current scan status
         self.enableScan = self.bluetoothManager.isScaning
         
         // start auto refresh thread
-        startRefreshThread()
+   //     startRefreshThread()
     }
     deinit {
         cancellables.removeAll() // 모든 구독 해제
@@ -120,10 +129,12 @@ class BleDeviceManager: ObservableObject ,IBluetoothEventObserver, IBwt901bleRec
             
             // Monitor data
             bwt901ble?.registerListenKeyUpdateObserver(obj: self)
+            
             isBlueToothConnected = true
         }
         catch{
             print("Failed to open device")
+            isBlueToothConnected = true
         }
     }
     
@@ -154,7 +165,10 @@ class BleDeviceManager: ObservableObject ,IBluetoothEventObserver, IBwt901bleRec
     func onRecord(_ bwt901ble: Bwt901ble) {
         
         let deviceData =  getDeviceDataToString(bwt901ble)
-        
+        self.angles  =  getDeviceAngleData(bwt901ble)
+       
+        dataPublisher.send(angles)
+ 
         //Prints to the console, where you can also log the data to your file
         print("onRecrod: \(deviceData)")
     }
@@ -215,23 +229,20 @@ class BleDeviceManager: ObservableObject ,IBluetoothEventObserver, IBwt901bleRec
         s  = "\(s)AngX:\(device.getDeviceData(WitSensorKey.AngleX) ?? "") °\n"
         s  = "\(s)AngY:\(device.getDeviceData(WitSensorKey.AngleY) ?? "") °\n"
         s  = "\(s)AngZ:\(device.getDeviceData(WitSensorKey.AngleZ) ?? "") °\n"
-        
-        getDeviceAngleData(device)
         return s
     }
-    
-    func getDeviceAngleData(_ device:Bwt901ble) {
-        var s = ""
-        s  = "\(s)name:\(device.name ?? "")\n"
-        s  = "\(s)mac:\(device.mac ?? "")\n"
-        DispatchQueue.main.async {
-            self.angles.x = Float(device.getDeviceData(WitSensorKey.AngleX) ?? "") ?? 0.0
-            self.angles.y = Float(device.getDeviceData(WitSensorKey.AngleY) ?? "") ?? 0.0
-            self.angles.z = Float(device.getDeviceData(WitSensorKey.AngleZ) ?? "") ?? 0.0
-        }
+ 
+
+    func getDeviceAngleData(_ device: Bwt901ble) -> SIMD3<Double> {
+        let angleX = Double (device.getDeviceData(WitSensorKey.AngleX) ?? "") ?? 0.0
+        let angleY = Double(device.getDeviceData(WitSensorKey.AngleY) ?? "") ?? 0.0
+        let angleZ = Double (device.getDeviceData(WitSensorKey.AngleZ) ?? "") ?? 0.0
         
+        return SIMD3<Double>(x: angleX, y: angleY, z: angleZ)
     }
-    
+
+       
+     
     
     
     // MARK: Addition calibration
@@ -239,7 +250,6 @@ class BleDeviceManager: ObservableObject ,IBluetoothEventObserver, IBwt901bleRec
         for device in deviceList {
             
             do {
-                
                 // Unlock register
                 try device.unlockReg()
                 
@@ -260,7 +270,6 @@ class BleDeviceManager: ObservableObject ,IBluetoothEventObserver, IBwt901bleRec
     func startFieldCalibration(){
         for device in deviceList {
             do {
-                
                 // Unlock register
                 try device.unlockReg()
                 
@@ -329,7 +338,7 @@ class BleDeviceManager: ObservableObject ,IBluetoothEventObserver, IBwt901bleRec
                 // save
                 try device.saveReg()
             }catch{
-                print("设置失败 Set failed")
+                print("Set failed")
             }
         }
     }

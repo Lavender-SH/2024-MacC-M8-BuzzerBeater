@@ -11,6 +11,7 @@ import CoreBluetooth
 
 struct BleView: View {
     var body: some View {
+
         NavigationView {
             List {
                 // NavigationLink로 각각의 뷰를 연결
@@ -24,6 +25,7 @@ struct BleView: View {
                         .font(.headline)
                         .padding()
                 }
+
             }
             .navigationTitle("Sensor Settings") // 네비게이션 바 제목 설정
         }

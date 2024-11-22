@@ -20,6 +20,7 @@ struct BuzzerBeaterWatch_Watch_AppApp: App {
         _ = HealthService.shared
         _ = BleDeviceManager.shared
         _ = WorkoutManager.shared
+        _ = SailAngleDetect.shared
         
     }
     
@@ -34,6 +35,7 @@ struct BuzzerBeaterWatch_Watch_AppApp: App {
                 .environmentObject(HealthService.shared)
                 .environmentObject(BleDeviceManager.shared)
                 .environmentObject(WorkoutManager.shared)
+                .environmentObject(SailAngleDetect.shared)
         }
     }
 }

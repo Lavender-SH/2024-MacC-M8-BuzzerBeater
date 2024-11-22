@@ -24,7 +24,7 @@ struct InfoRow: View {
                         List {
                             ForEach(groupedWorkoutsByMonth(), id: \.key) { month, workouts in
                                 Section(header: Text(month)
-                                    .font(.headline)
+                                    .font(.system(size: 17, weight: .bold, design: .rounded))
                                     .foregroundColor(.white)) {
                                         ForEach(workouts, id: \.self) { workout in
                                             NavigationLink(
@@ -39,17 +39,18 @@ struct InfoRow: View {
                                                     
                                                     VStack(alignment: .leading) {
                                                         Text("Dinghy Yacht")
-                                                            .font(.headline)
+                                                            .font(.system(size: 20, weight: .bold, design: .rounded))
+                                                            .foregroundColor(.white)
                                                         
                                                         let totalDistance = workout.metadata?["TotalDistance"] as? Double ?? 0.0
                                                         Text("\(formattedDistance(totalDistance))")
-                                                            .font(.title3)
+                                                            .font(.system(size: 20, weight: .bold, design: .rounded))
                                                             .foregroundColor(.cyan)
                                                         
                                                         HStack {
                                                             Spacer()
                                                             Text(DateFormatter.yearMonthDay.string(from: workout.startDate))
-                                                                .font(.caption)
+                                                                .font(.system(size: 12, weight: .bold, design: .rounded))
                                                                 .foregroundColor(.secondary)
                                                         }
                                                     }
@@ -58,8 +59,8 @@ struct InfoRow: View {
                                             .id(workout.hashValue)
                                         }
                                         .onDelete { indexSet in
-                                                                                deleteWorkout(at: indexSet, in: workouts)
-                                                                            }
+                                            deleteWorkout(at: indexSet, in: workouts)
+                                        }
                                     }
                             }
                         }
@@ -84,7 +85,15 @@ struct InfoRow: View {
                 isLoading = false
             }
             .navigationTitle("Navigation Record")
-            
+//            .toolbar {
+//                ToolbarItem(placement: .automatic) {
+//                    Text("Navigation Record")
+//                        .font(.system(size: 24, weight: .bold, design: .rounded))
+//                        .foregroundColor(.white)
+//                        .padding(10)
+//                        .background(Capsule().fill(Color.blue))
+//                }
+//            }
         }
     }
     
@@ -105,12 +114,12 @@ struct InfoRow: View {
         return grouped.sorted { $0.key > $1.key }
     }
     private func deleteWorkout(at indexSet: IndexSet, in workouts: [HKWorkout]) {
-            indexSet.forEach { index in
-                let workout = workouts[index]
-                viewModel.deleteWorkout(workout) // Calls the delete method in the ViewModel
-            }
-            Task {
-                await viewModel.fetchWorkout(appIdentifier: "seastheDay") // Refresh the workout list
-            }
+        indexSet.forEach { index in
+            let workout = workouts[index]
+            viewModel.deleteWorkout(workout) // Calls the delete method in the ViewModel
         }
+        Task {
+            await viewModel.fetchWorkout(appIdentifier: "seastheDay") // Refresh the workout list
+        }
+    }
 }
