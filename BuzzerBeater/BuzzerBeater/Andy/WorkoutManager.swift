@@ -73,11 +73,10 @@ class WorkoutManager:  ObservableObject
 //    var timerForWind: Timer?
 //  pausedTime is for resumeSaveToHealthData
     private var pausedTime: TimeInterval = 0 // 일시정지 시간 누적
-    
-//    private var timer: Timer?
-    var elapsedTime: TimeInterval = 0
+    private var timer: Timer?
+    private var elapsedTime: TimeInterval = 0
+    @Published var formattedElapsedTime: String = "00:00:00"
 
-// below variables are for Timer in the screen.
     private var isPaused: Bool = false // 일시정지 상태를 저장하는 변수
     var pauseStartDate: Date = Date()
     var pauseEndDate : Date  = Date()
@@ -86,11 +85,13 @@ class WorkoutManager:  ObservableObject
    // @Published var stopWatchEnabled : Bool = false
     
     deinit {
+          stopStopwatch()
            cancellables.removeAll() // 모든 구독 해제
            print("Workout deinitialized")
        }
     
     
+
     func startWorkout(startDate: Date)  {
         // 운동을 시작하기 전에 HKWorkoutBuilder를 초기화
         if isWorkoutActive  { return }
@@ -763,11 +764,10 @@ class WorkoutManager:  ObservableObject
         //                self.updateFormattedElapsedTime()
         //            }
         //
-      
         
+        //Timer.publish(every: TimeInterval(1), on: .main, in: .default)
         //Andy added
-  //      stopWatchEnabled = true
-        
+        //stopWatchEnabled = true
         Timer.publish(every: TimeInterval(0.1), on: .main, in: .common)
             .autoconnect() // Timer가 자동으로 시작하도록 설정
             .sink { [weak self] _ in
@@ -776,6 +776,7 @@ class WorkoutManager:  ObservableObject
                     let currentDate = Date()
                     self.elapsedTime = currentDate.timeIntervalSince(self.startDate ?? Date()) - self.pausedElapsedTime
                     self.updateFormattedElapsedTime()
+                    
                 }
             } .store(in: &cancellables)
     }

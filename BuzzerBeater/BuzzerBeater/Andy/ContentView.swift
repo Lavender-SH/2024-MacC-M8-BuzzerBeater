@@ -16,6 +16,7 @@ struct ContentView: View {
     @EnvironmentObject private var sailAngleFind : SailAngleFind
     @EnvironmentObject private var sailingDataCollector : SailingDataCollector
     @EnvironmentObject private var bleDeviceManager: BleDeviceManager
+    @EnvironmentObject var sharedWorkoutManager : WorkoutManager
     @State private var selection = 2
 
     private let totalTabs = 3 // 총 탭 수
@@ -59,10 +60,12 @@ struct ContentView: View {
                 //                    Text("Info")
                 //                }
                 //                .tag(4)
-                BleView()
-                    .environmentObject(BleDeviceManager.shared)
-                    .tag(4)
-            }
+              
+//                 BleView()
+//                     .environmentObject(BleDeviceManager.shared)
+//                     .tag(4)
+//             }
+              
 //            .navigationDestination(isPresented: $showWatchResultRecord) {
 //                            if let latestWorkout = WorkoutManager.shared.workout {
 //                                WatchResultRecord(workout: latestWorkout)
@@ -82,9 +85,12 @@ struct SessionPage: View {
     @EnvironmentObject  var apparentWind :ApparentWind
     @EnvironmentObject  var sailAngleFind : SailAngleFind
     @EnvironmentObject  var sailingDataCollector : SailingDataCollector
-    
-    @State  private var isSavingData = false
+
+    //var sharedWorkoutManager = WorkoutManager.shared
+    @EnvironmentObject var sharedWorkoutManager : WorkoutManager
+    @State private var isSavingData = false
     @State var isShowingWorkoutList = false
+    @State private var isSensorSetting = false
     @State var showingLastWorkoutSnapShot = false
     @State private var elapsedTime: TimeInterval = 0 // 스탑워치 시간
 //@State private var timer: Timer? // 타이머 인스턴스
@@ -96,13 +102,38 @@ struct SessionPage: View {
     
     var body: some View {
         VStack(alignment: .center) {
+            Button(action: {
+                isSensorSetting.toggle()
+                
+            }) {
+                Image(systemName: "sensor.fill")
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: 18, height: 18) // 아이콘 크기 설정
+                    .foregroundColor(Color.white) // 아이콘 색상
+                    .padding(0) // 아이콘 패딩
+            }
+            .buttonStyle(CustomButtonStyle(
+                backgroundColor: .blue,
+                foregroundColor: .blue
+            ))
+            
+            .sheet(isPresented: $isSensorSetting) {
+                BleView()
+            }
+            .padding([.leading], -85)
+            .padding(.top, 10)
+            //.disabled(sharedWorkoutManager.isSavingData)
+            
             Text(sharedWorkoutManager.formattedElapsedTime)
                 .foregroundColor(.yellow)
                 .font(.system(size: 32))
                 .fontDesign(.rounded)
                 .multilineTextAlignment(.center)
-
+                .padding(.top, -7)
+            
    //         StopWatchView()
+
             HStack {
                 Button(action: {
                     sharedWorkoutManager.activateWaterLock()
@@ -149,7 +180,6 @@ struct SessionPage: View {
                 
                 Button(action: {
                     sharedWorkoutManager.isSavingData = false
-                  
                     sharedWorkoutManager.stopStopwatch()
                     
                     Task{
@@ -229,6 +259,7 @@ struct SessionPage: View {
             }
         }
         .padding(.top, 10)
+        .ignoresSafeArea(.all)
         //.navigationTitle("Info")
         
     }
