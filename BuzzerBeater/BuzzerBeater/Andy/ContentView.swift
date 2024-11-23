@@ -24,14 +24,14 @@ struct ContentView: View {
     var body: some View {
         NavigationStack {
             TabView(selection:$selection) {
-                SessionPage()
+                SessionPage(selection: $selection)
                     .environmentObject(LocationManager.shared)
                     .environmentObject(WindDetector.shared)
                     .environmentObject(ApparentWind.shared)
                     .environmentObject(SailAngleFind.shared)
                     .environmentObject(SailingDataCollector.shared)
                     .tabItem {
-                        Image(systemName: "info.circle.fill")
+                        Image(systemName: "command.circle.fill")
                         //Text("Info")
                     }
                     .tag(1)
@@ -100,6 +100,7 @@ struct SessionPage: View {
     
     //let sharedWorkoutManager = WorkoutManager.shared
     @State var workoutForView  : HKWorkout?
+    @Binding var selection: Int
     
     var body: some View {
         VStack(alignment: .center) {
@@ -140,7 +141,7 @@ struct SessionPage: View {
             HStack {
                 Button(action: {
                     sharedWorkoutManager.activateWaterLock()
-                    
+                    selection = 2
                     
                 }) {
                     Image(systemName: "drop.fill")
@@ -213,6 +214,10 @@ struct SessionPage: View {
                         NotificationCenter.default.post(name: .resetCompassView, object: nil)
                         
                         isMap = false
+                        
+                        DispatchQueue.main.async {
+                            isPaused = false
+                        }
                     }
                 }) {
                     Image(systemName: "xmark")
@@ -243,7 +248,8 @@ struct SessionPage: View {
                         sharedWorkoutManager.pauseStopwatch() // 일시정지 기능
                         sharedWorkoutManager.pauseSavingHealthData()
                     } else {
-                        sharedWorkoutManager.resumeStopwatch() // 다시 시작 기능
+                        sharedWorkoutManager.resumeStopwatch()
+                        //sharedWorkoutManager.resumeWorkout() // 다시 시작 기능
                         sharedWorkoutManager.resumeSavingHealthData()
                     }
                 }) {

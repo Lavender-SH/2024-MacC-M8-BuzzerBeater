@@ -11,7 +11,7 @@ import Combine
 struct BiasCheckView: View {
     @EnvironmentObject var bleDeviceManager : BleDeviceManager
     @StateObject  var biasCheckViewModel = BiasCheckViewModel()
-    
+
     let locationManager = LocationManager.shared
     @EnvironmentObject var sailAngleDetect : SailAngleDetect
    
@@ -29,7 +29,11 @@ struct BiasCheckView: View {
             //            Text("Bias: \(sailAngleDetect.biasCompass, specifier: "%.f")") .font(Font.system (size:16))
             //            Text("Boat Heading : \(sailAngleDetect.boatHeading, specifier: "%.f")") .font(Font.system (size:16))
             //            Text("Sail Heading : \(sailAngleDetect.deviceHeading, specifier: "%.f")") .font(Font.system (size:16))
-            
+            HStack {
+                Text(String(format: "( %.f ,", self.bleDeviceManager.angles.x))
+                Text(String(format: "%.f ," , self.bleDeviceManager.angles.y))
+                Text(String(format: "%.f )", self.bleDeviceManager.angles.z))
+            }
             
             HStack {
                 ZStack {

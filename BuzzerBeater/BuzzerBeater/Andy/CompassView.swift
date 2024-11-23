@@ -48,8 +48,8 @@ struct CompassView: View {
                 .font(.system(size: 17))
                 .fontDesign(.rounded)
                 .multilineTextAlignment(.leading)
-                .padding([.leading], -90)
-                .padding(.top, -30)
+                .padding([.leading], -87)
+                .padding(.top, -34)
 //                .onChange(of: sharedWorkoutManager.formattedElapsedTime) { _  , _ in
 //                    
 //                    self.testString = sharedWorkoutManager.formattedElapsedTime
