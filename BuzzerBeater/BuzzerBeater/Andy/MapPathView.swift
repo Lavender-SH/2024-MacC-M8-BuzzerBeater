@@ -9,12 +9,6 @@ import MapKit
 import SwiftUI
 import HealthKit
 
-struct Segment {
-    let id = UUID()
-    let start: CLLocationCoordinate2D
-    let end : CLLocationCoordinate2D
-    let color : Color
-}
 struct MapPathView: View {
     
     let workoutManager = WorkoutManager.shared
@@ -28,7 +22,8 @@ struct MapPathView: View {
     @State var minVelocity: Double = 0.0
     @State var maxVelocity: Double = 10.0
     
-    @State var segments : [Segment] =  []
+    @State var segments: [Segment] = []
+
     
     var isModal: Bool
     
@@ -40,54 +35,34 @@ struct MapPathView: View {
     var body: some View {
         
         VStack{
-            if isDataLoaded {
+            if mapPathViewModel.isSegmentLoaded  ||  mapPathViewModel.isDataLoaded {
                 ZStack(alignment: .top) {
                     
                     Map(position: $mapPathViewModel.position, interactionModes: [.zoom] ) {
-                        ForEach( 0..<segments.count , id:\.self) { index in
-                            
-                            // 각 segment의 start, end 좌표를 이용해 경로를 지도에 추가
-                            let startCoordinate = segments[index].start
-                            let endCoordinate = segments[index].end
-                            let color = segments[index].color
-                            let polyline = MKPolyline(coordinates: [startCoordinate, endCoordinate], count: 2)
-                            MapPolyline(coordinates: [startCoordinate, endCoordinate])
-                                                   .stroke(color, lineWidth: 6)
-                        }
-                        MapPolyline(coordinates: mapPathViewModel.coordinates)
+                     
+                       MapPolyline(coordinates: mapPathViewModel.coordinates)
                             .stroke(Color.cyan, lineWidth: 2)
+                        if mapPathViewModel.isSegmentLoaded {
+                            ForEach( 0..<mapPathViewModel.segments.count , id:\.self) { index in
+                                // 각 segment의 start, end 좌표를 이용해 경로를 지도에 추가
+                                let startCoordinate = mapPathViewModel.segments[index].start
+                                let endCoordinate = mapPathViewModel.segments[index].end
+                                let color = mapPathViewModel.segments[index].color
+                                let polyline = MKPolyline(coordinates: [startCoordinate, endCoordinate], count: 2)
+                                MapPolyline(coordinates: [startCoordinate, endCoordinate])
+                                    .stroke(color, lineWidth: 6)
+                            }
+                        }
                     }
                     .mapControls{
-                        VStack{
+                    
                             MapUserLocationButton()
                             MapCompass()
-                        }
-                        
+    
 #if !os(watchOS)
                         MapScaleView()
 #endif
                     }   .ignoresSafeArea(.all)
-                    
-                    //                    VStack{
-                    //#if !os(watchOS)
-                    //                        Text("\(formattedDuration(duration))").font(.caption2)
-                    //                        Text("Total Distance: \(formattedDistance(totalDistance))")
-                    //                            .font(.caption2)
-                    //                        Text("Total Energy Burned: \(formattedEnergyBurned(totalEnergyBurned))")
-                    //                            .font(.caption2)
-                    //                        Text("MaxSpeed: \(maxSpeed) --  maxVelocity \(velocities.max() ?? 10)")
-                    //                            .font(.caption2)
-                    //
-                    //#endif
-                    //
-                    //
-                    //#if os(watchOS)
-                    //                        Text("\(formattedDuration(duration))").font(.caption2)
-                    //
-                    //#endif
-                    //
-                    //                    }.padding(.top, 50)
-                    
                     if isModal {
                         VStack {
                             ZStack {
@@ -111,119 +86,50 @@ struct MapPathView: View {
                     }
                 }
             }
-            
             else {
                 //Text("Sky is Blue and Water is Clear!!!")
                 ProgressView()
+                
             }
             
         }
-        .task{
-            if mapPathViewModel.workout != self.workout {
-                print("mapPathViewModel will load data in the mapPathView \n workout: \(String(describing: self.workout))    \n mapPathViewModel.workout:\(String(describing: mapPathViewModel.workout))" )
-                if let workout = self.workout {
-                    await  mapPathViewModel.loadWorkoutData(workout: workout)
+        
+        .onAppear{
+            Task {
+                if mapPathViewModel.workout != self.workout {
+                    guard let workout = self.workout else {
+                        print("timestamp: \(Date()) workouit is nil in onAppear")
+                        return  }
+                    print("timestamp:\(Date()) mapPathViewModel will load data in the mapPathView \n self workout: \(String(describing: self.workout?.uuid))    \n mapPathViewModel.workout:\(String(describing: mapPathViewModel.workout?.uuid))" )
+                    await mapPathViewModel.loadWorkoutData(workout: workout)
                     
-                    self.mapPathViewModel.workout = self.workout //중복이지만 다시 작성
-                    print("mapPathViewModel after loadWorkoutData \(mapPathViewModel.workout) \(mapPathViewModel.isDataLoaded)")
-                    self.minVelocity = mapPathViewModel.velocities.min() ?? 0.0
-                    self.maxVelocity = mapPathViewModel.velocities.max() ?? 15.0
-                    await computeSegments()
-                    isDataLoaded = true
+                    await mapPathViewModel.computeSegments()
+                    
+                    print("timestamp:\(Date()) mapPathViewModel after loadWorkoutData uuid:\(mapPathViewModel.workout?.uuid) isDataLoaded: \(mapPathViewModel.isDataLoaded) segment count :\(mapPathViewModel.segments.count)" )
                 }
                 else {
-                    print("self.workout in the mapPathView is nil")
-                    isDataLoaded = true
+                    
+                    await mapPathViewModel.computeSegments()
+                    
+                    print("timestamp:\(Date()) mapPathViewModel will not load data in the mapPathViw  workout: \(String(describing: self.workout?.uuid))")
+                    print("timestamp:\(Date()) segment count :\(mapPathViewModel.segments.count) ")
                 }
-            } else {
-             
-                self.minVelocity = mapPathViewModel.velocities.min() ?? 0.0
-                self.maxVelocity = mapPathViewModel.velocities.max() ?? 15.0
-                await computeSegments()
-                isDataLoaded = true
-                print("mapPathViewModel will not load data in the mapPathViw  workout: \(String(describing: self.workout)) \n    mapPathViewModel.workout:\(String(describing: mapPathViewModel.workout))" )
             }
-            
+        }
+        .onChange(of: mapPathViewModel.isDataLoaded) { _, newValue in
+            Task{
+                await mapPathViewModel.computeSegments()
+                print("timestamp:\(Date()) isSegmentLoaded changed to \(newValue)")
+                print("timestamp:\(Date()) mapPathViewModel.segments.count \(mapPathViewModel.segments.count)")
+            }
         }
         .ignoresSafeArea()
     }
     
-    
-    func computeSegments()  async {
-        let startIndex = 0
-        let endIndexCount = mapPathViewModel.coordinates.count
-        let endIndex = endIndexCount - 2
-        
-        let interval = Int(endIndexCount / 1000) + 1
-        let countOfArray  = Int( endIndexCount / interval )
-        let endOfArrayIndex = countOfArray  - 2
-        
-        print("count of array in compute segments: \(countOfArray) endIndex:\(endIndex) interval :\(interval)")
-        print("mapPathviewModel.workout in the compute Segment  \(String(describing: mapPathViewModel.workout)) count: \(mapPathViewModel.coordinates.count)")
-        
-        guard endOfArrayIndex  >= 0 else { return print("endIndexOfArray is less than or equal to 0") }
-        
-        var segments: [Segment] = Array(repeating: Segment(start: CLLocationCoordinate2D(latitude: 0, longitude: 0), end: CLLocationCoordinate2D(latitude: 0, longitude: 0), color: .clear), count: endOfArrayIndex + 1 )
-
-        let minVelocity = mapPathViewModel.velocities.min() ?? 0.0
-        let maxVelocity = mapPathViewModel.velocities.max() ?? 10.0
-        let group = DispatchGroup()
-        if endIndex  <= 0 {
-            return print("endIndex is less than or equal to 0")
-        }
-        var count = 0
-        for index in stride(from: startIndex, to: endIndex  - interval * 3, by: interval)  {
-          
-            group.enter()
-
-            DispatchQueue.main.async {
-                let coordinate = mapPathViewModel.coordinates[index]
-                let nextCoordinate = mapPathViewModel.coordinates[index + interval]
-              
-                let speed = (mapPathViewModel.velocities[index] + mapPathViewModel.velocities[index + interval]) / 2.0
-                let color = calculateColor(for: speed, minVelocity: minVelocity, maxVelocity: maxVelocity)
-                let segment = Segment(start: coordinate, end: nextCoordinate, color: color)
-
-                    print("index :\(index) count \(count)")
-                    segments[count] = segment // 순서 보장을 위해 인덱스 맞춰서 저장
-                    count += 1
-                    group.leave()
-           
-            }
-            
-        }
-
-        group.notify(queue: DispatchQueue.main) {
-            self.segments = segments.compactMap { $0 }
-         
-        }
-    }
 
         
-    
-        
 
-    func calculateColor(for velocity: Double, minVelocity: Double, maxVelocity: Double) -> Color {
-        if maxVelocity <= minVelocity {
-            return Color.green
-        }
-        let progress = CGFloat((velocity - minVelocity) / (maxVelocity - minVelocity))
-        
-        if progress < 0.7 {
-            return Color.yellow
-        }
-        else if progress  >= 0.7 && progress < 0.85 {
-            return Color.green
-        }
-        
-        else if progress >= 0.85 {
-            return Color.red
-        }
-        else {
-            return Color.blue
-        }
-    }
-    
+   
 
     
     func formattedDuration(_ duration: TimeInterval) -> String {
