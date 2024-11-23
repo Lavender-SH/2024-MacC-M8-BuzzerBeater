@@ -84,10 +84,10 @@ class WorkoutManager:  ObservableObject
    // @Published var stopWatchEnabled : Bool = false
     
     deinit {
-          stopStopwatch()
-           cancellables.removeAll() // 모든 구독 해제
-           print("Workout deinitialized")
-       }
+        stopStopwatch()
+        cancellables.removeAll() // 모든 구독 해제
+        print("Workout deinitialized")
+    }
     
     
 
@@ -757,7 +757,7 @@ class WorkoutManager:  ObservableObject
     
     func startStopwatch() {
         elapsedTime = 0
-        pausedElapsedTime = 0
+        //pausedElapsedTime = 0
         isPaused = false
         updateFormattedElapsedTime()
         //            timer = Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { _ in
@@ -766,22 +766,21 @@ class WorkoutManager:  ObservableObject
         //            }
         //
         
-        //Timer.publish(every: TimeInterval(1), on: .main, in: .default)
+        Timer.publish(every: TimeInterval(1), on: .main, in: .default)
         //Andy added
         //stopWatchEnabled = true
-        Timer.publish(every: TimeInterval(0.1), on: .main, in: .common)
+        //Timer.publish(every: TimeInterval(0.1), on: .main, in: .common)
             .autoconnect() // Timer가 자동으로 시작하도록 설정
             .sink { [weak self] _ in
                 guard let self = self else { return }
                 if !isPaused {
-                    let currentDate = Date()
-                    self.elapsedTime = currentDate.timeIntervalSince(self.startDate ?? Date()) - self.pausedElapsedTime
+                    self.elapsedTime += 1
                     self.updateFormattedElapsedTime()
                     
                 }
             } .store(in: &cancellables)
     }
-        
+    
     func stopStopwatch() {
         cancellables.removeAll()
         elapsedTime = 0

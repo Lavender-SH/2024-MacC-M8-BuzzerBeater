@@ -24,14 +24,14 @@ struct ContentView: View {
     var body: some View {
         NavigationStack {
             TabView(selection:$selection) {
-                SessionPage()
+                SessionPage(selection: $selection)
                     .environmentObject(LocationManager.shared)
                     .environmentObject(WindDetector.shared)
                     .environmentObject(ApparentWind.shared)
                     .environmentObject(SailAngleFind.shared)
                     .environmentObject(SailingDataCollector.shared)
                     .tabItem {
-                        Image(systemName: "info.circle.fill")
+                        Image(systemName: "command.circle.fill")
                         //Text("Info")
                     }
                     .tag(1)
@@ -100,6 +100,7 @@ struct SessionPage: View {
     
     //let sharedWorkoutManager = WorkoutManager.shared
     @State var workoutForView  : HKWorkout?
+    @Binding var selection: Int
     
     var spacingForDevice: CGFloat {
             let screenBounds = WKInterfaceDevice.current().screenBounds

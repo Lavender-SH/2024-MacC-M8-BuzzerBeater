@@ -15,6 +15,8 @@ struct BleView: View {
         VStack {
             ConnectView()
                 .environmentObject(BleDeviceManager.shared)
+//            HomeView()
+//                .environmentObject(BleDeviceManager.shared)
             
             BiasCheckView()
         }

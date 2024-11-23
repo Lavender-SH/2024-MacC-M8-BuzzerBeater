@@ -20,39 +20,39 @@ struct HomeView: View {
     var body: some View {
         ZStack(alignment: .leading) {
             VStack(alignment: .center){
-                HStack {
-                    Text(" Control device")
-                        .font(Font.system(size: 16))
-                }
-                HStack{
-                    VStack{
-                        Button("Acc cali") {
-                            viewModel.appliedCalibration()
-                        }.padding(5)
-                        Button("Start mag"){
-                            viewModel.startFieldCalibration()
-                        }.padding(5)
-                        Button("Stop mag"){
-                            viewModel.endFieldCalibration()
-                        }.padding(5)
-                    }.font(Font.system(size: 12))
-                    VStack{
-                        Button("Read03reg"){
-                            viewModel.readReg03()
-                        }.padding(10)
-                        Button("Set50hzrate"){
-                            viewModel.setBackRate50hz()
-                        }.padding(10)
-                        Button("Set10hzrate"){
-                            viewModel.setBackRate10hz()
-                        }.padding(10)
-                    }.font(Font.system(size: 12))
-                }
-                
-                HStack {
-                    Text("Device data")
-                        .font(Font.system(size: 16))
-                }
+//                HStack {
+//                    Text(" Control device")
+//                        .font(Font.system(size: 16))
+//                }
+//                HStack{
+//                    VStack{
+//                        Button("Acc cali") {
+//                            viewModel.appliedCalibration()
+//                        }.padding(5)
+//                        Button("Start mag"){
+//                            viewModel.startFieldCalibration()
+//                        }.padding(5)
+//                        Button("Stop mag"){
+//                            viewModel.endFieldCalibration()
+//                        }.padding(5)
+//                    }.font(Font.system(size: 12))
+//                    VStack{
+//                        Button("Read03reg"){
+//                            viewModel.readReg03()
+//                        }.padding(10)
+//                        Button("Set50hzrate"){
+//                            viewModel.setBackRate50hz()
+//                        }.padding(10)
+//                        Button("Set10hzrate"){
+//                            viewModel.setBackRate10hz()
+//                        }.padding(10)
+//                    }.font(Font.system(size: 12))
+//                }
+//                
+//                HStack {
+//                    Text("Device data")
+//                        .font(Font.system(size: 16))
+//                }
                 HStack {
                     Text(String(format: "( %.f ,", self.viewModel.angles.x))
                     Text(String(format: "%.f ," , self.viewModel.angles.y))
