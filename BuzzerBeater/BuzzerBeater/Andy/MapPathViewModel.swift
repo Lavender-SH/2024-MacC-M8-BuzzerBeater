@@ -11,6 +11,14 @@ import MapKit
 import SwiftUI
 import HealthKit
 
+
+struct Segment {
+    let id = UUID()
+    let start: CLLocationCoordinate2D
+    let end : CLLocationCoordinate2D
+    let color : Color
+}
+
 class MapPathViewModel: ObservableObject {
    
     let healthStore =  HealthService.shared.healthStore
@@ -24,19 +32,101 @@ class MapPathViewModel: ObservableObject {
     
     @Published var activeEnergyBurned: Double = 0
     @Published var isDataLoaded : Bool = false
-    
+    @Published var isSegmentLoaded : Bool = false
     
     @Published var totalEnergyBurned: Double = 0
     @Published var totalDistance: Double = 0
     @Published var maxSpeed : Double = 0
     @Published var duration : TimeInterval = 0
     
+    var minVelocity : Double = 0
+    var maxVelocity: Double = 0
+    var segments: [Segment] = []
+    
     var workout: HKWorkout? // or the appropriate type for your workout data
     
     let minDegree = 0.000025
     let mapDisplayAreaPadding = 2.0
     
-   
+    func calculateColor(for velocity: Double, minVelocity: Double, maxVelocity: Double) -> Color {
+       
+        let progress = CGFloat((velocity - minVelocity) / (maxVelocity - minVelocity))
+        
+        if progress < 0.7 {
+            return Color.yellow
+        }
+        else if progress  >= 0.7 && progress < 0.85 {
+            return Color.green
+        }
+        
+        else if progress >= 0.85 {
+            return Color.red
+        }
+        else {
+            return Color.blue
+        }
+    }
+    
+    func computeSegments()  async  {
+        let startIndex = 0
+        let endIndexCount = min( self.coordinates.count , self.velocities.count)
+        let interval = Int(endIndexCount / 1000) + 1
+        let countOfArray  = Int( endIndexCount / interval )
+        let endOfArrayIndex = countOfArray  - 2
+        var countOfSegments = 0
+        print("timestamp:\(Date()) count of array in compute segments: \(countOfArray) endIndex:\(endOfArrayIndex) endIndexCount :\(endIndexCount)")
+        print("timestamp:\(Date()) mapPathviewModel.workout in the computeSegments  \(String(describing: self.workout?.uuid)) count: \(self.coordinates.count)")
+        print("timestamp:\(Date()) isDataLoaded in the computeSegments:\(self.isDataLoaded) " )
+        guard endOfArrayIndex  >= 0 else { return print("endIndexOfArray is less than or equal to 0") }
+        
+        var segments: [Segment] = Array(repeating: Segment(start: CLLocationCoordinate2D(latitude: 0, longitude: 0), end: CLLocationCoordinate2D(latitude: 0, longitude: 0), color: .clear), count: endOfArrayIndex + 2 )
+        
+        minVelocity = self.velocities.min() ?? 0
+        maxVelocity =  self.velocities.max() ?? 0
+        
+        if minVelocity < 0  { minVelocity = 0  }
+        if maxVelocity > 100 { maxVelocity = 100 }
+        
+        print("timestamp:\(Date()) computeSgments: minVelocity: \(self.minVelocity) maxVelocity: \(self.maxVelocity)")
+        let group = DispatchGroup()
+        if endOfArrayIndex  <= 0 {
+            return print("timestamp:\(Date()) endOfArrayIndex is less than or equal to 0")
+        }
+        
+        for index in stride(from: startIndex, to: endIndexCount  - interval  - 1  ,  by: interval)  {
+            
+            guard index <= ( endIndexCount  -  interval - 1) else { return print("index is greater than endIndexCount \(index) \(endIndexCount - interval)") }
+
+            let segmentQueue = DispatchQueue(label: "com.andy.segmentQueue")
+
+            group.enter()
+            DispatchQueue.main.async {
+                let coordinate = self.coordinates[index]
+                let nextCoordinate = self.coordinates[index + interval]
+                
+                let speed = (self.velocities[index] + self.velocities[index + interval]) / 2.0
+                let color = self.calculateColor(for: speed, minVelocity: self.minVelocity, maxVelocity: self.maxVelocity)
+                let segment = Segment(start: coordinate, end: nextCoordinate, color: color)
+                
+                // 이게 시간의 순서를 만족할까?
+                print("\(segment)")
+                print("timestamp:\(Date()) index :\(index) count \(countOfSegments)")
+                segments[countOfSegments] = segment
+                countOfSegments += 1
+                
+                group.leave()
+                
+            }
+            
+        }
+        
+      
+            group.notify(queue: DispatchQueue.main) {
+                self.segments = segments.compactMap { $0 }
+                self.isSegmentLoaded = true
+                print("timestamp: \(Date()) segments count \(self.segments.count) isSegmentLoaded \(self.isSegmentLoaded)")
+        }
+    }
     public func getRouteFrom(workout: HKWorkout, completion: @escaping (_ success: Bool, _ error: Error?) -> Void) {
         // Create a predicate for objects associated with the workout
         let runningObjectQuery = HKQuery.predicateForObjects(from: workout)
@@ -152,9 +242,8 @@ class MapPathViewModel: ObservableObject {
                     }
                     self.coordinates = self.routePoints.map { $0.coordinate }
                     self.velocities = self.routePoints.map { $0.speed }
-                    self.isDataLoaded = true
-                    print("velocities:\(self.velocities.count), coordinates \(self.coordinates.count), routePoints \(self.routePoints.count) in the getRouteFrom")
-                    self.duration = workout.endDate.timeIntervalSince(workout.startDate)
+                    print("timestamp:\(Date()) velocities:\(self.velocities.count), coordinates \(self.coordinates.count), routePoints: \(self.routePoints.count)  in the getRouteFrom")
+                    self.duration = max(workout.endDate.timeIntervalSince(workout.startDate),workout.metadata?["TotalDuration"] as? Double ?? 0.0)
                     
                     self.totalDistance = workout.metadata?["TotalDistance"]  as? Double ?? 0.0
                     self.totalEnergyBurned = workout.metadata?["TotalEnergyBurned"] as? Double ?? 0.0
@@ -183,11 +272,14 @@ class MapPathViewModel: ObservableObject {
                         }
                     }
                     
+                    self.isDataLoaded = true
+                    
+                    print("timestamp: \(Date()) isDataLoaded \(self.isDataLoaded)")
                 }
             } else {
                 DispatchQueue.main.async {
-                    self.isDataLoaded = true
-                    print("loadWorkoutData error \(error?.localizedDescription ?? "unknown error")")
+                    self.isDataLoaded  = false
+                    print("timestamp \(Date()) loadWorkoutData error \(error?.localizedDescription ?? "unknown error") isDataLoaded: \(self.isDataLoaded)")
                 }
             }
         }

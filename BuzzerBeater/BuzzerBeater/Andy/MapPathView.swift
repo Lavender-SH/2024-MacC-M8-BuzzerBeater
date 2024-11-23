@@ -17,14 +17,17 @@ struct MapPathView: View {
     let healthStore =  HealthService.shared.healthStore
     let minDegree = 0.000025
     let mapDisplayAreaPadding = 2.0
+    
     @State var  isDataLoaded: Bool = false
+    @State var minVelocity: Double = 0.0
+    @State var maxVelocity: Double = 10.0
+    
+    @State var segments: [Segment] = []
 
     
-   var isModal: Bool
+    var isModal: Bool
     
     init(workout: HKWorkout?, isModal: Bool = false) {
-         
-        
         self.workout = workout
         self.isModal = isModal
     }
@@ -32,62 +35,35 @@ struct MapPathView: View {
     var body: some View {
         
         VStack{
-            if isDataLoaded {
+            if mapPathViewModel.isSegmentLoaded  ||  mapPathViewModel.isDataLoaded {
                 ZStack(alignment: .top) {
                     
-                    Map(position: $mapPathViewModel.position, interactionModes: [.all] ){
-                        //                        if mapPathViewModel.coordinates.count >= 2 {
-                        //                            // 예시: CLLocation 객체를 포함한 coordinates 배열의 경우
-                        //                            let maxVelocity = mapPathViewModel.velocities.max() ?? 10.0
-                        //                            let minVelocity = mapPathViewModel.velocities.min() ?? 0.0
-                        //
-                        //                            ForEach(0..<mapPathViewModel.coordinates.count - 1, id: \.self) { index in
-                        //                                let start = mapPathViewModel.coordinates[index]
-                        //                                let end = mapPathViewModel.coordinates[index + 1]
-                        //                                let velocity = ( mapPathViewModel.velocities[index] + mapPathViewModel.velocities[index + 1] ) / 2.0
-                        //                                let color = calculateColor(for: velocity, minVelocity: minVelocity, maxVelocity: maxVelocity)
-                        //                                
-                        //                                MapPolyline(coordinates: [start, end])
-                        //                                    .stroke(color, lineWidth: 5)
-                        //                            }
-                        //                        }
-                        
-                        MapPolyline(coordinates: mapPathViewModel.coordinates)
-                            .stroke(Color.cyan, lineWidth: 4)
+                    Map(position: $mapPathViewModel.position, interactionModes: [.zoom] ) {
+                      if mapPathViewModel.isDataLoaded  && !mapPathViewModel.isSegmentLoaded {
+                          MapPolyline(coordinates: mapPathViewModel.coordinates)
+                               .stroke(Color.cyan, lineWidth: 2)
+                        }
+                    
+                        if mapPathViewModel.isSegmentLoaded {
+                            ForEach( 0..<mapPathViewModel.segments.count , id:\.self) { index in
+                                // 각 segment의 start, end 좌표를 이용해 경로를 지도에 추가
+                                let startCoordinate = mapPathViewModel.segments[index].start
+                                let endCoordinate = mapPathViewModel.segments[index].end
+                                let color = mapPathViewModel.segments[index].color
+                                MapPolyline(coordinates: [startCoordinate, endCoordinate])
+                                    .stroke(color, lineWidth: 6)
+                            }
+                        }
                     }
                     .mapControls{
-                        VStack{
+                    
                             MapUserLocationButton()
                             MapCompass()
-                        }
-                        
+    
 #if !os(watchOS)
                         MapScaleView()
 #endif
-                    }          .ignoresSafeArea(.all)
-                    
-                    
-                    
-                    //                    VStack{
-                    //#if !os(watchOS)
-                    //                        Text("\(formattedDuration(duration))").font(.caption2)
-                    //                        Text("Total Distance: \(formattedDistance(totalDistance))")
-                    //                            .font(.caption2)
-                    //                        Text("Total Energy Burned: \(formattedEnergyBurned(totalEnergyBurned))")
-                    //                            .font(.caption2)
-                    //                        Text("MaxSpeed: \(maxSpeed) --  maxVelocity \(velocities.max() ?? 10)")
-                    //                            .font(.caption2)
-                    //
-                    //#endif
-                    //
-                    //
-                    //#if os(watchOS)
-                    //                        Text("\(formattedDuration(duration))").font(.caption2)
-                    //
-                    //#endif
-                    //
-                    //                    }.padding(.top, 50)
-                    
+                    }   .ignoresSafeArea(.all)
                     if isModal {
                         VStack {
                             ZStack {
@@ -111,55 +87,50 @@ struct MapPathView: View {
                     }
                 }
             }
-            
             else {
                 //Text("Sky is Blue and Water is Clear!!!")
                 ProgressView()
+                
             }
             
         }
-        .task{
-            if mapPathViewModel.workout != self.workout {
-                print("mapPathViewModel will load data in the mapPathView \n workout: \(String(describing: self.workout))    \n mapPathViewModel.workout:\(String(describing: mapPathViewModel.workout))" )
-                if let workout = self.workout {
-                    await  mapPathViewModel.loadWorkoutData(workout: workout)
-                    self.mapPathViewModel.workout = self.workout //중복이지만 다시 작성
-                    print("mapPathViewModel after loadWorkoutData \(mapPathViewModel.workout) \(mapPathViewModel.isDataLoaded)")
-                    isDataLoaded = true
+        
+        .onAppear{
+            Task {
+                if mapPathViewModel.workout != self.workout {
+                    guard let workout = self.workout else {
+                        print("timestamp: \(Date()) workouit is nil in onAppear")
+                        return  }
+                    print("timestamp:\(Date()) mapPathViewModel will load data in the mapPathView \n self workout: \(String(describing: self.workout?.uuid))    \n mapPathViewModel.workout:\(String(describing: mapPathViewModel.workout?.uuid))" )
+                    await mapPathViewModel.loadWorkoutData(workout: workout)
+                    
+                    await mapPathViewModel.computeSegments()
+                    
+                    print("timestamp:\(Date()) mapPathViewModel after loadWorkoutData uuid:\(mapPathViewModel.workout?.uuid) isDataLoaded: \(mapPathViewModel.isDataLoaded) segment count :\(mapPathViewModel.segments.count)" )
                 }
                 else {
-                    print("self.workout in the mapPathView is nil")
-                    isDataLoaded = true
+                    
+                    await mapPathViewModel.computeSegments()
+                    
+                    print("timestamp:\(Date()) mapPathViewModel will not load data in the mapPathViw  workout: \(String(describing: self.workout?.uuid))")
+                    print("timestamp:\(Date()) segment count :\(mapPathViewModel.segments.count) ")
                 }
-            } else {
-                isDataLoaded = true
-                print("mapPathViewModel will not load data in the mapPathViw \n workout: \(String(describing: self.workout)) \n    mapPathViewModel.workout:\(String(describing: mapPathViewModel.workout))" )
             }
-            
+        }
+        .onChange(of: mapPathViewModel.isDataLoaded) { _, newValue in
+            Task{
+                await mapPathViewModel.computeSegments()
+                print("timestamp:\(Date()) isSegmentLoaded changed to \(newValue)")
+                print("timestamp:\(Date()) mapPathViewModel.segments.count \(mapPathViewModel.segments.count)")
+            }
         }
         .ignoresSafeArea()
     }
-    func calculateColor(for velocity: Double, minVelocity: Double, maxVelocity: Double) -> Color {
-        if maxVelocity <= minVelocity {
-            return Color.green
-        }
-        let progress = CGFloat((velocity - minVelocity) / (maxVelocity - minVelocity))
-        
-        if progress < 0.7 {
-            return Color.yellow
-        }
-        else if progress  >= 0.7 && progress < 0.85 {
-            return Color.green
-        }
-        
-        else if progress >= 0.85 {
-            return Color.red
-        }
-        else {
-            return Color.blue
-        }
-    }
     
+
+        
+
+   
 
     
     func formattedDuration(_ duration: TimeInterval) -> String {
