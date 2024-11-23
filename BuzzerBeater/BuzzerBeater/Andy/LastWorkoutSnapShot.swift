@@ -98,7 +98,6 @@ struct LastWorkoutSnapShot: View {
                         self.activeEnergyBurned = activeEnergyBurned.doubleValue(for: .kilocalorie())
                     }
                 }
-                
                 self.workoutManager.fetchTotalEnergyBurned(for: workout) { totalEnergyBurned in
                     if let totalEnergyBurned = totalEnergyBurned {
                         self.totalEnergyBurned = totalEnergyBurned.doubleValue(for: .kilocalorie())
