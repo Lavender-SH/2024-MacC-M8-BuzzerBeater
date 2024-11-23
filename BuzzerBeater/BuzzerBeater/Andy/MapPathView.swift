@@ -39,16 +39,17 @@ struct MapPathView: View {
                 ZStack(alignment: .top) {
                     
                     Map(position: $mapPathViewModel.position, interactionModes: [.zoom] ) {
-                     
-                       MapPolyline(coordinates: mapPathViewModel.coordinates)
-                            .stroke(Color.cyan, lineWidth: 2)
+                      if mapPathViewModel.isDataLoaded  && !mapPathViewModel.isSegmentLoaded {
+                          MapPolyline(coordinates: mapPathViewModel.coordinates)
+                               .stroke(Color.cyan, lineWidth: 2)
+                        }
+                    
                         if mapPathViewModel.isSegmentLoaded {
                             ForEach( 0..<mapPathViewModel.segments.count , id:\.self) { index in
                                 // 각 segment의 start, end 좌표를 이용해 경로를 지도에 추가
                                 let startCoordinate = mapPathViewModel.segments[index].start
                                 let endCoordinate = mapPathViewModel.segments[index].end
                                 let color = mapPathViewModel.segments[index].color
-                                let polyline = MKPolyline(coordinates: [startCoordinate, endCoordinate], count: 2)
                                 MapPolyline(coordinates: [startCoordinate, endCoordinate])
                                     .stroke(color, lineWidth: 6)
                             }
