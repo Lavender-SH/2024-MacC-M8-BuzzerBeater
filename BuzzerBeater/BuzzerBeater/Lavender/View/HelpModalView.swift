@@ -1,10 +1,3 @@
-//
-//  HelpPage.swift
-//  BuzzerBeaterWatch Watch App
-//
-//  Created by 이승현 on 11/22/24.
-//
-
 import SwiftUI
 
 struct HelpModalView: View {
@@ -24,7 +17,21 @@ struct HelpModalView: View {
                 ScrollView {
                     VStack(alignment: .leading, spacing: 20) {
                         // Section 1
-                        Text("1. Wind Direction Indicators")
+                        Text("1. Apple Watch Required")
+                            .font(.title2)
+                            .fontWeight(.semibold)
+                            .foregroundColor(.cyan)
+                            .padding(.leading, 10)
+                        VStack(alignment: .leading, spacing: 8) {
+                            Text("This app is exclusively designed for use with Apple Watch, ensuring precise navigation and real-time sailing insights. Pair it with your Apple Watch to unlock its full potential and elevate your sailing experience.")
+                        }
+                        .multilineTextAlignment(.leading)
+                        .foregroundColor(.white)
+                        .font(.body)
+                        .padding(.leading, 20)
+
+                        // Section 2
+                        Text("2. Wind Direction Indicators")
                             .font(.title2)
                             .fontWeight(.semibold)
                             .foregroundColor(.cyan)
@@ -38,8 +45,8 @@ struct HelpModalView: View {
                         .font(.body)
                         .padding(.leading, 20)
 
-                        // Section 2
-                        Text("2. Zero Point Adjustment")
+                        // Section 3
+                        Text("3. Zero Point Adjustment")
                             .font(.title2)
                             .fontWeight(.semibold)
                             .foregroundColor(.cyan)
@@ -53,8 +60,8 @@ struct HelpModalView: View {
                         .font(.body)
                         .padding(.leading, 20)
 
-                        // Section 3
-                        Text("3. Measurement Units")
+                        // Section 4
+                        Text("4. Measurement Units")
                             .font(.title2)
                             .fontWeight(.semibold)
                             .foregroundColor(.cyan)
@@ -69,8 +76,8 @@ struct HelpModalView: View {
                         .font(.body)
                         .padding(.leading, 20)
 
-                        // Section 4
-                        Text("4. Optimal Sail Angle Guide")
+                        // Section 5
+                        Text("5. Optimal Sail Angle Guide")
                             .font(.title2)
                             .fontWeight(.semibold)
                             .foregroundColor(.cyan)
@@ -83,8 +90,8 @@ struct HelpModalView: View {
                         .font(.body)
                         .padding(.leading, 20)
 
-                        // Section 5
-                        Text("5. Water Lock Release")
+                        // Section 6
+                        Text("6. Water Lock Release")
                             .font(.title2)
                             .fontWeight(.semibold)
                             .foregroundColor(.cyan)
@@ -98,8 +105,8 @@ struct HelpModalView: View {
                         .font(.body)
                         .padding(.leading, 20)
 
-                        // Section 6
-                        Text("6. Map Record Colors")
+                        // Section 7
+                        Text("7. Map Record Colors")
                             .font(.title2)
                             .fontWeight(.semibold)
                             .foregroundColor(.cyan)
@@ -114,13 +121,12 @@ struct HelpModalView: View {
                         .font(.body)
                         .padding(.leading, 20)
 
-                        // Section 7
-                        Text("7. Sensor Connection and \n    Sail Angle Adjustment")
+                        // Section 8
+                        Text("8. Sensor Connection and \n    Sail Angle Adjustment")
                             .font(.title2)
                             .fontWeight(.semibold)
                             .foregroundColor(.cyan)
                             .padding(.leading, 10)
-                            
                         VStack(alignment: .leading, spacing: 8) {
                             Text("• In the Control Center on your Apple Watch, tap the blue Bluetooth icon at the top to connect sensors.")
                             Text("• After connection, the current sail position will appear as a shadow of the yellow bar on the screen.")
@@ -134,13 +140,9 @@ struct HelpModalView: View {
                 }
                 .padding(.bottom, 10)
             }
-       //     .frame(width: main.bounds.width * 0.95, height: main.bounds.height * 0.95)
             .background(Color.black.opacity(0.1))
             .cornerRadius(20)
             .shadow(radius: 10)
         }
     }
 }
-
-
-
