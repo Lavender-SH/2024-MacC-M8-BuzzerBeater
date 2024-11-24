@@ -15,10 +15,9 @@ struct LastWorkoutSnapShot: View {
     
  
     let workoutManager = WorkoutManager.shared
-    
     var workout: HKWorkout?
     let healthStore =  HealthService.shared.healthStore
-  
+    @StateObject  var mapPathViewModel =  MapPathViewModel()
     @State var activeEnergyBurned: Double = 0
     @State var isDataLoaded : Bool = false
     
@@ -38,28 +37,28 @@ struct LastWorkoutSnapShot: View {
     
     var body: some View {
         VStack(spacing: 13) { // 전체 줄 간격
-            if isDataLoaded {
+            if mapPathViewModel.isDataLoaded {
                 // 날짜 표시
-                Text(formattedDate(startDate))
+                Text(formattedDate(  mapPathViewModel.workout?.startDate))
                     .font(.system(size: 15, weight: .bold, design: .rounded))
                     .foregroundColor(.secondary)
                 
                 // 상자 그룹
                 HStack(spacing: 8) {
                     // Time 상자
-                    InfoBox(title: "Time", value: formattedDuration(duration), valueColor: .yellow)
+                    InfoBox(title: "Time", value: formattedDuration(mapPathViewModel.duration), valueColor: .yellow)
                     // Distance 상자
-                    InfoBox(title: "Distance", value: "\(formattedDistance(totalDistance))", valueColor: .cyan)
+                    InfoBox(title: "Distance", value: "\(formattedDistance(mapPathViewModel.totalDistance))", valueColor: .cyan)
                 }
                 HStack(spacing: 8) {
                     // Calories 상자
-                    InfoBox(title: "Calories", value: "\(formattedEnergyBurned(totalEnergyBurned))", valueColor: .cyan)
+                    InfoBox(title: "Calories", value: "\(formattedEnergyBurned(mapPathViewModel.totalEnergyBurned))", valueColor: .cyan)
                     // Max Speed 상자
-                    InfoBox(title: "Max Speed", value: "\(formattedMaxSpeed(self.maxSpeed)) m/s", valueColor: .cyan)
+                    InfoBox(title: "Max Speed", value: "\(formattedMaxSpeed(mapPathViewModel.maxSpeed)) m/s", valueColor: .cyan)
                 }
                 
                 // 시작 및 종료 시간
-                if let startDate = startDate, let endDate = endDate {
+                if let startDate = mapPathViewModel.workout?.startDate, let endDate = mapPathViewModel.workout?.endDate {
                     Text("\(formattedTime(startDate)) - \(formattedTime(endDate))")
                         .font(.system(size: 15, weight: .bold, design: .rounded))
                         .foregroundColor(.secondary)
@@ -70,9 +69,14 @@ struct LastWorkoutSnapShot: View {
                     Image(systemName: "location.fill")
                         .font(.system(size: 13, weight: .bold, design: .rounded))
                         .foregroundColor(.secondary)
-//                    Text(locationName)
-//                        .font(.system(size: 15, weight: .bold, design: .rounded))
-//                        .foregroundColor(.secondary)
+                    Text(locationName)
+                        .font(.system(size: 15, weight: .bold, design: .rounded))
+                        .foregroundColor(.secondary)
+                        .onAppear{
+                            let coordinate = CLLocationCoordinate2D(latitude: 36.017470189362115, longitude: 129.32224097538742)
+                            let location = CLLocation(latitude: coordinate.latitude, longitude: coordinate.longitude)
+                            fetchLocationName(for: mapPathViewModel.routePoints.first ?? location )
+                        }
                 }
             } else {
                 // 데이터 로딩 중 표시
@@ -83,32 +87,14 @@ struct LastWorkoutSnapShot: View {
         .padding(.vertical, 8)
         .padding(.horizontal, 11)
         .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .onAppear {
-            DispatchQueue.main.async {
-                guard let workout = workout else { return print("workout is nil in the LastWorkoutSnapShot view") }
-                self.totalDistance = workout.metadata?["TotalDistance"] as? Double ?? 0.0
-                self.duration = workout.metadata?["Duration"] as? Double ?? 0.0
-                self.totalEnergyBurned = workout.metadata?["TotalEnergyBurned"] as? Double ?? 0.0
-                self.maxSpeed = workout.metadata?["MaxSpeed"] as? Double ?? 0.0
-                self.startDate = workout.startDate
-                self.endDate = workout.endDate
-                
-                self.workoutManager.fetchActiveEnergyBurned(startDate: workout.startDate, endDate: workout.endDate) { activeEnergyBurned in
-                    if let activeEnergyBurned = activeEnergyBurned {
-                        self.activeEnergyBurned = activeEnergyBurned.doubleValue(for: .kilocalorie())
-                    }
-                }
-                self.workoutManager.fetchTotalEnergyBurned(for: workout) { totalEnergyBurned in
-                    if let totalEnergyBurned = totalEnergyBurned {
-                        self.totalEnergyBurned = totalEnergyBurned.doubleValue(for: .kilocalorie())
-                    }
-                }
-                
-                self.duration = workout.endDate.timeIntervalSince(workout.startDate)
-                
-                self.isDataLoaded = true
+        .onAppear{
+            Task {
+                guard let workout = self.workout else {
+                    return  }
+                await mapPathViewModel.loadWorkoutData(workout: workout)
             }
         }
+        
     }
 
     

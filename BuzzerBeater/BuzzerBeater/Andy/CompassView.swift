@@ -396,7 +396,7 @@ struct CompassView: View {
                             .foregroundColor(.cyan)
                             .font(.system(size: 10, weight: .bold, design: .rounded))
                             .multilineTextAlignment(.center)
-                        Text("\(WindDetector.shared.speed ?? 0, specifier: "%.1f")")
+                        Text("\(WindDetector.shared.speed > 0 ? WindDetector.shared.speed : 0.0, specifier: "%.1f")")
                             .foregroundColor(.cyan)
                             .font(.system(size: 17, weight: .bold, design: .rounded))
                             .multilineTextAlignment(.center)

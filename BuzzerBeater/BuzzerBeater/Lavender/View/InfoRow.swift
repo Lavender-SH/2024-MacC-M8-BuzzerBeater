@@ -15,12 +15,14 @@ struct InfoRow: View {
     @Namespace private var scrollNamespace
     @State private var isHelpModalPresented = false
     @State private var isEmailModalPresented = false
+    @Environment(\.presentationMode) var presentationMode
     
     var body: some View {
         NavigationStack {
             VStack {
                 if isLoading {
                     ProgressView("Loading Workouts...")
+                        
                 } else {
                     ScrollViewReader { scrollViewProxy in
                         List {
@@ -114,7 +116,6 @@ struct InfoRow: View {
                     }
                 }
             }
-            
             .sheet(isPresented: $isEmailModalPresented) {
                 EmailView()
             }

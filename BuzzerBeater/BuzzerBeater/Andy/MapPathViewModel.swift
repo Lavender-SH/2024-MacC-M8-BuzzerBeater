@@ -87,13 +87,13 @@ class MapPathViewModel: ObservableObject {
         if minVelocity < 0  { minVelocity = 0  }
         if maxVelocity > 100 { maxVelocity = 100 }
         
-        print("timestamp:\(Date()) computeSgments: minVelocity: \(self.minVelocity) maxVelocity: \(self.maxVelocity)")
+        print("timestamp:\(Date()) computeSgments started. minVelocity: \(self.minVelocity) maxVelocity: \(self.maxVelocity)")
         let group = DispatchGroup()
         if endOfArrayIndex  <= 0 {
             return print("timestamp:\(Date()) endOfArrayIndex is less than or equal to 0")
         }
         
-        for index in stride(from: startIndex, to: endIndexCount  - interval  - 1  ,  by: interval)  {
+        for index in stride(from: startIndex, to: endIndexCount  - interval  - 1  ,  by: interval)  where index + interval < endIndexCount {
             
             guard index <= ( endIndexCount  -  interval - 1) else { return print("index is greater than endIndexCount \(index) \(endIndexCount - interval)") }
 
@@ -109,8 +109,8 @@ class MapPathViewModel: ObservableObject {
                 let segment = Segment(start: coordinate, end: nextCoordinate, color: color)
                 
                 // 이게 시간의 순서를 만족할까?
-                print("\(segment)")
-                print("timestamp:\(Date()) index :\(index) count \(countOfSegments)")
+                // print("\(segment)")
+                //  print("timestamp:\(Date()) index :\(index) count \(countOfSegments)")
                 segments[countOfSegments] = segment
                 countOfSegments += 1
                 

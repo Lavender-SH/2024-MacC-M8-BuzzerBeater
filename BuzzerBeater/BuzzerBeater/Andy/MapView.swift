@@ -48,10 +48,10 @@ struct MapView: View {
             Map(position: $position, interactionModes: [.all]) {
                 if !coordinates.isEmpty {
                     MapPolyline(coordinates: coordinates)
-                        .stroke(Color.blue, lineWidth: 2)
+                        .stroke(Color.yellow, lineWidth: 4)
                 }
             }
-            .ignoresSafeArea(.all)
+            .ignoresSafeArea(.all , edges: .trailing)
             .onAppear {
                 position = .userLocation(followsHeading: true, fallback: MapCameraPosition.region(MKCoordinateRegion(
                     center: CLLocationCoordinate2D(latitude: LocationManager.shared.latitude, longitude: LocationManager.shared.longitude),
@@ -113,26 +113,7 @@ struct MapView: View {
                 
                 
 
-//                ZStack {
-//                    Rectangle()
-//                    //.fill(Color.clear)
-//                        .fill(Color.gray.opacity(0.01))
-//                        .frame(width: 55, height: 80)
-//                        .zIndex(1)
-//                    Image(systemName: "chevron.right")
-//                        .resizable()
-//                        .scaledToFit()
-//                        .frame(width: 15, height: 15)
-//                        .foregroundColor(.white)
-//                }
-//                .allowsHitTesting(true)
-//                .position(x: geometry.size.width * 0.87, y: geometry.size.height * 0.5)
-//                .gesture(
-//                    LongPressGesture(minimumDuration: 0.01, maximumDistance: 3)
-//                        .onEnded { value in
-//                            selection = 4
-//                        }
-//                )
+
 
             }
         }
