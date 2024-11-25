@@ -264,7 +264,7 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
             .store(in: &cancellables)
         
         headingPublisher
-            .throttle(for: .milliseconds(200), scheduler: RunLoop.main, latest: true)
+            .throttle(for: .milliseconds(16), scheduler: RunLoop.main, latest: true)
             .compactMap { $0 }
         
             .filter { [weak self] newHeading in

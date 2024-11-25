@@ -42,7 +42,7 @@ class SailAngleDetect : ObservableObject{
     func startDetect() {
         
         bleDeviceManager.dataPublisher
-            .throttle(for: .milliseconds(200), scheduler: DispatchQueue.main, latest: true)
+            .throttle(for: .milliseconds(16), scheduler: DispatchQueue.main, latest: true)
             .sink { [weak self] angles in
                 guard let self = self else {
                     print("self is nil in SailAngleDetect")
