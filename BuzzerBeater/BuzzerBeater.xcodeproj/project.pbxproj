@@ -9,6 +9,9 @@
 /* Begin PBXBuildFile section */
 		0216AA4E2CF44D2B00AA78B5 /* Launch Screen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 0216AA4C2CF44D2B00AA78B5 /* Launch Screen.storyboard */; };
 		0216ABD92CF455B700AA78B5 /* FirebaseAnalyticsWithoutAdIdSupport in Frameworks */ = {isa = PBXBuildFile; productRef = 0216ABD82CF455B700AA78B5 /* FirebaseAnalyticsWithoutAdIdSupport */; };
+		0216AD012CF458A300AA78B5 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0216AD002CF458A300AA78B5 /* AppDelegate.swift */; };
+		0216AD042CF458D100AA78B5 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 0216AD032CF458D100AA78B5 /* GoogleService-Info.plist */; };
+		0216AD052CF45A4D00AA78B5 /* InfoDetail.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF7997552CDB692D004FF039 /* InfoDetail.swift */; };
 		0273E9CB2CE9D2760043B886 /* Splash.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0273E9CA2CE9D2760043B886 /* Splash.swift */; };
 		0273E9CC2CE9D2760043B886 /* Splash.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0273E9CA2CE9D2760043B886 /* Splash.swift */; };
 		0273EC5C2CEC7F530043B886 /* WatchResultRecord.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0273EC5B2CEC7F530043B886 /* WatchResultRecord.swift */; };
@@ -42,7 +45,6 @@
 		CE1B72242CD299F60044895B /* WorkoutViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE1B72232CD299EB0044895B /* WorkoutViewModel.swift */; };
 		CE1B72252CD299F60044895B /* WorkoutViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE1B72232CD299EB0044895B /* WorkoutViewModel.swift */; };
 		CE1B9A7F2CEE471800F97803 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 0297A2882CC51A740024AEC9 /* Assets.xcassets */; };
-		CE22341C2CF0ABD9004C9E59 /* InfoDetail.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF7997552CDB692D004FF039 /* InfoDetail.swift */; };
 		CE22341D2CF0CBF9004C9E59 /* WindDetector.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0297A2832CC51A740024AEC9 /* WindDetector.swift */; };
 		CE5E09992CD8F576005DCB57 /* MapPathView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE5E09982CD8F563005DCB57 /* MapPathView.swift */; };
 		CE5E099A2CD8F576005DCB57 /* MapPathView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE5E09982CD8F563005DCB57 /* MapPathView.swift */; };
@@ -81,6 +83,8 @@
 
 /* Begin PBXFileReference section */
 		0216AA4C2CF44D2B00AA78B5 /* Launch Screen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = "Launch Screen.storyboard"; sourceTree = "<group>"; };
+		0216AD002CF458A300AA78B5 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
+		0216AD032CF458D100AA78B5 /* GoogleService-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		0273E9CA2CE9D2760043B886 /* Splash.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Splash.swift; sourceTree = "<group>"; };
 		0273EC5B2CEC7F530043B886 /* WatchResultRecord.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchResultRecord.swift; sourceTree = "<group>"; };
 		0273ED222CEEC9D90043B886 /* ResultMap.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResultMap.swift; sourceTree = "<group>"; };
@@ -210,7 +214,9 @@
 				0297A2872CC51A740024AEC9 /* .gitignore */,
 				0297A2882CC51A740024AEC9 /* Assets.xcassets */,
 				0297A2892CC51A740024AEC9 /* BuzzerBeater.entitlements */,
+				0216AD032CF458D100AA78B5 /* GoogleService-Info.plist */,
 				0297A28A2CC51A740024AEC9 /* BuzzerBeaterApp.swift */,
+				0216AD002CF458A300AA78B5 /* AppDelegate.swift */,
 				0297A28B2CC51A740024AEC9 /* BuzzerBeaterRelease.entitlements */,
 				0297A28C2CC51A740024AEC9 /* Info.plist */,
 			);
@@ -375,6 +381,7 @@
 				0297A2982CC51A740024AEC9 /* Preview Assets.xcassets in Resources */,
 				0297A2992CC51A740024AEC9 /* .gitignore in Resources */,
 				0216AA4E2CF44D2B00AA78B5 /* Launch Screen.storyboard in Resources */,
+				0216AD042CF458D100AA78B5 /* GoogleService-Info.plist in Resources */,
 				0297A29A2CC51A740024AEC9 /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -386,7 +393,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				CE22341C2CF0ABD9004C9E59 /* InfoDetail.swift in Sources */,
 				CE1B72252CD299F60044895B /* WorkoutViewModel.swift in Sources */,
 				EF7997502CDB6881004FF039 /* InfoRow.swift in Sources */,
 				CE5E099A2CD8F576005DCB57 /* MapPathView.swift in Sources */,
@@ -396,6 +402,7 @@
 				CEC131D62CEF5A750084BC99 /* LastWorkoutSnapShot.swift in Sources */,
 				0273EC5C2CEC7F530043B886 /* WatchResultRecord.swift in Sources */,
 				CE1B721E2CD27B030044895B /* WorkoutManager.swift in Sources */,
+				0216AD052CF45A4D00AA78B5 /* InfoDetail.swift in Sources */,
 				CE1B72212CD299B00044895B /* WorkoutListView.swift in Sources */,
 				0297A29D2CC51A740024AEC9 /* SailingDataCollector.swift in Sources */,
 				CE7B6A312CF076A6004068D1 /* MapPathViewModel.swift in Sources */,
@@ -441,6 +448,7 @@
 				0297A2952CC51A740024AEC9 /* SailingDataCollector.swift in Sources */,
 				0297A2962CC51A740024AEC9 /* WindDetector.swift in Sources */,
 				0297A2972CC51A740024AEC9 /* BuzzerBeaterApp.swift in Sources */,
+				0216AD012CF458A300AA78B5 /* AppDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

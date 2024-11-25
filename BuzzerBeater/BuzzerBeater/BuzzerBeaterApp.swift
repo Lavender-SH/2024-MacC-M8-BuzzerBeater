@@ -5,6 +5,8 @@ import HealthKit
 struct BuzzerBeaterApp: App {
     @StateObject private var viewModel = WorkoutViewModel()  // WorkoutViewModel 인스턴스 생성
     @State private var isSplashView = true
+    @UIApplicationDelegateAdaptor(AppDelegate.self) var delegate
+    
     init() {
         // 앱 시작 시 LocationManager와 HealthKit 서비스 등을 초기화합니다.
 #if os(watchOS)

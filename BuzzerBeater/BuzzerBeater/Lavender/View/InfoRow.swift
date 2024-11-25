@@ -4,12 +4,12 @@
 //
 //  Created by 이승현 on 11/13/24.
 //
-
+#if os(iOS)
 import SwiftUI
 import HealthKit
 import FirebaseAnalytics
 
-#if os(iOS)
+
 struct InfoRow: View {
     @StateObject private var viewModel = WorkoutViewModel()
     @State private var isLoading = true

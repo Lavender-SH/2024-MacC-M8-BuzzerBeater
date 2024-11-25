@@ -5,7 +5,7 @@
 //  Created by 이승현 on 11/13/24.
 //  revised by Andy .task {}
 //   MapPathView( workout: workout, isModal: true).environmentObject(mapPathViewModel)
-
+#if os(iOS)
 import Foundation
 import SwiftUI
 import Charts
@@ -323,3 +323,4 @@ struct InfoDetail: View {
     }
     
 }
+#endif
