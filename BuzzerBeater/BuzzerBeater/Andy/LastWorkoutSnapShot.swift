@@ -11,9 +11,9 @@ import HealthKit
 
 
 struct LastWorkoutSnapShot: View {
-  
     
- 
+    
+    @Environment(\.presentationMode) var presentationMode
     let workoutManager = WorkoutManager.shared
     var workout: HKWorkout?
     let healthStore =  HealthService.shared.healthStore
@@ -65,23 +65,31 @@ struct LastWorkoutSnapShot: View {
                 }
                 
                 // 위치 정보
-                HStack(spacing: 2) {
-                    Image(systemName: "location.fill")
-                        .font(.system(size: 13, weight: .bold, design: .rounded))
-                        .foregroundColor(.secondary)
-                    Text(locationName)
-                        .font(.system(size: 15, weight: .bold, design: .rounded))
-                        .foregroundColor(.secondary)
-                        .onAppear{
-                            let coordinate = CLLocationCoordinate2D(latitude: 36.017470189362115, longitude: 129.32224097538742)
-                            let location = CLLocation(latitude: coordinate.latitude, longitude: coordinate.longitude)
-                            fetchLocationName(for: mapPathViewModel.routePoints.first ?? location )
-                        }
-                }
+//                HStack(spacing: 2) {
+//                    Image(systemName: "location.fill")
+//                        .font(.system(size: 13, weight: .bold, design: .rounded))
+//                        .foregroundColor(.secondary)
+//                    Text(locationName)
+//                        .font(.system(size: 15, weight: .bold, design: .rounded))
+//                        .foregroundColor(.secondary)
+//                        .onAppear{
+//                            let coordinate = CLLocationCoordinate2D(latitude: 36.017470189362115, longitude: 129.32224097538742)
+//                            let location = CLLocation(latitude: coordinate.latitude, longitude: coordinate.longitude)
+//                            fetchLocationName(for: mapPathViewModel.routePoints.first ?? location )
+//                        }
+//                }
             } else {
                 // 데이터 로딩 중 표시
                 ProgressView("Loading Data...")
                     .font(.system(size: 12, weight: .bold, design: .rounded))
+                    .onAppear {
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 10) {
+                            if !self.mapPathViewModel.isDataLoaded   {
+                                presentationMode.wrappedValue.dismiss()
+                            }
+                        }
+                    }
+                
             }
         }
         .padding(.vertical, 8)
@@ -96,11 +104,11 @@ struct LastWorkoutSnapShot: View {
         }
         
     }
-
     
-   
-
-  
+    
+    
+    
+    
     
     
     func formattedDuration(_ duration: TimeInterval) -> String {
@@ -135,7 +143,7 @@ struct LastWorkoutSnapShot: View {
         return String(format: "%.1f", speed)
     }
     
-   func formattedTime(_ date: Date) -> String {
+    func formattedTime(_ date: Date) -> String {
         let formatter = DateFormatter()
         formatter.dateFormat = "a h:mm"
         formatter.amSymbol = "AM"
@@ -159,8 +167,8 @@ struct LastWorkoutSnapShot: View {
             }
         }
     }
- 
-
+    
+    
     func fetchLatestWorkout(completion: @escaping (HKWorkout?) -> Void) {
         let healthStore = HKHealthStore()
         
@@ -187,7 +195,7 @@ struct LastWorkoutSnapShot: View {
         // 쿼리 실행
         healthStore.execute(workoutQuery)
     }
-
+    
 }
 
 

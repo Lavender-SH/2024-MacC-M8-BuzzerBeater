@@ -45,7 +45,7 @@ struct MapView: View {
             //                    .stroke(Color.blue, lineWidth: 2)
             //
             //            }
-            Map(position: $position, interactionModes: [.all]) {
+            Map(position: $position, interactionModes: [.zoom]) {
                 if !coordinates.isEmpty {
                     MapPolyline(coordinates: coordinates)
                         .stroke(Color.yellow, lineWidth: 4)
