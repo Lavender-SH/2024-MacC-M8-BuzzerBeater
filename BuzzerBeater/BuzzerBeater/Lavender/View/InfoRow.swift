@@ -4,10 +4,12 @@
 //
 //  Created by 이승현 on 11/13/24.
 //
-
+#if os(iOS)
 import SwiftUI
 import HealthKit
-#if os(iOS)
+import FirebaseAnalytics
+
+
 struct InfoRow: View {
     @StateObject private var viewModel = WorkoutViewModel()
     @State private var isLoading = true
@@ -22,7 +24,7 @@ struct InfoRow: View {
             VStack {
                 if isLoading {
                     ProgressView("Loading Workouts...")
-                        
+                    
                 } else {
                     ScrollViewReader { scrollViewProxy in
                         List {
@@ -66,6 +68,9 @@ struct InfoRow: View {
                                                 }
                                             }
                                             .id(workout.hashValue)
+                                            .onTapGesture {
+                                                Analytics.logEvent("아이폰_기록_리스트", parameters: nil)
+                                            }
                                         }
                                         .onDelete { indexSet in
                                             deleteWorkout(at: indexSet, in: workouts)
@@ -79,6 +84,7 @@ struct InfoRow: View {
                             isLoading = false
                         }
                         .onAppear {
+                            Analytics.logEvent("메인뷰진입", parameters: nil)
                             if let position = savedScrollPosition {
                                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
                                     scrollViewProxy.scrollTo(position, anchor: .zero)
@@ -98,6 +104,7 @@ struct InfoRow: View {
                 ToolbarItemGroup(placement: .navigationBarTrailing) {
                     Button(action: {
                         isEmailModalPresented.toggle()
+                        Analytics.logEvent("이메일_버튼", parameters: nil)
                         //print("Mailbox button tapped")
                     }) {
                         Image(systemName: "envelope.circle")
@@ -108,6 +115,7 @@ struct InfoRow: View {
                     
                     Button {
                         isHelpModalPresented.toggle()
+                        Analytics.logEvent("헬프_버튼", parameters: nil)
                     } label: {
                         Image(systemName: "info.circle")
                             .resizable()
@@ -119,7 +127,7 @@ struct InfoRow: View {
             .sheet(isPresented: $isEmailModalPresented) {
                 EmailView()
             }
-      
+            
             .sheet(isPresented: $isHelpModalPresented) {
                 HelpModalView()
             }

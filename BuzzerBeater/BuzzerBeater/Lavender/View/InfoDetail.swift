@@ -5,7 +5,7 @@
 //  Created by 이승현 on 11/13/24.
 //  revised by Andy .task {}
 //   MapPathView( workout: workout, isModal: true).environmentObject(mapPathViewModel)
-
+#if os(iOS)
 import Foundation
 import SwiftUI
 import Charts
@@ -13,6 +13,7 @@ import MapKit
 import HealthKit
 import CoreLocation
 import Charts
+import FirebaseAnalytics
 
 struct InfoDetail: View {
     @Environment(\.presentationMode) var presentationMode
@@ -191,6 +192,7 @@ struct InfoDetail: View {
                     // Button to show the map in a modal view
                     Button(action: {
                         isMapModalPresented = true // Present modal when tapped
+                        Analytics.logEvent("지도뷰터치", parameters: nil)
                     }) {
                         MapPathView( workout: workout, isModal: false)
                             .environmentObject(mapPathViewModel)
@@ -321,3 +323,4 @@ struct InfoDetail: View {
     }
     
 }
+#endif
