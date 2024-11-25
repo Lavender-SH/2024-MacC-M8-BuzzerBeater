@@ -117,9 +117,9 @@ struct MapPathView: View {
                     print("timestamp:\(Date()) mapPathViewModel after loadWorkoutData uuid:\(mapPathViewModel.workout?.uuid) isDataLoaded: \(mapPathViewModel.isDataLoaded) segment count :\(mapPathViewModel.segments.count)" )
                 }
                 else {
-                    
-                    await mapPathViewModel.computeSegments()
-                    
+                    if !mapPathViewModel.isSegmentLoaded {
+                        await mapPathViewModel.computeSegments()
+                    }
                     print("timestamp:\(Date()) mapPathViewModel will not load data in the mapPathViw  workout: \(String(describing: self.workout?.uuid))")
                     print("timestamp:\(Date()) segment count :\(mapPathViewModel.segments.count) ")
                 }
