@@ -12,7 +12,7 @@ import CoreLocation
 import MapKit
 
 struct WatchResultRecord: View {
-//    @Environment(\.presentationMode) var presentationMode
+    @Environment(\.presentationMode) var presentationMode
     @EnvironmentObject var mapPathViewModel : MapPathViewModel
     
     
@@ -36,7 +36,7 @@ struct WatchResultRecord: View {
     
     var body: some View {
         VStack(spacing: 13) { // 전체 줄 간격
-            if isDataLoaded {
+            if mapPathViewModel.isDataLoaded {
                 // 날짜 표시
                 Text(formattedDate(mapPathViewModel.workout?.startDate))
                     .font(.system(size: 15, weight: .bold, design: .rounded))
@@ -82,30 +82,33 @@ struct WatchResultRecord: View {
                 // 데이터 로딩 중 표시
                 ProgressView("Loading Data...")
                     .font(.system(size: 12, weight: .bold, design: .rounded))
+                    .onAppear {
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 10) {
+                            if !self.mapPathViewModel.isDataLoaded {
+                                presentationMode.wrappedValue.dismiss()
+                            }
+                        }
+                    }
+               
+                
+                
             }
         }
         .padding(.vertical, 8)
         .padding(.horizontal, 11)
         .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .task{
-            if mapPathViewModel.workout != self.workout {
-                print("mapPathViewModel will load data in the WatchResultRecord \n workout: \(String(describing: self.workout))    \n mapPathViewModel.workout:\(String(describing: mapPathViewModel.workout))" )
-                if let workout = self.workout {
-                    await  mapPathViewModel.loadWorkoutData(workout: workout)
-                    self.mapPathViewModel.workout = self.workout //중복이지만 다시 작성
-                    print("mapPathViewModel after loadWorkoutData in the WatchResultRecord \(mapPathViewModel.workout) \(mapPathViewModel.isDataLoaded)")
-                    isDataLoaded = true
+        .onAppear{
+            Task {
+                if mapPathViewModel.workout != self.workout {
+                    guard let workout = self.workout else {
+                        return  }
+                   
+                    await mapPathViewModel.loadWorkoutData(workout: workout)
+              
                 }
-                else {
-                    print("self.workout in the WatchResultRecord is nil")
-                    isDataLoaded = true
-                }
-            } else {
-                isDataLoaded = true
-                print("mapPathViewModel will not load data  in the WatchResultRecord \n workout: \(String(describing: self.workout)) \n    mapPathViewModel.workout:\(String(describing: mapPathViewModel.workout))" )
             }
-       
         }
+    
     }
 
     

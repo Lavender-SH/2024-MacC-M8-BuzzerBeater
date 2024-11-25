@@ -658,9 +658,10 @@ class WorkoutManager:  ObservableObject
         
         metadataForWorkout["AppIdentifier"] = appIdentifier
         metadataForWorkout["TotalDistance"] =  self.totalDistance
+        
         let duration = self.workout?.endDate.timeIntervalSince(self.workout?.startDate ?? Date())
        
-        metadataForWorkout["TotalDuration"] = duration
+        metadataForWorkout["TotalDuration"] = (duration ?? 0) - pausedElapsedTime
         
         metadataForWorkout["TotalEneryBurned"] =  self.workout?.totalEnergyBurned
         metadataForWorkout["MaxSpeed"] = self.maxSpeed

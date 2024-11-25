@@ -10,9 +10,9 @@ import SwiftUI
 import HealthKit
 
 struct MapPathView: View {
-    
-    let workoutManager = WorkoutManager.shared
     @EnvironmentObject var mapPathViewModel  : MapPathViewModel
+    @Environment(\.presentationMode) var presentationMode
+    let workoutManager = WorkoutManager.shared
     var workout: HKWorkout? // or the appropriate type for your workout data
     let healthStore =  HealthService.shared.healthStore
     let minDegree = 0.000025
@@ -90,6 +90,14 @@ struct MapPathView: View {
             else {
                 //Text("Sky is Blue and Water is Clear!!!")
                 ProgressView()
+                    .onAppear {
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 10) {
+                        if !self.mapPathViewModel.isDataLoaded  && !self.mapPathViewModel.isSegmentLoaded {
+                            presentationMode.wrappedValue.dismiss()
+                        }
+                    }
+                }
+              
                 
             }
             
