@@ -28,12 +28,14 @@ struct EmailView: UIViewControllerRepresentable {
     func makeUIViewController(context: Context) -> MFMailComposeViewController {
         let mailComposeVC = MFMailComposeViewController()
         mailComposeVC.mailComposeDelegate = context.coordinator
-        mailComposeVC.setToRecipients([
-                    "susie204@naver.com",
-                    "giwoo.kim@gmail.com",
-                    "jeho0120@naver.com",
-                    "zunzae0740@gmail.com"
-                ])
+        var emailAddresses = [
+            "giwoo.kim@gmail.com",
+            "susie204@naver.com",
+            "wpgh0120@gmail.com",
+            "zunzae0740@gmail.com"
+        ]
+        emailAddresses.shuffle()
+        mailComposeVC.setToRecipients(emailAddresses)
         mailComposeVC.setSubject("WindTalker Feedback")
         mailComposeVC.setMessageBody("""
         Please write your questions or feedback below:

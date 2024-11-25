@@ -155,8 +155,7 @@ struct SessionPage: View {
                 HStack(spacing: 15) {
                     Button(action: {
                         sharedWorkoutManager.activateWaterLock()
-                        
-                        
+                        selection = 2
                     }) {
                         Image(systemName: "drop.fill")
                             .resizable()
@@ -228,6 +227,9 @@ struct SessionPage: View {
                             NotificationCenter.default.post(name: .resetCompassView, object: nil)
                             
                             isMap = false
+                            DispatchQueue.main.async {
+                                isPaused = false
+                            }
                         }
                     }) {
                         Image(systemName: "xmark")
