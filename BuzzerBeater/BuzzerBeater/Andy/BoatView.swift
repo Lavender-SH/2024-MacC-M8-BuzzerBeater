@@ -19,7 +19,7 @@ struct BoatView: View{
     @State private var diffAngle : Angle = .degrees(0)
     @State private var duration : TimeInterval = 0
     @State private var currentSailAngle : Angle = .degrees(0)
-    @State private var angleStep : Angle = .degrees(1)
+    @State private var angleStep : Angle = .degrees(15)
     
     @EnvironmentObject private var sailAngleFind : SailAngleFind
 #if os(watchOS)
@@ -159,7 +159,7 @@ struct BoatView: View{
         self.diffAngle = Angle(degrees: newSailAngle.degrees - self.previousSailAngle.degrees)
         print("diffAngle updated to: \(diffAngle.degrees)")
         
-        self.angleStep = Angle(degrees: self.diffAngle.degrees > 0 ? 3 : -3 )
+        self.angleStep = Angle(degrees: self.diffAngle.degrees > 0 ? 15.0 : -15.0)
         currentSailAngle = self.previousSailAngle
         
         // self.sailAngle = self.newSailAngle  vs startTimer() 둘중 하나만 사용
@@ -174,7 +174,7 @@ struct BoatView: View{
     
     
     private func startTimer() {
-        cancellable = Timer.publish(every: 0.2, on: .main, in: .common)
+        cancellable = Timer.publish(every: 0.05, on: .main, in: .common)
                .autoconnect()
                .sink { _ in
                  
