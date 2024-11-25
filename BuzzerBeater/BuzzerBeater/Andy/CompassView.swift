@@ -34,6 +34,19 @@ struct CompassView: View {
     @State var testString : String = "00:00:00"
     //let sharedWorkoutManager = WorkoutManager.shared
     
+    var spacingForDevice: CGFloat {
+            let screenBounds = WKInterfaceDevice.current().screenBounds
+            // 기기의 높이를 기준으로 간격 설정
+            switch screenBounds.height {
+            case ..<200: // 작은 화면
+                return -1.6
+            case 200..<300: // 중간 화면
+                return -2.8
+            default: // 큰 화면 (예: 애플워치 울트라)
+                return -5.5
+            }
+        }
+    
     var body: some View {
 
         ZStack{
@@ -48,7 +61,7 @@ struct CompassView: View {
                 .font(.system(size: 17))
                 .fontDesign(.rounded)
                 .multilineTextAlignment(.leading)
-                .padding([.leading], -75)
+                .padding([.leading], -75).padding([.top], spacingForDevice)
                 .padding(.top, -30)
 //                .onChange(of: sharedWorkoutManager.formattedElapsedTime) { _  , _ in
 //                    
