@@ -65,7 +65,7 @@ struct InfoDetail: View {
                             .font(.system(size: 25).bold())
                             .fontDesign(.rounded)
                             .padding(.bottom, 5)
-                        if let startDate = startDate, let endDate = endDate {
+                        if let startDate = mapPathViewModel.workout?.startDate, let endDate = mapPathViewModel.workout?.endDate {
                             Text("\(formattedTime(startDate)) - \(formattedTime(endDate))")
                                 .font(.system(size: 20).bold())
                                 .foregroundColor(.secondary)
