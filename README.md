@@ -1,4 +1,4 @@
-# 2024-MacC-M8-BuzzerBeater
+# Wind Talker
 
 Feel the Wind: The Ultimate Sailing Companion
 
