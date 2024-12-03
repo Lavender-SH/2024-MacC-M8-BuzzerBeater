@@ -3,17 +3,16 @@
 Feel the Wind: The Ultimate Sailing Companion
 
 This app tells the True wind and Apparent wind direction.
-If you connect the digital compass sensor, you can see your sail in reality.
+If you connect with the digital compass sensor, you can see your sail in reality.
 and with the true wind and apparent wind, this app calibrate the optimal sail angle.
-After sailing this app records the distance, route, and calories and max speed for reflection.
+After sailing, this app records the distance, route, and calories and max speed for reflection.
 
 
 <details>
   <summary>
     Privacy Policy for Feel the Wind: The Ultimate Sailing Companion
-  </summary>
-
-We at Feel the Wind: The Ultimate Sailing Companion value your privacy and are committed to protecting your personal data. This Privacy Policy explains how your information is collected, used, stored, and shared when you use our app.
+  </summary> 
+your privacy and are committed to protecting your personal data. This Privacy Policy explains how your information is collected, used, stored, and shared when you use our app.
 
 ## 1. Information We Collect and How We Collect It
 Our app does not directly collect or store personal data. However, certain data is used to provide the app’s core functionalities:
@@ -61,9 +60,9 @@ This Privacy Policy may be updated in the future. Changes will be communicated t
 ## 8. Contact Information
 If you have any questions or concerns about this Privacy Policy, please contact us:
 
-Email: giwoo.kim@gmail.com
-Phone: +82-10-8728-0337
-This Privacy Policy is effective as of December 3, 2024.
+Email: giwoo.kim@gmail.com  
+Phone: +82-10-8728-0337  
+This Privacy Policy is effective as of December 3, 2024.  
   
 </details>
 
