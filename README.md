@@ -289,7 +289,21 @@ if relativeWindDirection < -180 { relativeWindDirection += 360 }
 if relativeApparentWindDirection > 180 { relativeApparentWindDirection -= 360 }
 if relativeApparentWindDirection < -180 { relativeApparentWindDirection += 360 }
 ```
+ 1. 왜 trueWindDirection - boatDirection을 계산하는가? </br>
+    relativeWindDirection은 보트 기준에서의 바람 방향을 의미합니다. 이를 구하기 위해서는 </br>
+    1. 바람의 방향(trueWindDirection)에서 </br>
+    2. 보트가 진행하는 방향(boatDirection)을 빼서 </br>
+    3. 보트 입장에서 상대적으로 바람이 어느 쪽에서 불어오는지를 계산해야 합니다.</br>
     
+    - 예시 </br>
+    trueWindDirection = 90° (동쪽에서 바람이 옴) </br>
+    boatDirection = 30° (보트가 북동쪽으로 진행 중) </br>
+    relativeWindDirection = 90° - 30° = 60° </br>
+    즉, 보트 기준으로 동쪽에서 60° 시계 방향으로 바람이 불어옴을 나타냅니다. </br>
+
+
+
+     
 
 
 
