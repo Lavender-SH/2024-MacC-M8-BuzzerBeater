@@ -142,6 +142,7 @@ let y = r * sin(angle.radians) // y좌표 계산
 3. 오차 보정: windCorrectionDetent를 통해 센서 오차를 실시간으로 보정하며, 디지털 크라운을 통해 사용자가 직접 보정값을 조정할 수 있습니다.</br>
 
 </br>
+
 ### 바람 데이터 처리코드
 
 ``` swift
@@ -180,6 +181,7 @@ func fetchCurrentWind(for location: CLLocation) async -> WindData? {
 
 ```
 </br>
+
 ###  애플워치 디지털 크라운 활용 코드(바람의 방향 오차 보정 기능)
     
 ``` swift
