@@ -23,9 +23,9 @@
 
 ### 성과
 - Apple Developer Academy @ POSTECH 최종 PR 홍보팀 선정
-<br>
-- 애플 상부 및 고위 관계자들에게 프로젝트 발표  
-- 글로벌 혁신성과 사회적 영향력을 입증
+
+- 애플 상부 및 고위 관계자들에게 프로젝트 발표<br>
+- 글로벌 혁신성과 사회적 영향력을 입증<br>
 
 ### 프로젝트 기간
 - 2024.09.01 ~ 2024.12.05 (3개월) - Apple Developer Academy @ POSTECH (MACRO Challenge)</br>
