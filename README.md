@@ -57,10 +57,11 @@
 
 ### 실시간 바람의 방향을 보여주는 기능
 - 앱은 WeatherKit을 사용하여 현재 사용자가 위치한 지역의 실시간 바람 데이터를 제공합니다. 이를 통해 세일링 중인 사용자가 바람의 방향, 속도, 그리고 나침반 방향을 직관적으로 확인할 수 있습니다.</br>
-1.WeatherKit 활용: Apple의 WeatherKit을 사용하여 정확하고 실시간 데이터를 가져옵니다.</br>
-2.데이터 구조화: 바람 데이터를 WindData라는 구조체에 저장하여 UI에서 쉽게 활용 가능.</br>
-3.오차 보정: windCorrectionDetent를 통해 센서 오차를 실시간으로 보정.</br>
-4.UI 반영: @Published 속성을 사용하여 데이터를 UI와 자동으로 연동.</br>
+</br>
+1. WeatherKit 활용: Apple의 WeatherKit을 사용하여 정확하고 실시간 데이터를 가져옵니다.</br>
+2. 데이터 구조화: 바람 데이터를 WindData라는 구조체에 저장하여 UI에서 쉽게 활용 가능.</br>
+3. 오차 보정: windCorrectionDetent를 통해 센서 오차를 실시간으로 보정.</br>
+4. UI 반영: @Published 속성을 사용하여 데이터를 UI와 자동으로 연동.</br>
 
 ``` swift
 func fetchCurrentWind(for location: CLLocation) async -> WindData? {
