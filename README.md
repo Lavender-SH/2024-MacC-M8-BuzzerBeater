@@ -228,25 +228,13 @@ func fetchCurrentWind(for location: CLLocation) async -> WindData? {
       
  4. 주행풍 크기와 방향 구하기</br>
     - 크기: 피타고라스 정리를 사용해 주행풍의 속도를 구함.</br>
-      $$
+$$
 \text{속도(Apparent Wind Speed)} = \sqrt{(\text{True Wind X} + \text{Boat X})^2 + (\text{True Wind Y} + \text{Boat Y})^2}
 $$
     - 방향: 주행풍의 각도를 atan2 함수로 계산.</br>
       direction = atan2(apparentWind X, apparentWind Y)</br>
 
 
- 3. 실제 계산 예시
 
-    반지름 r = 100 (나침반 원의 크기)</br>
-    각도 angle = 90° (동쪽을 가리킴)</br>
-
-    각도를 라디안으로 변환</br>
-    angle.radians = 90° × (π / 180) = π/2</br>
-
-    x = r * cos(π/2) = 100 * 0 = 0</br>
-    y = r * sin(π/2) = 100 * 1 = 100</br>
-    결과: (x, y) = (0, 100)</br>
-
-    즉, 이 점은 동쪽(E) 방향에 해당하는 위치입니다.</br>
 
 </details>
