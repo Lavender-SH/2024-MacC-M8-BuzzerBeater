@@ -279,7 +279,8 @@ func calculateThetaY(x: Double, y: Double) -> Double {
  2. 상대 바람 방향 계산</br>
     - Relative Wind Direction은 True Wind와 Boat Direction의 차이로 계산됩니다.</br>
     - 계산 후 방향은 -180° ~ 180° 범위로 조정됩니다.</br>
-    ``` swift
+
+``` swift
 var relativeWindDirection = fmod(trueWindDirection - boatDirection, 360)
 var relativeApparentWindDirection  = fmod (apparentWindDirection  - boatDirection , 360)
 if relativeWindDirection > 180 { relativeWindDirection -= 360 }
@@ -287,14 +288,9 @@ if relativeWindDirection < -180 { relativeWindDirection += 360 }
 
 if relativeApparentWindDirection > 180 { relativeApparentWindDirection -= 360 }
 if relativeApparentWindDirection < -180 { relativeApparentWindDirection += 360 }
-    ```
+```
     
 
 
- 1. 실제 바람의 성분 분리 (True Wind Components)</br>
-    - x축: 바람이 가로 방향으로 얼마나 영향을 주는지 계산</br>
-      wind X = windSpeed × cos(windDirection)</br>
-    - Y축: 바람이 세로 방향으로 얼마나 영향을 주는지 계산</br>
-      wind Y = windSpeed × sin(windDirection)</br>
 
 </details>
