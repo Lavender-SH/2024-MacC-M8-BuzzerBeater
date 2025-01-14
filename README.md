@@ -63,7 +63,7 @@
 3. 오차 보정: windCorrectionDetent를 통해 센서 오차를 실시간으로 보정하며, 디지털 크라운을 통해 사용자가 직접 보정값을 조정할 수 있습니다.</br>
 4. UI 반영: @Published 속성을 사용하여 데이터를 UI와 자동으로 연동.</br>
 
-####바람 데이터 처리코드
+###바람 데이터 처리코드
 ``` swift
 func fetchCurrentWind(for location: CLLocation) async -> WindData? {
 
@@ -100,7 +100,7 @@ func fetchCurrentWind(for location: CLLocation) async -> WindData? {
 
 ```
 </br>
-####디지털 크라운 활용 코드(애플워치 바람의 방향 오차 보정 기능)
+###디지털 크라운 활용 코드(애플워치 바람의 방향 오차 보정 기능)
 ``` swift
 crownEvent in
     isCrownIdle = false
