@@ -74,7 +74,7 @@ WindTalker앱에서 나침반(Compass)은 사용자 경험을 극대화하기 �
  - UI 반영: @Published 속성을 사용하여 데이터를 UI와 자동으로 연동.</br>
  - 나침반 화살표, 주요 방향(N, E, S, W), 바람의 방향 등을 시각적으로 표시.</br>
 
-    ###  나침반 원과 눈금 표시하는 코드
+    ###  나침반 원과 눈금을 표시하는 코드
  ``` swift
 ForEach(0..<72, id: \.self) { index in
     let degree = index * 5  // 5도 단위 눈금
@@ -97,7 +97,7 @@ ForEach(0..<72, id: \.self) { index in
  ```  
  </br>
 
-### 나침반 부가 설명
+### 1-1. 나침반 부가 설명
     
 - 코드에서 cos(코사인)과 sin(사인)을 사용한 부분은 원(circle) 위의 점의 위치를 계산하는 데 쓰였습니다. 이 원은 나침반처럼 중심에서 360도로 퍼져 있다고 생각하면 됩니다. 각도를 사용해 원의 특정 지점(점)을 계산하려는 것입니다.</br>
  ``` swift
@@ -205,7 +205,7 @@ func fetchCurrentWind(for location: CLLocation) async -> WindData? {
 ```
 </br>
 
-###  주행풍에 따른 하얀색 화살표 Apparent Wind 계산 방식
+###  2-2. 주행풍에 따른 하얀색 화살표 (Apparent Wind) 계산 방식
  - 주행풍은 실제 바람(True Wind)과 보트가 움직이면서 생기는 상대적인 바람이 결합된 결과입니다. 예를 들어, 바람이 정면에서 불고 있지만 보트가 빠르게 이동하면 느껴지는 바람의 방향과 세기가 달라지게 됩니다. 이 주행풍은 세일링에서 매우 중요한 요소입니다.</br>
 
  1. 실제 바람의 성분 분리 (True Wind Components)</br>
@@ -233,7 +233,7 @@ func fetchCurrentWind(for location: CLLocation) async -> WindData? {
     - 방향: 주행풍의 각도를 atan2 함수로 계산.</br>
       direction = atan2(apparentWind X, apparentWind Y)</br>
 
-###  Apparent Wind 하얀색 화살표 계산 코드
+###  하얀색 화살표 (Apparent Wind) 계산 코드
 ``` swift
 func calcApparentWind() {
     // True Wind와 Boat의 속도 및 방향 데이터
@@ -264,6 +264,37 @@ func calculateThetaY(x: Double, y: Double) -> Double {
 
 
 ```
+</br>
 
+### 3. 바람의 방향에 맞게 최적의 돛의 각도를 가이딩하는 기능
+
+ - 돛의 각도는 바람의 방향(True Wind Direction)과 보트의 진행 방향(Boat Direction)을 기준으로 계산됩니다. 최적의 돛 각도를 설정하면 효율적인 항해가 가능합니다. 이를 위해 상대 바람(Apparent Wind Direction) 방향과 돛의 위치를 계산하는 방법이 구현되었습니다.</br>
+ 
+ 
+ 1. 돛의 각도 계산을 위한 필수 데이터</br>
+    - True Wind Direction: 실제 바람의 방향</br>
+    - Apparent Wind Direction: 보트의 움직임으로 인한 주행풍 방향</br>
+    - Boat Direction: 보트의 진행 방향</br>
+    
+ 2. 상대 바람 방향 계산</br>
+    - Relative Wind Direction은 True Wind와 Boat Direction의 차이로 계산됩니다.</br>
+    - 계산 후 방향은 -180° ~ 180° 범위로 조정됩니다.</br>
+    ``` swift
+var relativeWindDirection = fmod(trueWindDirection - boatDirection, 360)
+var relativeApparentWindDirection  = fmod (apparentWindDirection  - boatDirection , 360)
+if relativeWindDirection > 180 { relativeWindDirection -= 360 }
+if relativeWindDirection < -180 { relativeWindDirection += 360 }
+
+if relativeApparentWindDirection > 180 { relativeApparentWindDirection -= 360 }
+if relativeApparentWindDirection < -180 { relativeApparentWindDirection += 360 }
+    ```
+    
+
+
+ 1. 실제 바람의 성분 분리 (True Wind Components)</br>
+    - x축: 바람이 가로 방향으로 얼마나 영향을 주는지 계산</br>
+      wind X = windSpeed × cos(windDirection)</br>
+    - Y축: 바람이 세로 방향으로 얼마나 영향을 주는지 계산</br>
+      wind Y = windSpeed × sin(windDirection)</br>
 
 </details>
