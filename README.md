@@ -20,7 +20,6 @@
 </p>
 
 </br>
-
 ### 성과
 - Apple Developer Academy @ POSTECH 최종 PR 홍보팀 선정
 
@@ -32,6 +31,15 @@
 
 ### 프로젝트 참여 인원
 - iOS Developer 3명, Design 1명, PM 1명
+
+</br>
+
+## 기술 스택
+- **Framework**
+`SwitUI`, `UIKit`, `WatchKit`, `HealthKit`, `CoreBluetooth`, `MapKit`, `WorkoutKit`, `WeatherKit`, `CoreLocation`, `Combine`, `Charts`, `simd`
+
+- **Design Pattern**
+`MVVM`
 
 
 
