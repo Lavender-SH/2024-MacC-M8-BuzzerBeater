@@ -99,7 +99,9 @@ func fetchCurrentWind(for location: CLLocation) async -> WindData? {
 }
 
 ```
+
 </br>
+
 ### 디지털 크라운 활용 코드(애플워치 바람의 방향 오차 보정 기능)
 ``` swift
 crownEvent in
@@ -118,6 +120,7 @@ crownEvent in
 } onIdle: {
     isCrownIdle = true
 }
+
 ```
 
 </details>
