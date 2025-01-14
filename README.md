@@ -228,9 +228,8 @@ func fetchCurrentWind(for location: CLLocation) async -> WindData? {
       
  4. 주행풍 크기와 방향 구하기</br>
     - 크기: 피타고라스 정리를 사용해 주행풍의 속도를 구함.</br>
-$$
-\text{속도(Apparent Wind Speed)} = \sqrt{(\text{True Wind X} + \text{Boat X})^2 + (\text{True Wind Y} + \text{Boat Y})^2}
-$$
+      Apparent Wind Speed = √((True Wind X + Boat X)² + (True Wind Y + Boat Y)²)
+
     - 방향: 주행풍의 각도를 atan2 함수로 계산.</br>
       direction = atan2(apparentWind X, apparentWind Y)</br>
 
