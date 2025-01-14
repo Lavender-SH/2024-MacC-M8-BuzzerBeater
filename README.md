@@ -203,5 +203,50 @@ func fetchCurrentWind(for location: CLLocation) async -> WindData? {
 
 
 ```
+</br>
+
+###  주행풍에 따른 하얀색 화살표 Apparent Wind 계산 방식
+ - 주행풍은 실제 바람(True Wind)과 보트가 움직이면서 생기는 상대적인 바람이 결합된 결과입니다. 예를 들어, 바람이 정면에서 불고 있지만 보트가 빠르게 이동하면 느껴지는 바람의 방향과 세기가 달라지게 됩니다. 이 주행풍은 세일링에서 매우 중요한 요소입니다.</br>
+
+ 1. 실제 바람의 성분 분리 (True Wind Components)</br>
+    - x축: 바람이 가로 방향으로 얼마나 영향을 주는지 계산</br>
+      wind X = windSpeed × cos(windDirection)</br>
+    - Y축: 바람이 세로 방향으로 얼마나 영향을 주는지 계산</br>
+      wind Y = windSpeed × sin(windDirection)</br>
+
+ 2. 보트의 이동 성분 분리 (Boat Motion Components)</br>
+    - x축: 보트가 가로 방향으로 얼마나 움직이는지 계산</br>
+      boat X = boatSpeed × cos(boatCourse)</br>
+    - Y축: 보트가 세로 방향으로 얼마나 움직이는지 계산</br>
+      boat Y = boatSpeed × sin(boatCourse)</br>
+      
+ 3. 주행풍 계산 (Apparent Wind Calculation)</br>
+    - x축 주행풍: 실제 바람(x)와 보트 이동(x)을 더한다.</br>
+      apparentWind X = wind X + boat X</br>
+    - Y축 주행풍: 실제 바람(y)와 보트 이동(y)을 더한다.</br>
+      apparentWind Y = wind Y + boat Y</br>
+      
+ 4. 주행풍 크기와 방향 구하기</br>
+    - 크기: 피타고라스 정리를 사용해 주행풍의 속도를 구함.</br>
+      $$
+\text{속도(Apparent Wind Speed)} = \sqrt{(\text{True Wind X} + \text{Boat X})^2 + (\text{True Wind Y} + \text{Boat Y})^2}
+$$
+    - 방향: 주행풍의 각도를 atan2 함수로 계산.</br>
+      direction = atan2(apparentWind X, apparentWind Y)</br>
+
+
+ 3. 실제 계산 예시
+
+    반지름 r = 100 (나침반 원의 크기)</br>
+    각도 angle = 90° (동쪽을 가리킴)</br>
+
+    각도를 라디안으로 변환</br>
+    angle.radians = 90° × (π / 180) = π/2</br>
+
+    x = r * cos(π/2) = 100 * 0 = 0</br>
+    y = r * sin(π/2) = 100 * 1 = 100</br>
+    결과: (x, y) = (0, 100)</br>
+
+    즉, 이 점은 동쪽(E) 방향에 해당하는 위치입니다.</br>
 
 </details>
