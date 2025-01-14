@@ -6,9 +6,9 @@
 
 - [실제 Apple 홍보에 쓰인 유튜브 영상 링크](https://www.youtube.com/watch?v=GKnI3lnFm9E&t=348s)</br>
 
-- [Apple Developer Academy @ POSTECH 유튜버 방문 영상 9분 40초 부분](https://www.youtube.com/watch?v=GKnI3lnFm9E&t=348s)</br>
+- [Apple Developer Academy @ POSTECH 유튜버 방문 영상 9분 40초](https://www.youtube.com/watch?v=GKnI3lnFm9E&t=348s)</br>
 
-- [Wind Talker - 세계 최초 센서 기반 요트 세일링앱 링크](https://apps.apple.com/kr/app/windtalker/id6738647452?platform=iphone)</br>
+- [Wind Talker - 세계 최초 센서 기반 요트 세일링앱 앱스토어 링크](https://apps.apple.com/kr/app/windtalker/id6738647452?platform=iphone)</br>
 
 
 
@@ -56,16 +56,19 @@
 </br>
 
 ### 실시간 바람의 방향을 보여주는 기능
-- 앱은 WeatherKit을 사용하여 현재 사용자가 위치한 지역의 실시간 바람 데이터를 제공합니다. 이를 통해 세일링 중인 사용자가 바람의 방향, 속도, 그리고 나침반 방향을 직관적으로 확인할 수 있습니다.</br>
+- WindTalker앱은 WeatherKit을 사용하여 현재 사용자가 위치한 지역의 실시간 바람 데이터를 제공합니다. 이를 통해 세일링 중인 사용자가 바람의 방향, 속도, 그리고 나침반 방향을 직관적으로 확인할 수 있습니다.</br>
 
 1. WeatherKit 활용: Apple의 WeatherKit을 사용하여 정확하고 실시간 데이터를 가져옵니다.</br>
 2. 데이터 구조화: 바람 데이터를 WindData라는 구조체에 저장하여 UI에서 쉽게 활용 가능.</br>
-3. 오차 보정: windCorrectionDetent를 통해 센서 오차를 실시간으로 보정.</br>
+3. 오차 보정: windCorrectionDetent를 통해 센서 오차를 실시간으로 보정하며, 디지털 크라운을 통해 사용자가 직접 보정값을 조정할 수 있습니다.</br>
 4. UI 반영: @Published 속성을 사용하여 데이터를 UI와 자동으로 연동.</br>
 
+####바람 데이터 처리코드
 ``` swift
 func fetchCurrentWind(for location: CLLocation) async -> WindData? {
-    let weatherService = WeatherService.shared // WeatherKit 서비스 인스턴스
+
+    let weatherService = WeatherService.shared
+    
     do {
         let weather = try await weatherService.weather(for: location)
         let currentWind = weather.currentWeather.wind
@@ -76,7 +79,7 @@ func fetchCurrentWind(for location: CLLocation) async -> WindData? {
             self.direction = currentWind.direction.value > 0 ? currentWind.direction.value : nil
             self.adjustedDirection = self.direction.map { $0 + self.windCorrectionDetent }
             self.compassDirection = currentWindCompassDirection
-            self.speed = max(0, currentWind.speed.value) // 속도 값이 0보다 작지 않도록 처리
+            self.speed = max(0, currentWind.speed.value)
             print("Current wind speed: \(self.speed) m/s")
             print("Current wind direction: \(String(describing: self.direction))°")
         }
@@ -93,6 +96,27 @@ func fetchCurrentWind(for location: CLLocation) async -> WindData? {
         print("Failed to fetch weather: \(error)")
         return nil
     }
+}
+
+```
+</br>
+####디지털 크라운 활용 코드(애플워치 바람의 방향 오차 보정 기능)
+``` swift
+crownEvent in
+    isCrownIdle = false
+    let crownOffset = crownEvent.offset
+
+    // 디지털 크라운의 오프셋을 바람 보정값에 반영
+    windCorrectionDetent = crownOffset
+
+    // WindDetector 모델의 보정값 업데이트
+    windDetector.windCorrectionDetent = windCorrectionDetent
+
+    // 보정값의 범위를 -30° ~ +30°로 제한
+    windCorrectionDetent = max(min(30, windCorrectionDetent), -30)
+    print("crownOffset: \(crownOffset), windCorrectionDetent: \(windCorrectionDetent)")
+} onIdle: {
+    isCrownIdle = true
 }
 ```
 
