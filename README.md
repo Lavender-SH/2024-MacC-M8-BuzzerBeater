@@ -96,9 +96,8 @@ ForEach(0..<72, id: \.self) { index in
 
  ```  
  </br>
-<div style="padding-left: 20px;">
+
 ### 나침반 부가 설명
-</div>
     
 - 코드에서 cos(코사인)과 sin(사인)을 사용한 부분은 원(circle) 위의 점의 위치를 계산하는 데 쓰였습니다. 이 원은 나침반처럼 중심에서 360도로 퍼져 있다고 생각하면 됩니다. 각도를 사용해 원의 특정 지점(점)을 계산하려는 것입니다.</br>
  ``` swift
@@ -143,7 +142,7 @@ let y = r * sin(angle.radians) // y좌표 계산
 3. 오차 보정: windCorrectionDetent를 통해 센서 오차를 실시간으로 보정하며, 디지털 크라운을 통해 사용자가 직접 보정값을 조정할 수 있습니다.</br>
 
 </br>
-    ### 바람 데이터 처리코드
+### 바람 데이터 처리코드
 
 ``` swift
 func fetchCurrentWind(for location: CLLocation) async -> WindData? {
@@ -181,8 +180,7 @@ func fetchCurrentWind(for location: CLLocation) async -> WindData? {
 
 ```
 </br>
-    ###  애플워치 디지털 크라운 활용 코드(바람의 방향 오차 보정 기능)
-</br>
+###  애플워치 디지털 크라운 활용 코드(바람의 방향 오차 보정 기능)
     
 ``` swift
 .digitalCrownRotation(
