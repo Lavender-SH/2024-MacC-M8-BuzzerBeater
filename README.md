@@ -233,7 +233,37 @@ func fetchCurrentWind(for location: CLLocation) async -> WindData? {
     - 방향: 주행풍의 각도를 atan2 함수로 계산.</br>
       direction = atan2(apparentWind X, apparentWind Y)</br>
 
+###  Apparent Wind 하얀색 화살표 계산 코드
+``` swift
+func calcApparentWind() {
+    // True Wind와 Boat의 속도 및 방향 데이터
+    let windSpeed = windDetector.speed
+    let windDirection = windDetector.adjustedDirection ?? 0
+    let boatSpeed = locationManager.boatSpeed == 0 ? windSpeed * 0.5 : locationManager.boatSpeed
+    let boatCourse = locationManager.boatCourse
 
+    // True Wind와 Boat의 X, Y 성분 계산
+    let windX = windSpeed * cos(Angle(degrees: 90 - windDirection).radians)
+    let windY = windSpeed * sin(Angle(degrees: 90 - windDirection).radians)
+    let boatX = boatSpeed * cos(Angle(degrees: 90 - boatCourse).radians)
+    let boatY = boatSpeed * sin(Angle(degrees: 90 - boatCourse).radians)
+
+    // Apparent Wind (주행풍) 성분
+    let apparentWindX = windX + boatX
+    let apparentWindY = windY + boatY
+
+    // 주행풍 속도 및 방향 계산
+    speed = sqrt(pow(apparentWindX, 2) + pow(apparentWindY, 2))
+    direction = speed != 0 ? calculateThetaY(x: apparentWindX, y: apparentWindY) : windDirection
+}
+
+func calculateThetaY(x: Double, y: Double) -> Double {
+    let theta = atan2(x, y) * (180 / .pi) // y축 기준 각도 계산
+    return theta < 0 ? theta + 360 : theta // 음수 각도를 양수로 변환
+}
+
+
+```
 
 
 </details>
