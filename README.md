@@ -27,7 +27,7 @@
 </p>
 
 </br>
-<img src="https://github.com/user-attachments/assets/92cbb0d6-ebc2-4b43-93a7-a58de399ccb3" width="100%">
+<img src="https://github.com/user-attachments/assets/92cbb0d6-ebc2-4b43-93a7-a58de399ccb3" width="100%" height="300>
 
 ### 성과
 - Apple Developer Academy @ POSTECH 최종 PR(Public Relations) 홍보팀 선정
