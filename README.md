@@ -277,7 +277,7 @@ func calculateThetaY(x: Double, y: Double) -> Double {
     - Boat Direction: 보트의 진행 방향</br>
     
  2. 상대 바람 방향 계산</br>
-    - Relative Wind Direction은 True Wind와 Boat Direction의 차이로 계산됩니다.</br>
+    - Relative Wind Direction은 True Wind, Apparent Wind와 Boat Direction의 차이로 계산됩니다.</br>
     - 계산 후 방향은 -180° ~ 180° 범위로 조정됩니다.</br>
 
 ``` swift
@@ -307,13 +307,77 @@ if relativeApparentWindDirection < -180 { relativeApparentWindDirection += 360 }
  2. 왜 360으로 나눠서 나머지를 구하는가?
     360으로 나눠 나머지를 구하는 이유는 각도를 항상 0° ~ 360° 범위로 유지하기 위해서입니다.
 
- 3. 왜 추가로 음수 각도를 보정하나요?
+ 3. 왜 추가로 음수 각도를 보정하는가?
      나머지 연산(fmod) 결과가 음수일 수 있기 때문에, 음수를 양수로 변환해 0° ~ 360° 사이로 맞춥니다.
 
 ```
 
-     
+ 3. 돛의 각도 결정</br>
+    - 상대 바람 방향에 따라 돛 각도와 항해 포인트(Sailing Point)를 설정합니다.</br>
 
+``` swift
+enum SailingPoint {
+    case noGoZone        // 못가는 구간 (-40° ~ 40°)
+    case closehauled     // 바람을 맞고 항해하는 자세 (40° ~ 70° 또는 -40° ~ -70°)
+    case beamReach       // 바람을 옆에서 받아 항해하는 자세 (70° ~ 120° 또는 -70° ~ -120°)
+    case broadReach      // 바람을 사선 뒤쪽에서 받아 항해하는 자세 (120° ~ 160° 또는 -120° ~ -160°)
+    case downwind        // 바람을 뒤에서 받으며 항해하는 자세 (160° ~ -160°)
+}
+
+
+
+if relativeWindDirection > -40 && relativeWindDirection < 40 {
+    sailingPoint = [.noGoZone]
+    sailAngle = Angle(degrees: 0)
+} else if relativeWindDirection < -40 && relativeWindDirection > -120 {
+    sailingPoint = [.closehauled, .beamReach, .broadReach]
+    sailAngle = min(Angle(degrees: -relativeApparentWindDirection), Angle(degrees: 90))
+} else if relativeWindDirection > 40 && relativeWindDirection < 120 {
+    sailingPoint = [.closehauled, .beamReach, .broadReach]
+    sailAngle = max(Angle(degrees: -relativeApparentWindDirection), Angle(degrees: -90))
+} else if relativeWindDirection > 120 || relativeWindDirection < -120 {
+    sailingPoint = [.downwind]
+    sailAngle = Angle(degrees: relativeWindDirection > 0 ? -90 : 90)
+}
+
+``` 
+</br>     
+    ### 3-1. `Combine` 활용
+    - Combine 프레임워크를 사용하여 바람 속도, 방향, 보트의 진행 방향(heading), 코스(course)를 실시간으로 수집.</br>
+    - 이전 데이터와 비교하여 중요한 변화(예: 1° 이상의 각도 변화)가 발생하면 calcSailAngle() 함수를 호출해 돛의 각도를 재계산.</br>
+    - 실시간 데이터 스트림을 기반으로, 돛의 각도를 동적으로 업데이트합니다.</br>
+    
+    ``` swift
+    func startCollectingData() {
+    Publishers.CombineLatest4(
+        apparentWind.$speed,
+        apparentWind.$direction,
+        locationManager.$heading,
+        locationManager.$course
+    )
+    .filter { [weak self] speed, direction, heading, course in
+        let speedChange = abs((speed ?? 0) - (self?.previousSpeed ?? 0)) > 0.1
+        let directionChange = abs((direction ?? 0) - (self?.previousDirection ?? 0)) > 1
+        let headingChange = abs((heading?.trueHeading ?? 0) - (self?.previousHeading ?? 0)) > 1
+        let courseChange = abs((course ?? 0) - (self?.previousCourse ?? 0)) > 1
+
+        self?.previousSpeed = speed ?? 0
+        self?.previousDirection = direction ?? 0
+        self?.previousHeading = heading?.trueHeading ?? 0
+        self?.previousCourse = course ?? 0
+
+        return speedChange || directionChange || headingChange || courseChange
+    }
+    .sink { [weak self] _, _, _, _ in
+        DispatchQueue.main.async {
+            self?.calcSailAngle()
+        }
+    }
+    .store(in: &cancellables)
+}
+        ```
+    
+    
 
 
 </details>
