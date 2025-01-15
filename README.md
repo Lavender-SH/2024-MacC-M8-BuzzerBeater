@@ -313,7 +313,7 @@ if relativeApparentWindDirection < -180 { relativeApparentWindDirection += 360 }
 ```
 
  3. 돛의 각도 결정</br>
-    - 상대 바람 방향에 따라 돛 각도와 항해 포인트(Sailing Point)를 설정합니다.</br>
+    - 상대 바람 방향에 따라 돛 각도와 항해 포인트(Sailing Point)를 설정.</br>
 
 ``` swift
 enum SailingPoint {
@@ -346,7 +346,7 @@ if relativeWindDirection > -40 && relativeWindDirection < 40 {
 ``` 
 </br>
 
-### 3-1. `Combine` 활용
+### 3-1. `Combine` 프레임워크 활용
 
  - Combine 프레임워크를 사용하여 바람 속도, 방향, 보트의 진행 방향(heading), 코스(course)를 실시간으로 수집.</br>
  - 이전 데이터와 비교하여 중요한 변화(예: 1° 이상의 각도 변화)가 발생하면 calcSailAngle() 함수를 호출해 돛의 각도를 재계산.</br>
@@ -446,7 +446,80 @@ func calculateColor(for velocity: Double, minVelocity: Double, maxVelocity: Doub
 }
 
 ```
+</br>
 
+### 5. 애플워치와 아이폰의 데이터 연동
+ - HealthKit을 사용하여 Apple Watch와 iPhone을 연동. 운동 데이터 기록 및 관리 시스템을 구축</br>
+ 
+ ### 5-1. HealthKit 주요 구성 요소
+ 
+ 1. HKHealthStore</br>
+  - HealthKit 데이터와 상호작용하는 중앙 허브 역할</br>
+  - HealthKit 데이터베이스와 연결되어 데이터를 읽거나 쓰는 데 사용</br>
+  - 앱에서 HKHealthStore 인스턴스를 생성하여 사용하며, 권한 요청 및 데이터 쿼리 실행에 활용</br>
+  
+```swift
+let healthStore = HKHealthStore()
+```
+</br> 
 
+ 2. HKObjectType</br>
+  - HealthKit에서 관리하는 데이터 유형 </br>
+    HKQuantityType: 숫자 데이터 (예: 심박수, 이동 거리)</br>
+    HKCategoryType: 카테고리 데이터 (예: 수면 상태)</br>
+    
+```swift
+let heartRateType = HKQuantityType.quantityType(forIdentifier: .heartRate)!
+let sleepAnalysisType = HKCategoryType.categoryType(forIdentifier: .sleepAnalysis)!
+```    
+ </br>
+ 
+ 3. HKSampleType</br>
+  - HealthKit 데이터베이스에서 쿼리할 수 있는 데이터의 샘플 유형</br>
+  - HKObjectType의 하위 클래스이며, 데이터 항목을 구체적으로 정의</br>
+  
+```swift
+let stepCountType = HKSampleType.quantityType(forIdentifier: .stepCount)!
+``` 
+
+ 4. HKWorkout</br>
+  - 운동 세션을 나타내는 객체</br>
+  - 운동 유형(HKWorkoutActivityType), 운동 시간, 거리, 소모 칼로리 등과 같은 정보를 포함</br>
+  - 운동 데이터를 기록하고 분석하는 데 사용</br>
+  
+```swift
+let workout = HKWorkout(activityType: .running,
+                        start: Date(),
+                        end: Date(),
+                        duration: 3600,
+                        totalEnergyBurned: HKQuantity(unit: .kilocalorie(), doubleValue: 500),
+                        totalDistance: HKQuantity(unit: .meter(), doubleValue: 5000),
+                        metadata: nil)
+
+```
+
+ 5. HKWorkoutBuilder</br>
+ - 운동 세션 데이터를 실시간으로 기록하는 데 사용되는 객체</br>
+ - 운동 세션 종료 후 데이터를 HealthKit에 저장</br>
+ 
+```swift
+let workoutBuilder = HKWorkoutBuilder(healthStore: healthStore,
+                                      configuration: workoutConfiguration,
+                                      device: .local())
+
+```
+
+ 6. HKWorkoutRoute</br>
+  - 사용자가 이동한 GPS 경로를 저장하는 객체</br>
+  - 위치 데이터(CLLocation)를 기반으로 경로를 구성</br>
+  
+```swift
+let workoutBuilder = HKWorkoutBuilder(healthStore: healthStore,
+                                      configuration: workoutConfiguration,
+                                      device: .local())
+
+```
+ </br>
+ 
 
 </details>
