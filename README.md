@@ -521,5 +521,80 @@ let workoutBuilder = HKWorkoutBuilder(healthStore: healthStore,
 ```
  </br>
  
+  ### 5-2. HealthKit 데이터 흐름
+ 
+  1. 권한 요청</br>
+   - 사용자에게 데이터 읽기/쓰기 권한을 요청</br>
+   - 사용자가 승인하지 않으면 HealthKit 데이터에 접근할 수 없음</br>
+   
+```swift
+let sampleTypes: Set = [HKQuantityType.quantityType(forIdentifier: .heartRate)!]
+    healthStore.requestAuthorization(toShare: sampleTypes, read: sampleTypes) { success, error in
+    if success {
+        print("Authorization granted.")
+    } else {
+        print("Authorization failed.")
+    }
+}
+
+```
+
+ 2. 데이터 쓰기</br>
+    - 앱에서 수집한 데이터를 HealthKit에 저장</br>
+    
+```swift
+let heartRateQuantity = HKQuantity(unit: .count().unitDivided(by: .minute()), doubleValue: 80)
+let heartRateSample = HKQuantitySample(type: HKQuantityType.quantityType(forIdentifier: .heartRate)!,
+                                       quantity: heartRateQuantity,
+                                       start: Date(),
+                                       end: Date())
+healthStore.save(heartRateSample) { success, error in
+    if success {
+        print("Heart rate saved successfully.")
+    }
+}
+
+```
+ 3. 데이터 읽기</br>
+  - HealthKit 데이터베이스에서 특정 데이터를 쿼리</br>
+  
+```swift
+let heartRateType = HKQuantityType.quantityType(forIdentifier: .heartRate)!
+let query = HKSampleQuery(sampleType: heartRateType, predicate: nil, limit: 10, sortDescriptors: nil) { query, results, error in
+    if let samples = results as? [HKQuantitySample] {
+        for sample in samples {
+            print("Heart rate: \(sample.quantity.doubleValue(for: .count().unitDivided(by: .minute())))")
+        }
+    }
+}
+healthStore.execute(query)
+
+```
+ 4. 운동 세션 관리</br>
+    - 운동 시작: HKWorkoutBuilder로 운동 데이터 기록</br>
+    - 경로 추가: HKWorkoutRouteBuilder를 사용해 위치 데이터 추가</br>
+    - 운동 종류 후 데이터 저장</br>
+    
+</br>
+ 
+### 5-2. HKMetadata와 커스텀 데이터 관리</br>
+
+    - HKMetadata: HealthKit 데이터 항목에 추가 정보를 저장하기 위한 딕셔너리</br>
+    - 메타데이터를 통해 커스텀 데이터를 HealthKit 데이터에 포함하여 저장</br>
+    
+```swift
+let metadata: [String: Any] = [
+    HKMetadataKeySyncIdentifier: "uniqueWorkoutID",
+    HKMetadataKeySyncVersion: 1,
+    "AppIdentifier": "com.example.myapp"
+]
+
+let windSpeedMetadata: [String: Any] = [
+    "WindSpeed": 5.5,
+    "WindDirection": 120
+]
+
+```
+
 
 </details>
