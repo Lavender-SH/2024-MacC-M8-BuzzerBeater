@@ -66,7 +66,7 @@
 ### 1. 애플워치에서 나침반을 구현한 방법
 WindTalker앱에서 나침반(Compass)은 사용자 경험을 극대화하기 위해 SwiftUI와 CoreLocation을 활용하여 구현되었습니다.</br>
 
-<img src="https://github.com/user-attachments/assets/ca76206c-0339-4604-8075-2ece556c5a9b" width="90%">
+<img src="https://github.com/user-attachments/assets/ca76206c-0339-4604-8075-2ece556c5a9b" width="100%">
 
  1. `CoreLocation`
  - CLLocationManager를 사용해 사용자의 실시간 위치와 방향 정보를 수집.</br>
@@ -601,6 +601,9 @@ func calculateColor(for velocity: Double, minVelocity: Double, maxVelocity: Doub
 </br>
 
 ### 6. 요트에 하드웨어를 부착하여 블루투스로 현재 나의 돛의 각도를 보여주는 기능
+
+<img src="https://github.com/user-attachments/assets/9a261778-ad22-4e80-b876-3a12c0aee34c" width="100%">
+
  - Witmotion 센서를 요트의 실제 돛에 부착하여 돛의 각도를 실시간으로 측정하고 Apple Watch에서 데이터를 시각화
  - Witmotion에서 제공한 iOS 전용 SDK를 본사에 문의해서 샘플 코드를 받음
  - SDK를 Apple Watch 환경에 맞게 수정 및 최적화
