@@ -423,6 +423,7 @@ func startCollectingData() {
 
 ```
 </br>
+
 - MapPolyline을 활용해 경로 데이터를 지도에 시각적으로 표시하며, 속도에 따라 색상이 달라지도록 구현</br>
     
 ```swift   
