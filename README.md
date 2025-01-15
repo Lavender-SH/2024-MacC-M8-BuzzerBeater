@@ -12,6 +12,8 @@
 
 - [Wind Talker앱을 만들면서 참고했던 자료들](https://mahogany-numeric-6b8.notion.site/MACRO-CHALLENGE-115b508d1941802e84b3c1d45047355e#125b508d19418068a1fcdec7c71a478b)</br>
 
+- [요트에 하드웨어를 부착하여 블루투스로 연동했던 센서 구매 링크](https://ko.aliexpress.com/item/1005006313311459.html?spm=a2g0o.productlist.main.1.3908chMychMydv&algo_pvid=6f78082b-8c93-495b-bbdd-3d7921bdd109&algo_exp_id=6f78082b-8c93-495b-bbdd-3d7921bdd109-0&pdp_npi=4%40dis%21KRW%2120568%2120500%21%21%2114.50%2114.45%21%402102f0cc17307854810794112ed37d%2112000036722462657%21sea%21KR%211934967517%21X&curPageLogUid=3I2hxbiPn2nG&utparam-url=scene%3Asearch%7Cquery_from%3A)</br>
+
 ## 프로젝트 소개
 ### 앱 설명
 - WindTalker는 세일링 요트를 즐기는 사용자들을 위해 설계된 앱으로, 현재 바람의 방향과 의 각도를 제공하여 최적의 세일링을 지원합니다. 사용자는 바람과 돛 정보를 기반으로 세일링을 즐기고, 항해 후에는 항해 기록 및 회고 정보를 통해 경험을 돌아볼 수 있습니다.</br>
@@ -55,9 +57,9 @@
 - 1.애플워치에서 나침반을 구현한 방법</br>
 - 2.실시간으로 바람의 방향을 나침반에 보여주는 기능</br>
 - 3.바람의 방향에 맞게 최적의 돛의 각도를 가이딩하는 기능</br>
-- 4.지도에서 항해 경로를 표시하는 기능</br>
-- 5.애플워치와 아이폰의 데이터 연동</br>
-- 6.요트에 하드웨어를 부착하여 블루투스로 실제 돛의 각도를 보여주는 기능</br>
+- 4.애플워치와 아이폰의 데이터 연동</br>
+- 5.지도에서 항해 경로를 표시하는 기능</br>
+- 6.요트에 하드웨어를 부착하여 블루투스로 현재 나의 돛의 각도를 보여주는 기능</br>
 
 </br>
 
@@ -384,74 +386,10 @@ func startCollectingData() {
 ```
 </br>
 
-### 4. 지도에 항해 경로를 표시하는 기능
-
- - HealthKit 데이터를 활용하여 항해 기록 및 경로를 지도에 표시</br>
- - 사용자가 항해한 경로와 속도를 HealthKit에서 가져와 시각적으로 표시.</br>
- - 경로는 속도에 따라 색상이 다르게 표시되어 항해 데이터를 직관적으로 분석.</br>
- - HKWorkout과 HKWorkoutRoute를 생성 및 저장하여 운동 데이터와 경로를 효과적으로 관리.</br>
- - 경로 데이터는 지도에 표시되며, 속도, 에너지 소모량, 거리 등의 추가 데이터를 제공.</br>
- 
- ``` swift
-
- func getRouteFrom(workout: HKWorkout, completion: @escaping (_ success: Bool, _ error: Error?) -> Void) {
-    let routePredicate = HKQuery.predicateForObjects(from: workout)
-    let routeQuery = HKAnchoredObjectQuery(type: HKSeriesType.workoutRoute(), predicate: routePredicate, anchor: nil, limit: HKObjectQueryNoLimit) { _, samples, _, _, error in
-        guard let route = samples?.first as? HKWorkoutRoute else {
-            completion(false, error)
-            return
-        }
-        let locationQuery = HKWorkoutRouteQuery(route: route) { _, locations, done, error in
-            if let locations = locations {
-                self.routePoints.append(contentsOf: locations)
-                if done {
-                    self.routePoints.sort { $0.timestamp < $1.timestamp }
-                    self.getMetric()
-                    completion(true, nil)
-                }
-            }
-        }
-        self.healthStore.execute(locationQuery)
-    }
-    healthStore.execute(routeQuery)
-}
-
------------------------------------------------------------------------------------------
-    1. HKWorkoutRouteQuery: 운동 경로 데이터를 가져오는 쿼리로, 사용자가 기록한 위치 데이터를 반환
-    2. 데이터를 시간 순으로 정렬한 뒤 routePoints 배열에 저장하여 지도에 표시
-       (CLLocation 객체를 저장하는 배열. 사용자 항해 경로의 위치 데이터(위도, 경도 등)가 포함)
-
-```
-</br>
-
-- MapPolyline을 활용해 경로 데이터를 지도에 시각적으로 표시하며, 속도에 따라 색상이 달라지도록 구현</br>
-    
-```swift   
-Map {
-    ForEach(0..<mapPathViewModel.segments.count, id: \.self) { index in
-        let segment = mapPathViewModel.segments[index]
-        MapPolyline(coordinates: [segment.start, segment.end])
-            .stroke(segment.color, lineWidth: 6)
-    }
-}
-
-func calculateColor(for velocity: Double, minVelocity: Double, maxVelocity: Double) -> Color {
-    let progress = CGFloat((velocity - minVelocity) / (maxVelocity - minVelocity))
-    switch progress {
-    case ..<0.7: return .yellow
-    case 0.7..<0.85: return .green
-    case 0.85...: return .red
-    default: return .blue
-    }
-}
-
-```
-</br>
-
-### 5. 애플워치와 아이폰의 데이터 연동
+### 4. 애플워치와 아이폰의 데이터 연동
  - HealthKit을 사용하여 Apple Watch와 iPhone을 연동. 운동 데이터 기록 및 관리 시스템을 구축</br>
  
- ### 5-1. HealthKit 주요 구성 요소
+ ### 4-1. HealthKit 주요 구성 요소
  
  1. HKHealthStore</br>
   - HealthKit 데이터와 상호작용하는 중앙 허브 역할</br>
@@ -521,7 +459,7 @@ let workoutBuilder = HKWorkoutBuilder(healthStore: healthStore,
 ```
  </br>
  
-  ### 5-2. HealthKit 데이터 흐름
+  ### 4-2. HealthKit 데이터 흐름
  
   1. 권한 요청</br>
    - 사용자에게 데이터 읽기/쓰기 권한을 요청</br>
@@ -540,7 +478,7 @@ let sampleTypes: Set = [HKQuantityType.quantityType(forIdentifier: .heartRate)!]
 ```
 
  2. 데이터 쓰기</br>
-    - 앱에서 수집한 데이터를 HealthKit에 저장</br>
+   - 앱에서 수집한 데이터를 HealthKit에 저장</br>
     
 ```swift
 let heartRateQuantity = HKQuantity(unit: .count().unitDivided(by: .minute()), doubleValue: 80)
@@ -571,13 +509,13 @@ healthStore.execute(query)
 
 ```
  4. 운동 세션 관리</br>
-    - 운동 시작: HKWorkoutBuilder로 운동 데이터 기록</br>
-    - 경로 추가: HKWorkoutRouteBuilder를 사용해 위치 데이터 추가</br>
-    - 운동 종류 후 데이터 저장</br>
+   - 운동 시작: HKWorkoutBuilder로 운동 데이터 기록</br>
+   - 경로 추가: HKWorkoutRouteBuilder를 사용해 위치 데이터 추가</br>
+   - 운동 종류 후 데이터 저장</br>
     
 </br>
  
-### 5-2. HKMetadata와 커스텀 데이터 관리</br>
+### 4-3. HKMetadata와 커스텀 데이터 관리
 
     - HKMetadata: HealthKit 데이터 항목에 추가 정보를 저장하기 위한 딕셔너리</br>
     - 메타데이터를 통해 커스텀 데이터를 HealthKit 데이터에 포함하여 저장</br>
@@ -596,5 +534,108 @@ let windSpeedMetadata: [String: Any] = [
 
 ```
 
+### 5. 지도에 항해 경로를 표시하는 기능
+
+ - HealthKit 데이터를 활용하여 항해 기록 및 경로를 지도에 표시</br>
+ - 사용자가 항해한 경로와 속도를 HealthKit에서 가져와 시각적으로 표시.</br>
+ - 경로는 속도에 따라 색상이 다르게 표시되어 항해 데이터를 직관적으로 분석.</br>
+ - HKWorkout과 HKWorkoutRoute를 생성 및 저장하여 운동 데이터와 경로를 효과적으로 관리.</br>
+ - 경로 데이터는 지도에 표시되며, 속도, 에너지 소모량, 거리 등의 추가 데이터를 제공.</br>
+ 
+ ``` swift
+
+ func getRouteFrom(workout: HKWorkout, completion: @escaping (_ success: Bool, _ error: Error?) -> Void) {
+    let routePredicate = HKQuery.predicateForObjects(from: workout)
+    let routeQuery = HKAnchoredObjectQuery(type: HKSeriesType.workoutRoute(), predicate: routePredicate, anchor: nil, limit: HKObjectQueryNoLimit) { _, samples, _, _, error in
+        guard let route = samples?.first as? HKWorkoutRoute else {
+            completion(false, error)
+            return
+        }
+        let locationQuery = HKWorkoutRouteQuery(route: route) { _, locations, done, error in
+            if let locations = locations {
+                self.routePoints.append(contentsOf: locations)
+                if done {
+                    self.routePoints.sort { $0.timestamp < $1.timestamp }
+                    self.getMetric()
+                    completion(true, nil)
+                }
+            }
+        }
+        self.healthStore.execute(locationQuery)
+    }
+    healthStore.execute(routeQuery)
+}
+
+-----------------------------------------------------------------------------------------
+    1. HKWorkoutRouteQuery: 운동 경로 데이터를 가져오는 쿼리로, 사용자가 기록한 위치 데이터를 반환
+    2. 데이터를 시간 순으로 정렬한 뒤 routePoints 배열에 저장하여 지도에 표시
+       (CLLocation 객체를 저장하는 배열. 사용자 항해 경로의 위치 데이터(위도, 경도 등)가 포함)
+
+```
+</br>
+
+- MapPolyline을 활용해 경로 데이터를 지도에 시각적으로 표시하며, 속도에 따라 색상이 달라지도록 구현</br>
+    
+```swift   
+Map {
+    ForEach(0..<mapPathViewModel.segments.count, id: \.self) { index in
+        let segment = mapPathViewModel.segments[index]
+        MapPolyline(coordinates: [segment.start, segment.end])
+            .stroke(segment.color, lineWidth: 6)
+    }
+}
+
+func calculateColor(for velocity: Double, minVelocity: Double, maxVelocity: Double) -> Color {
+    let progress = CGFloat((velocity - minVelocity) / (maxVelocity - minVelocity))
+    switch progress {
+    case ..<0.7: return .yellow
+    case 0.7..<0.85: return .green
+    case 0.85...: return .red
+    default: return .blue
+    }
+}
+
+```
+</br>
+
+### 6. 요트에 하드웨어를 부착하여 블루투스로 현재 나의 돛의 각도를 보여주는 기능
+ - Witmotion 센서를 요트의 실제 돛에 부착하여 돛의 각도를 실시간으로 측정하고 Apple Watch에서 데이터를 시각화
+ - Witmotion에서 제공한 iOS 전용 SDK를 본사에 문의해서 샘플 코드를 받음
+ - SDK를 Apple Watch 환경에 맞게 수정 및 최적화
+ - BLE(Bluetooth Low Energy)를 활용하여 센서와 실시간 통신
+ - 3축 데이터 X, Y, Z 각 축의 회전 각도를 실시간으로 읽어와서 돛의 실제 각도를 표현
+    X: 세일의 좌우 기울기
+    Y: 세일의 앞뒤 기울기
+    Z: 세일이 수직으로 기울어진 정ㄷ
+
+```swift
+class BleDeviceManager: ObservableObject {
+    let bluetoothManager = WitBluetoothManager.shared
+    
+    @Published var deviceList: [Bwt901ble] = []
+    @Published var angles = SIMD3<Double>(0, 0, 0)
+    
+    func scanDevices() {
+        bluetoothManager.startScan()
+    }
+    
+    func openDevice(device: Bwt901ble) {
+        try? device.openDevice()
+        device.registerListenKeyUpdateObserver(obj: self)
+    }
+    
+    func onRecord(_ bwt901ble: Bwt901ble) {
+        self.angles = getDeviceAngleData(bwt901ble)
+    }
+    
+    func getDeviceAngleData(_ device: Bwt901ble) -> SIMD3<Double> {
+        return SIMD3<Double>(
+            x: Double(device.getDeviceData(WitSensorKey.AngleX) ?? "") ?? 0.0,
+            y: Double(device.getDeviceData(WitSensorKey.AngleY) ?? "") ?? 0.0,
+            z: Double(device.getDeviceData(WitSensorKey.AngleZ) ?? "") ?? 0.0
+        )
+    }
+}
+```
 
 </details>
