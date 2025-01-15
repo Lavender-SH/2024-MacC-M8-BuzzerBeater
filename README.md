@@ -520,8 +520,8 @@ healthStore.execute(query)
  
 ### 4-3. HKMetadata와 커스텀 데이터 관리
 
-    - HKMetadata: HealthKit 데이터 항목에 추가 정보를 저장하기 위한 딕셔너리</br>
-    - 메타데이터를 통해 커스텀 데이터를 HealthKit 데이터에 포함하여 저장</br>
+ - HKMetadata: HealthKit 데이터 항목에 추가 정보를 저장하기 위한 딕셔너리</br>
+ - 메타데이터를 통해 커스텀 데이터를 HealthKit 데이터에 포함하여 저장</br>
     
 ```swift
 let metadata: [String: Any] = [
