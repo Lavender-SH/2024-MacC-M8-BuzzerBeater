@@ -4,7 +4,7 @@
 
 - [News Article - Apple Developer Academy @ POSTECH 공식 뉴스 기사](https://developeracademy.postech.ac.kr/news/%ED%8F%AC%ED%95%AD%EC%97%90-%EC%84%B8%EC%9A%B4-'%EC%95%A0%ED%94%8C-%EA%B0%9C%EB%B0%9C%EC%9E%90-%EC%82%AC%EA%B4%80%ED%95%99%EA%B5%90'%E2%80%A655%EC%82%B4-%EC%A6%9D%EA%B6%8C%EB%A7%A8%EB%8F%84-%EA%BF%88-%EC%AB%92%EC%95%84%EC%99%94%EB%8B%A4)</br>
 
-- [실제 Apple 홍보에 쓰인 유튜브 영상 링크](https://www.youtube.com/watch?v=GKnI3lnFm9E&t=348s)</br>
+- [실제 Apple 홍보에 쓰인 유튜브 영상 링크](https://youtu.be/XLBkyDmDrlc?si=N38nCGoIaMjNGtHz)</br>
 
 - [Apple Developer Academy @ POSTECH 유튜버 방문 영상 9분 40초](https://www.youtube.com/watch?v=GKnI3lnFm9E&t=348s)</br>
 
