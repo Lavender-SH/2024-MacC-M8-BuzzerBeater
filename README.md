@@ -29,7 +29,7 @@
 </br>
 
 ### 성과
-- Apple Developer Academy @ POSTECH 최종 PR 홍보팀 선정
+- Apple Developer Academy @ POSTECH 최종 PR(Public Relations) 홍보팀 선정
 
 - 애플 상부 및 고위 관계자들에게 프로젝트 발표<br>
 - 경북도지사, 포항시장, 포스텍 총장, 포스코 그룹에게 발표 <br>
