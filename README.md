@@ -329,12 +329,15 @@ enum SailingPoint {
 if relativeWindDirection > -40 && relativeWindDirection < 40 {
     sailingPoint = [.noGoZone]
     sailAngle = Angle(degrees: 0)
+    
 } else if relativeWindDirection < -40 && relativeWindDirection > -120 {
     sailingPoint = [.closehauled, .beamReach, .broadReach]
     sailAngle = min(Angle(degrees: -relativeApparentWindDirection), Angle(degrees: 90))
+    
 } else if relativeWindDirection > 40 && relativeWindDirection < 120 {
     sailingPoint = [.closehauled, .beamReach, .broadReach]
     sailAngle = max(Angle(degrees: -relativeApparentWindDirection), Angle(degrees: -90))
+    
 } else if relativeWindDirection > 120 || relativeWindDirection < -120 {
     sailingPoint = [.downwind]
     sailAngle = Angle(degrees: relativeWindDirection > 0 ? -90 : 90)
@@ -342,13 +345,13 @@ if relativeWindDirection > -40 && relativeWindDirection < 40 {
 
 ``` 
 </br>     
-    ### 3-1. `Combine` 활용
+### 3-1. `Combine` 활용
     - Combine 프레임워크를 사용하여 바람 속도, 방향, 보트의 진행 방향(heading), 코스(course)를 실시간으로 수집.</br>
     - 이전 데이터와 비교하여 중요한 변화(예: 1° 이상의 각도 변화)가 발생하면 calcSailAngle() 함수를 호출해 돛의 각도를 재계산.</br>
     - 실시간 데이터 스트림을 기반으로, 돛의 각도를 동적으로 업데이트합니다.</br>
     
-    ``` swift
-    func startCollectingData() {
+``` swift
+func startCollectingData() {
     Publishers.CombineLatest4(
         apparentWind.$speed,
         apparentWind.$direction,
@@ -375,7 +378,9 @@ if relativeWindDirection > -40 && relativeWindDirection < 40 {
     }
     .store(in: &cancellables)
 }
-        ```
+
+```
+
     
     
 
