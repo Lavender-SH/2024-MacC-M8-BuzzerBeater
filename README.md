@@ -16,7 +16,7 @@
 
 ## 프로젝트 소개
 ### 앱 설명
-- WindTalker는 세일링 요트를 즐기는 사용자들을 위해 설계된 앱으로, 현재 바람의 방향과 의 각도를 제공하여 최적의 세일링을 지원합니다. 사용자는 바람과 돛 정보를 기반으로 세일링을 즐기고, 항해 후에는 항해 기록 및 회고 정보를 통해 경험을 돌아볼 수 있습니다.</br>
+- WindTalker는 세일링 요트를 즐기는 사용자들을 위해 설계된 앱으로, 현재 바람의 방향과 돛의 각도를 제공하여 최적의 세일링을 지원합니다. 사용자는 바람과 돛 정보를 기반으로 세일링을 즐기고, 항해 후에는 항해 기록 및 회고 정보를 통해 경험을 돌아볼 수 있습니다.</br>
 
 <p>
 <img src="https://github.com/user-attachments/assets/576984b0-0824-4acc-8a05-b98dc322d078" width="19%">
@@ -65,6 +65,8 @@
 
 ### 1. 애플워치에서 나침반을 구현한 방법
 WindTalker앱에서 나침반(Compass)은 사용자 경험을 극대화하기 위해 SwiftUI와 CoreLocation을 활용하여 구현되었습니다.</br>
+
+<img src="https://github.com/user-attachments/assets/ca76206c-0339-4604-8075-2ece556c5a9b" width="90%">
 
  1. `CoreLocation`
  - CLLocationManager를 사용해 사용자의 실시간 위치와 방향 정보를 수집.</br>
