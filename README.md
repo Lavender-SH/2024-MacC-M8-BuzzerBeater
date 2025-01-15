@@ -10,7 +10,7 @@
 
 - [Wind Talker - 세계 최초 센서 기반 요트 세일링앱 앱스토어 링크](https://apps.apple.com/kr/app/windtalker/id6738647452?platform=iphone)</br>
 
-
+- [Wind Talker앱을 만들면서 참고했던 자료들](https://mahogany-numeric-6b8.notion.site/MACRO-CHALLENGE-115b508d1941802e84b3c1d45047355e#125b508d19418068a1fcdec7c71a478b)</br>
 
 ## 프로젝트 소개
 ### 앱 설명
@@ -382,9 +382,69 @@ func startCollectingData() {
 }
 
 ```
+</br>
 
+### 4. 지도에 항해 경로를 표시하는 기능
+
+ - HealthKit 데이터를 활용하여 항해 기록 및 경로를 지도에 표시</br>
+ - 사용자가 항해한 경로와 속도를 HealthKit에서 가져와 시각적으로 표시.</br>
+ - 경로는 속도에 따라 색상이 다르게 표시되어 항해 데이터를 직관적으로 분석.</br>
+ - HKWorkout과 HKWorkoutRoute를 생성 및 저장하여 운동 데이터와 경로를 효과적으로 관리.</br>
+ - 경로 데이터는 지도에 표시되며, 속도, 에너지 소모량, 거리 등의 추가 데이터를 제공.</br>
+ 
+ ``` swift
+
+ func getRouteFrom(workout: HKWorkout, completion: @escaping (_ success: Bool, _ error: Error?) -> Void) {
+    let routePredicate = HKQuery.predicateForObjects(from: workout)
+    let routeQuery = HKAnchoredObjectQuery(type: HKSeriesType.workoutRoute(), predicate: routePredicate, anchor: nil, limit: HKObjectQueryNoLimit) { _, samples, _, _, error in
+        guard let route = samples?.first as? HKWorkoutRoute else {
+            completion(false, error)
+            return
+        }
+        let locationQuery = HKWorkoutRouteQuery(route: route) { _, locations, done, error in
+            if let locations = locations {
+                self.routePoints.append(contentsOf: locations)
+                if done {
+                    self.routePoints.sort { $0.timestamp < $1.timestamp }
+                    self.getMetric()
+                    completion(true, nil)
+                }
+            }
+        }
+        self.healthStore.execute(locationQuery)
+    }
+    healthStore.execute(routeQuery)
+}
+
+-----------------------------------------------------------------------------------------
+    1. HKWorkoutRouteQuery: 운동 경로 데이터를 가져오는 쿼리로, 사용자가 기록한 위치 데이터를 반환
+    2. 데이터를 시간 순으로 정렬한 뒤 routePoints 배열에 저장하여 지도에 표시 준비를 완료.(CLLocation 객체를 저장하는 배열. 사용자 항해 경로의 위치 데이터(위도, 경도 등)가 포함)
+
+```
+</br>
+    - MapPolyline을 활용해 경로 데이터를 지도에 시각적으로 표시하며, 속도에 따라 색상이 달라지도록 구현</br>
     
-    
+```swift   
+Map {
+    ForEach(0..<mapPathViewModel.segments.count, id: \.self) { index in
+        let segment = mapPathViewModel.segments[index]
+        MapPolyline(coordinates: [segment.start, segment.end])
+            .stroke(segment.color, lineWidth: 6)
+    }
+}
+
+func calculateColor(for velocity: Double, minVelocity: Double, maxVelocity: Double) -> Color {
+    let progress = CGFloat((velocity - minVelocity) / (maxVelocity - minVelocity))
+    switch progress {
+    case ..<0.7: return .yellow
+    case 0.7..<0.85: return .green
+    case 0.85...: return .red
+    default: return .blue
+    }
+}
+
+```
+
 
 
 </details>
