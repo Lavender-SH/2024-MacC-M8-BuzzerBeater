@@ -604,9 +604,9 @@ func calculateColor(for velocity: Double, minVelocity: Double, maxVelocity: Doub
  - SDK를 Apple Watch 환경에 맞게 수정 및 최적화
  - BLE(Bluetooth Low Energy)를 활용하여 센서와 실시간 통신
  - 3축 데이터 X, Y, Z 각 축의 회전 각도를 실시간으로 읽어와서 돛의 실제 각도를 표현
-    X: 세일의 좌우 기울기
-    Y: 세일의 앞뒤 기울기
-    Z: 세일이 수직으로 기울어진 정ㄷ
+    X: 세일의 좌우 기울기</br>
+    Y: 세일의 앞뒤 기울기</br>
+    Z: 세일이 수직으로 기울어진 정도</br>
 
 ```swift
 class BleDeviceManager: ObservableObject {
