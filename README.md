@@ -1,6 +1,6 @@
 # Wind Talker - 세계 최초 센서 기반 요트 세일링앱
 
-<img src="https://github.com/user-attachments/assets/f198009e-20cd-4694-83ad-4fda62541344" width="20%">
+<img src="https://github.com/user-attachments/assets/ac4b535c-309b-46c5-8a07-4175d9d690924" width="25%">
 
 - [News Article - Apple Developer Academy @ POSTECH 공식 뉴스 기사](https://developeracademy.postech.ac.kr/news/%ED%8F%AC%ED%95%AD%EC%97%90-%EC%84%B8%EC%9A%B4-'%EC%95%A0%ED%94%8C-%EA%B0%9C%EB%B0%9C%EC%9E%90-%EC%82%AC%EA%B4%80%ED%95%99%EA%B5%90'%E2%80%A655%EC%82%B4-%EC%A6%9D%EA%B6%8C%EB%A7%A8%EB%8F%84-%EA%BF%88-%EC%AB%92%EC%95%84%EC%99%94%EB%8B%A4)</br>
 
