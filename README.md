@@ -16,7 +16,7 @@
 
 ## 프로젝트 소개
 ### 앱 설명
-- WindTalker는 세일링 요트를 즐기는 사용자들을 위해 설계된 앱으로, 현재 바람의 방향과 돛의 각도를 제공하여 최적의 세일링을 지원합니다. 사용자는 바람과 돛 정보를 기반으로 세일링을 즐기고, 항해 후에는 항해 기록 및 회고 정보를 통해 경험을 돌아볼 수 있습니다.</br>
+- WindTalker 앱은 세일링 요트를 즐기는 사용자들을 위해 설계된 앱으로, 현재 바람의 방향과 돛의 각도를 제공하여 최적의 세일링을 지원합니다. 사용자는 바람과 돛 정보를 기반으로 세일링을 즐기고, 항해 후에는 항해 기록 및 회고 정보를 통해 경험을 돌아볼 수 있습니다.</br>
 
 <img src="https://github.com/user-attachments/assets/78ee956c-a7c4-4c15-975e-e397c880eec3" width="100%" height="100%">
 
@@ -392,6 +392,8 @@ func startCollectingData() {
 
 ### 4. 애플워치와 아이폰의 데이터 연동
  - HealthKit을 사용하여 Apple Watch와 iPhone을 연동. 운동 데이터 기록 및 관리 시스템을 구축</br>
+ 
+ <img src="https://github.com/user-attachments/assets/8d19dbfb-54af-4550-962f-45cb9aff6c63" width="100%">
  
  ### 4-1. HealthKit 주요 구성 요소
  
