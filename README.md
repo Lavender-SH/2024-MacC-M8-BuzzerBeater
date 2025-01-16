@@ -18,6 +18,8 @@
 ### 앱 설명
 - WindTalker는 세일링 요트를 즐기는 사용자들을 위해 설계된 앱으로, 현재 바람의 방향과 돛의 각도를 제공하여 최적의 세일링을 지원합니다. 사용자는 바람과 돛 정보를 기반으로 세일링을 즐기고, 항해 후에는 항해 기록 및 회고 정보를 통해 경험을 돌아볼 수 있습니다.</br>
 
+<img src="https://github.com/user-attachments/assets/78ee956c-a7c4-4c15-975e-e397c880eec3" width="100%" height="100%">
+
 <p>
 <img src="https://github.com/user-attachments/assets/576984b0-0824-4acc-8a05-b98dc322d078" width="19.5%">
 <img src="https://github.com/user-attachments/assets/d505674d-f3fa-4d1f-95a0-6b71957ed7e5" width="19.5%">
@@ -27,7 +29,6 @@
 </p>
 
 </br>
-<img src="https://github.com/user-attachments/assets/78ee956c-a7c4-4c15-975e-e397c880eec3" width="100%" height="100%">
 
 ### 성과
 - Apple Developer Academy @ POSTECH 최종 PR(Public Relations) 홍보팀 선정
@@ -80,7 +81,7 @@ WindTalker앱에서 나침반(Compass)은 사용자 경험을 극대화하기 �
  - 나침반 화살표, 주요 방향(N, E, S, W), 바람의 방향 등을 시각적으로 표시.</br>
 
     ###  나침반 원과 눈금을 표시하는 코드
- ``` swift
+``` swift
 ForEach(0..<72, id: \.self) { index in
     let degree = index * 5  // 5도 단위 눈금
     let isMainDirection = degree % 90 == 0 // 주요 방향 (N, E, S, W)
@@ -99,7 +100,7 @@ ForEach(0..<72, id: \.self) { index in
     .stroke(isMainDirection ? Color.white : Color.gray, lineWidth: isMainDirection ? 3 : 1)
 }
 
- ```  
+```  
  </br>
 
 ### 1-1. 나침반 부가 설명
