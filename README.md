@@ -37,9 +37,11 @@
 - 경북도지사, 포항시장, 포스텍 총장, 포스코 그룹 등 주요 인사들에게 발표</br>
 - 글로벌 혁신성과 사회적 영향력을 인정받음</br>
 - 현대오토에버 Talent Acquisition(인재 채용팀) 류창한 팀장님으로부터 명함을 수여받음
+</br>
 
 ### 프로젝트 기간
 - 2024.09.01 ~ 2024.12.05 (3개월) - Apple Developer Academy @ POSTECH (MACRO Challenge)</br>
+</br>
 
 ### 프로젝트 참여 인원
 - iOS Developer 3명, Design 1명, PM 1명
