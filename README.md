@@ -33,9 +33,10 @@
 ### 성과
 - Apple Developer Academy @ POSTECH 최종 PR(Public Relations) 홍보팀 선정
 
-- 애플 상부 및 고위 관계자들에게 프로젝트 발표<br>
-- 경북도지사, 포항시장, 포스텍 총장, 포스코 그룹에게 발표 <br>
-- 글로벌 혁신성과 사회적 영향력을 입증<br>
+- 애플 고위 관계자 및 상부에게 프로젝트 발표</br>
+- 경북도지사, 포항시장, 포스텍 총장, 포스코 그룹 등 주요 인사들에게 발표</br>
+- 글로벌 혁신성과 사회적 영향력을 인정받음</br>
+- 현대오토에버 Talent Acquisition(인재 채용팀) 류창한 팀장님으로부터 명함을 수여받음
 
 ### 프로젝트 기간
 - 2024.09.01 ~ 2024.12.05 (3개월) - Apple Developer Academy @ POSTECH (MACRO Challenge)</br>
