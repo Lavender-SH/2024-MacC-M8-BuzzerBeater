@@ -13,8 +13,9 @@
 - [Wind Talker앱을 만들면서 참고했던 자료들](https://mahogany-numeric-6b8.notion.site/MACRO-CHALLENGE-115b508d1941802e84b3c1d45047355e#125b508d19418068a1fcdec7c71a478b)</br>
 
 - [요트에 하드웨어를 부착하여 블루투스로 연동했던 센서 구매 링크](https://ko.aliexpress.com/item/1005006313311459.html?spm=a2g0o.productlist.main.1.3908chMychMydv&algo_pvid=6f78082b-8c93-495b-bbdd-3d7921bdd109&algo_exp_id=6f78082b-8c93-495b-bbdd-3d7921bdd109-0&pdp_npi=4%40dis%21KRW%2120568%2120500%21%21%2114.50%2114.45%21%402102f0cc17307854810794112ed37d%2112000036722462657%21sea%21KR%211934967517%21X&curPageLogUid=3I2hxbiPn2nG&utparam-url=scene%3Asearch%7Cquery_from%3A)</br>
+</br>
 
-## 프로젝트 소개
+## WindTalker 프로젝트 소개
 ### 앱 설명
 - WindTalker 앱은 세일링 요트를 즐기는 사용자들을 위해 설계된 앱으로, 현재 바람의 방향과 돛의 각도를 제공하여 최적의 세일링을 지원합니다. 사용자는 바람과 돛 정보를 기반으로 세일링을 즐기고, 항해 후에는 항해 기록 및 회고 정보를 통해 경험을 돌아볼 수 있습니다.</br>
 
