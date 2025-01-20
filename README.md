@@ -651,13 +651,14 @@ class BleDeviceManager: ObservableObject {
     }
 }
 ```
+</br>
 
 </details>
 
 # License and Copyright
 
-© 2024 이승현 (SeungHyun Lee). All rights reserved.
-- 본 GitHub 리드미는 팀 프로젝트 WindTalker를 소개하기 위해 작성되었으며, 리드미의 모든 내용은 **이승현(SeungHyun Lee)**이 직접 작성하였습니다.
+© 2024 이승현 (SeungHyeon Lee). All rights reserved.
+- 본 GitHub 리드미는 팀 프로젝트 WindTalker를 소개하기 위해 작성되었으며, 리드미의 모든 내용은 이승현(SeungHyeon Lee)이 직접 작성하였습니다.
 
 - 이 프로젝트는 iOS Developer 3명, 디자이너 1명, PM 1명으로 구성된 팀이 협력하여 진행한 결과물입니다. 그러나 리드미에 포함된 모든 텍스트, 이미지 배치, 설명, 기술 스택 소개 등은 저의 작업임을 밝힙니다.
 
